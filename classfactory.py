@@ -11,14 +11,15 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"$Id: classfactory.py,v 1.2 2002/12/25 14:12:45 jim Exp $"
+"$Id: classfactory.py,v 1.3 2003/05/03 16:32:41 jim Exp $"
 
+from zope.interface import implements
 from zope.component.interfaces import IFactory
 
 class ClassFactory:
     "Class that creates a factory component from a class"
 
-    __implements__ = IFactory
+    implements(IFactory)
 
     def __init__(self, _class):
         self._class = _class
