@@ -16,6 +16,8 @@
 $Id$
 """
 __docformat__ = "reStructuredText"
+import zope.component
+from zope.app import zapi
 
 ##############################################################################
 # BBB: Backward Compatiblity 12/23/2004
@@ -39,9 +41,30 @@ zope.app.utility = utility
 
 ##############################################################################
 
-
-
 _marker = object()
+
+def getNextSiteManager(context):
+    """Get the next site manager."""
+    sm = queryNextSiteManager(context, _marker)
+    if sm is _marker:
+        raise zope.component.interfaces.ComponentLookupError, \
+              "No more site managers have been found."
+    return sm
+
+
+def queryNextSiteManager(context, default=None):
+    """Get the next site manager.
+
+    If the site manager of the given context is the global site manager, then
+    `default` is returned.
+    """
+    sm = zapi.getSiteManager(context)
+    if zope.component.site.IGlobalSiteManager.providedBy(sm):
+        return default
+    if sm.next is None:
+        return zapi.getGlobalSiteManager()
+    return sm.next
+
 
 def getNextUtility(context, interface, name=''):
     """Get the next available utility.
@@ -50,7 +73,7 @@ def getNextUtility(context, interface, name=''):
     """
     util = queryNextUtility(context, interface, name, _marker)
     if util is _marker:
-        raise ComponentLookupError, \
+        raise zope.component.interfaces.ComponentLookupError, \
               "No more utilities for %s, '%s' have been found." %(interface,
                                                                   name)
     return util
@@ -61,46 +84,8 @@ def queryNextUtility(context, interface, name='', default=None):
 
     Find the next available utility providing `interface` and having the
     specified name. If no utility was found, return the specified `default`
-    value.
-
-    It is very important that this method really finds the next utility and
-    does not abort, if the utility was not found in the next utility service.
-
-    Let's start out by declaring a utility interface and an implementation:
-
-      >>> from zope.interface import Interface, implements
-      >>> class IAnyUtility(Interface):
-      ...     pass
-      
-      >>> class AnyUtility(object):
-      ...     implements(IAnyUtility)
-      ...     def __init__(self, id):
-      ...         self.id = id
-      
-      >>> any1 = AnyUtility(1)
-      >>> any1next = AnyUtility(2)
-
-    Now that we have the utilities, let's register them:
-
-      >>> testingNextUtility(any1, any1next, IAnyUtility)
-
-    The next utility of `any1` ahould be `any1next`:
-
-      >>> queryNextUtility(any1, IAnyUtility) is any1next
-      True
-
-    But `any1next` does not have a next utility, so the default is returned:
-
-      >>> queryNextUtility(any1next, IAnyUtility) is None
-      True
-
-    """    
-    util = _marker
-    while util is _marker:
-        utilservice = queryNextService(context, zapi.servicenames.Utilities)
-        if utilservice is None:
-            return default
-        util = utilservice.queryUtility(interface, name, _marker)
-        context = utilservice
-        
-    return util
+    value."""    
+    sm = queryNextSiteManager(context)
+    if sm is None:
+        return default
+    return sm.queryUtility(interface, name, default)
