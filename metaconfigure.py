@@ -11,8 +11,9 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
-$Id: metaconfigure.py,v 1.24 2004/01/08 20:48:21 garrett Exp $
+"""Generic Components ZCML Handlers
+
+$Id: metaconfigure.py,v 1.25 2004/02/13 22:27:33 srichter Exp $
 """
 
 from zope.configuration.exceptions import ConfigurationError
