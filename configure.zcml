@@ -18,15 +18,6 @@
       permission="zope.Public"
       factory="zope.component.adapter.GlobalAdapterService" />
 
-  <serviceType
-      id="Presentation"
-      interface="zope.component.interfaces.IPresentationService" />
-
-  <service
-      serviceType="Presentation"
-      permission="zope.Public"
-      factory="zope.component.presentation.GlobalPresentationService" />
-
   <vocabulary
       name="Interfaces"
       factory="zope.app.utility.vocabulary.UtilityVocabulary"
