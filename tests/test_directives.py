@@ -46,7 +46,7 @@ from zope.testing.doctestunit import DocTestSuite
 from zope.app.component.metaconfigure import interface
 from zope.app.interfaces.content import IContentType
 
-atre = re.compile(' at [0-9a-fx]+')
+atre = re.compile(' at [0-9a-fA-Fx]+')
 
 class Context:
     actions = ()
