@@ -92,6 +92,7 @@ class SiteManagerContainer(bbb.site.BBBSiteManagerContainer, Contained):
             self, interfaces.ISite,
             zope.interface.directlyProvidedBy(self))
 
+        zope.event.notify(interfaces.NewLocalSite(sm))
 
 def _findNextSiteManager(site):
     while True:

@@ -64,6 +64,17 @@ class ILocalSiteManager(zope.component.interfaces.ISiteManager,
     the global site manager which contains file based utilities and adapters.
     """
 
+class INewLocalSite(zope.interface.Interface):
+
+    manager = zope.interface.Attribute("The new site manager")
+
+class NewLocalSite:
+    zope.interface.implements(INewLocalSite)
+    
+    def __init__(self, manager):
+        self.manager = manager
+
+
 class ISiteManagementFolder(registration.IRegisterableContainer,
                             IContainer):
     """Component and component registration containers."""

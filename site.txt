@@ -50,6 +50,14 @@ To convert a possible site to a real site, we have to provide a site manager:
   >>> myfolder.getSiteManager() is sm
   True
 
+Note that an event is generated when a local site manager is created:
+
+  >>> from zope.app.event.tests.placelesssetup import getEvents
+  >>> from zope.app.component.interfaces import INewLocalSite
+  >>> [event] = getEvents(INewLocalSite)
+  >>> event.manager is sm
+  True
+
 If one tries to set a bogus site manager, a `ValueError` will be raised:
 
    >>> myfolder2 = folder.Folder()
