@@ -13,7 +13,7 @@
 ##############################################################################
 """Component Directives Tests
 
-$Id: test_directives.py,v 1.28 2004/03/09 12:39:25 srichter Exp $
+$Id: test_directives.py,v 1.29 2004/03/18 12:19:20 jim Exp $
 """
 import re
 import unittest
@@ -118,6 +118,128 @@ class Test(PlacelessSetup, unittest.TestCase):
             )))
 
         self.assertEqual(IApp(Content()).__class__, Comp)
+
+    def testAdapter_w_multiple_factories(self):
+        from zope.app.component.tests.adapter import A1, A2, A3
+        from zope.component.tests.components import Content, IApp
+
+        xmlconfig(StringIO(template % (
+            """
+            <adapter
+              factory="zope.app.component.tests.adapter.A1
+                       zope.app.component.tests.adapter.A2
+                       zope.app.component.tests.adapter.A3
+                      "
+              provides="zope.component.tests.components.IApp"
+              for="zope.component.tests.components.IContent"
+              />
+            """
+            )))
+
+        # The resulting adapter should be an A3, around an A2, around
+        # an A1, andround the content:
+
+        content = Content()
+        a3 = IApp(content)
+        self.assertEqual(a3.__class__, A3)
+        a2 = a3.context[0]
+        self.assertEqual(a2.__class__, A2)
+        a1 = a2.context[0]
+        self.assertEqual(a1.__class__, A1)
+        self.assertEqual(a1.context[0], content)
+
+    def testAdapter_fails_w_no_factories(self):
+        self.assertRaises(ConfigurationError,
+                          xmlconfig,
+                          StringIO(template % (
+                             """
+                             <adapter
+                             factory="
+                                     "
+                             provides="zope.component.tests.components.IApp"
+                             for="zope.component.tests.components.IContent"
+                             />
+                             """
+                             )),
+                          )
+
+    def testMultiAdapter(self):
+        from zope.app.component.tests.adapter import A1, A2, A3, I3
+        from zope.component.tests.components import Content
+
+        xmlconfig(StringIO(template % (
+            """
+            <adapter
+              factory="zope.app.component.tests.adapter.A3
+                      "
+              provides="zope.app.component.tests.adapter.I3"
+              for="zope.component.tests.components.IContent
+                   zope.app.component.tests.adapter.I1
+                   zope.app.component.tests.adapter.I2
+                  "
+              />
+            """
+            )))
+
+        content = Content()
+        a1 = A1()
+        a2 = A2()
+        a3 = zapi.queryMultiAdapter((content, a1, a2), I3)
+        self.assertEqual(a3.__class__, A3)
+        self.assertEqual(a3.context, (content, a1, a2))        
+
+    def testNullAdapter(self):
+        from zope.app.component.tests.adapter import A3, I3
+
+        xmlconfig(StringIO(template % (
+            """
+            <adapter
+              factory="zope.app.component.tests.adapter.A3
+                      "
+              provides="zope.app.component.tests.adapter.I3"
+              for=""
+              />
+            """
+            )))
+
+        a3 = zapi.queryMultiAdapter((), I3)
+        self.assertEqual(a3.__class__, A3)
+        self.assertEqual(a3.context, ())
+
+    def testMultiAdapterFails_w_multiple_factories(self):
+        self.assertRaises(ConfigurationError,
+                          xmlconfig,
+                          StringIO(template % (
+                             """
+                             <adapter
+                             factory="zope.app.component.tests.adapter.A1
+                                      zope.app.component.tests.adapter.A2
+                                     "
+                             for="zope.component.tests.components.IContent
+                                  zope.app.component.tests.adapter.I1
+                                  zope.app.component.tests.adapter.I2
+                                  "
+                             provides="zope.component.tests.components.IApp"
+                             />
+                             """
+                             )),
+                          )
+        
+        self.assertRaises(ConfigurationError,
+                          xmlconfig,
+                          StringIO(template % (
+                             """
+                             <adapter
+                             factory="zope.app.component.tests.adapter.A1
+                                      zope.app.component.tests.adapter.A2
+                                     "
+                             for=""
+                             provides="zope.component.tests.components.IApp"
+                             />
+                             """
+                             )),
+                          )
+        
 
     def testNamedAdapter(self):
 
@@ -275,7 +397,6 @@ class Test(PlacelessSetup, unittest.TestCase):
 
 
     def testView(self):
-
         ob = Ob()
         self.assertEqual(zapi.queryView(ob, 'test', Request(IV), None), None)
 
@@ -292,6 +413,94 @@ class Test(PlacelessSetup, unittest.TestCase):
             zapi.queryView(ob, 'test', Request(IV), None).__class__,
             V1)
 
+
+    def testMultiView(self):
+        from zope.app.component.tests.adapter import A1, A2, A3, I3
+        xmlconfig(StringIO(template %
+            """
+            <view name="test"
+                  factory="zope.app.component.tests.adapter.A3"
+                  for="zope.app.component.tests.views.IC
+                       zope.app.component.tests.adapter.I1
+                       zope.app.component.tests.adapter.I2
+                       "
+                  type="zope.app.component.tests.views.IV"/>
+            """
+            ))
+
+
+        ob = Ob()
+        a1 = A1()
+        a2 = A2()
+        request = Request(IV)
+        view = zapi.queryMultiView((ob, a1, a2), 'test', request)
+        self.assertEqual(view.__class__, A3)
+        self.assertEqual(view.context, (ob, a1, a2, request))
+
+    def testMultiView_fails_w_multiple_factories(self):
+        from zope.app.component.tests.adapter import A1, A2, A3, I3
+        self.assertRaises(
+            ConfigurationError,
+            xmlconfig,
+            StringIO(template %
+              """
+              <view name="test"
+                    factory="zope.app.component.tests.adapter.A3
+                             zope.app.component.tests.adapter.A2"
+                    for="zope.app.component.tests.views.IC
+                         zope.app.component.tests.adapter.I1
+                         zope.app.component.tests.adapter.I2
+                         "
+                    type="zope.app.component.tests.views.IV"/>
+              """
+              )
+            )
+
+    def testView_w_multiple_factories(self):
+        from zope.app.component.tests.adapter import A1, A2, A3
+
+        xmlconfig(StringIO(template %
+            """
+            <view name="test"
+                  factory="zope.app.component.tests.adapter.A1
+                           zope.app.component.tests.adapter.A2
+                           zope.app.component.tests.adapter.A3
+                           zope.app.component.tests.views.V1"
+                  for="zope.app.component.tests.views.IC"
+                  type="zope.app.component.tests.views.IV"/>
+            """
+            ))
+
+        ob = Ob()
+
+        # The view should be a V1 around an A3, around an A2, around
+        # an A1, anround ob:
+        view = zapi.queryView(ob, 'test', Request(IV))
+        self.assertEqual(view.__class__, V1)
+        a3 = view.context
+        self.assertEqual(a3.__class__, A3)
+        a2 = a3.context[0]
+        self.assertEqual(a2.__class__, A2)
+        a1 = a2.context[0]
+        self.assertEqual(a1.__class__, A1)
+        self.assertEqual(a1.context[0], ob)
+
+    def testView_fails_w_no_factories(self):
+        from zope.app.component.tests.adapter import A1, A2, A3
+
+        self.assertRaises(ConfigurationError,
+                          xmlconfig,
+                          StringIO(template %
+                                   """
+                                   <view name="test"
+                                   factory=""
+                                   for="zope.app.component.tests.views.IC"
+                                   type="zope.app.component.tests.views.IV"/>
+                                   """
+                                   ),
+                          )
+
+        
     def testViewThatProvidesAnInterface(self):
 
         ob = Ob()
@@ -456,7 +665,6 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             ))
         self.assertRaises(ValueError, xmlconfig, config, testing=1)
-
 
 
     def testDefaultView(self):
