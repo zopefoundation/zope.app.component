@@ -13,7 +13,7 @@
 ##############################################################################
 """Generic Components ZCML Handlers
 
-$Id: metaconfigure.py,v 1.29 2004/03/09 12:39:25 srichter Exp $
+$Id: metaconfigure.py,v 1.30 2004/03/13 23:54:58 srichter Exp $
 """
 from zope.interface import Interface
 from zope.component.service import UndefinedService
@@ -26,7 +26,7 @@ from zope.component.interfaces import IFactory
 from zope.app import zapi
 from zope.app.component.interface import queryInterface
 from zope.app.security.permission import checkPermission 
-from zope.app.services.servicenames import Adapters, Presentation
+from zope.app.servicenames import Adapters, Presentation
 
 
 PublicPermission = 'zope.Public'
