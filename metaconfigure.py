@@ -66,7 +66,7 @@ def subscriber(_context, for_=None, factory=None, handler=None, provides=None,
 
     if factory is None:
         if handler is None:
-            raise TypeError("No factory or handler provides")
+            raise TypeError("No factory or handler provided")
         if provides is not None:
             raise TypeError("Cannot use handler with provides")
         factory = handler
