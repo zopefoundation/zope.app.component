@@ -18,7 +18,6 @@ $Id$
 __docformat__ = 'restructuredtext'
 
 from zope.component.interfaces import IDefaultViewName, IFactory
-from zope.component.service import UndefinedService
 from zope.configuration.exceptions import ConfigurationError
 from zope.interface import Interface
 from zope.interface.interfaces import IInterface
@@ -34,28 +33,11 @@ from zope.app.security.adapter import TrustedAdapterFactory
 
 PublicPermission = 'zope.Public'
 
-# I prefer the indirection (using getService and getServices vs.
-# directly importing the various services)  not only because it makes
-# unit tests easier, but also because it reinforces that the services
-# should always be obtained through the
-# IPlacefulComponentArchitecture interface methods.
-
-# But these services aren't placeful! And we need to get at things that
-# normal service clients don't need!   Jim
-
-
-def handler(serviceName, methodName, *args, **kwargs):
-    method=getattr(zapi.getGlobalService(serviceName), methodName)
+def handler(methodName, *args, **kwargs):
+    method=getattr(zapi.getGlobalSiteManager(), methodName)
     method(*args, **kwargs)
 
-# We can't use the handler for serviceType, because serviceType needs
-# the interface service.
 from zope.app.component.interface import provideInterface
-
-def managerHandler(methodName, *args, **kwargs):
-    method=getattr(zapi.getGlobalServices(), methodName)
-    method(*args, **kwargs)
-
 def interface(_context, interface, type=None):
     _context.action(
         discriminator = None,
@@ -109,7 +91,7 @@ def subscriber(_context, factory, for_, provides=None, permission=None,
     _context.action(
         discriminator = None,
         callable = handler,
-        args = (zapi.servicenames.Adapters, 'subscribe',
+        args = ('subscribe',
                 for_, provides, factory),
         )
 
@@ -161,7 +143,7 @@ def adapter(_context, factory, provides, for_, permission=None, name='',
     _context.action(
         discriminator = ('adapter', for_, provides, name),
         callable = handler,
-        args = (zapi.servicenames.Adapters, 'register',
+        args = ('provideAdapter',
                 for_, provides, name, factory, _context.info),
         )
     _context.action(
@@ -195,7 +177,7 @@ def utility(_context, provides, component=None, factory=None,
     _context.action(
         discriminator = ('utility', provides, name),
         callable = handler,
-        args = ('Utilities', 'provideUtility',
+        args = ('provideUtility',
                 provides, component, name),
         )
     _context.action(
@@ -264,7 +246,7 @@ def resource(_context, factory, type, name, layer=None,
     _context.action(
         discriminator = ('resource', name, layer, provides),
         callable = handler,
-        args = (zapi.servicenames.Adapters, 'register',
+        args = ('provideAdapter',
                 (layer,), provides, name, factory, _context.info),
         )
     _context.action(
@@ -339,7 +321,7 @@ def view(_context, factory, type, name, for_, layer=None,
     _context.action(
         discriminator = ('view', for_, name, provides),
         callable = handler,
-        args = (zapi.servicenames.Adapters, 'register',
+        args = ('provideAdapter',
                 for_, provides, name, factory, _context.info),
         )
     if type is not None:
@@ -369,7 +351,7 @@ def defaultView(_context, type, name, for_):
     _context.action(
         discriminator = ('defaultViewName', for_, type, name),
         callable = handler,
-        args = (zapi.servicenames.Adapters, 'register',
+        args = ('provideAdapter',
                 (for_, type), IDefaultViewName, '', name, _context.info)
         )
     
@@ -389,7 +371,7 @@ def defaultLayer(_context, type, layer):
     _context.action(
         discriminator=('defaultLayer', type, layer),
         callable=handler,
-        args = (zapi.servicenames.Adapters, 'register',
+        args = ('provideAdapter',
                (type,), IInterface, 'defaultLayer',
                lambda request: layer, _context.info)
         )
