@@ -12,14 +12,13 @@
 #
 ##############################################################################
 """
-$Id: interfacefield.py,v 1.12 2004/03/05 22:08:58 jim Exp $
+$Id: interfacefield.py,v 1.13 2004/03/13 23:08:40 srichter Exp $
 """
-
 from zope.schema import Enumerated, Field, Tuple
 from zope.interface import Interface, implements
 from zope.interface.interfaces import IInterface
 from zope.schema.interfaces import ValidationError
-from zope.app.interfaces.component import IInterfaceField, IInterfacesField
+from interfaces import IInterfaceField, IInterfacesField
 
 class InterfaceField(Enumerated, Field):
     __doc__ = IInterfaceField.__doc__
