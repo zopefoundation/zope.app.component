@@ -1,7 +1,8 @@
-<zopeConfigure
+<configure
    xmlns='http://namespaces.zope.org/zope'
    package="zope.component"
->
+   i18n_domain="zope"
+   >
 
 <serviceType id='Utilities'
              interface='zope.component.interfaces.IUtilityService' />
@@ -58,6 +59,6 @@
 
 <interface interface="zope.interface.Interface" />
 
-</zopeConfigure>
+</configure>
 
 

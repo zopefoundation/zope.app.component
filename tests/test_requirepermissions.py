@@ -34,7 +34,8 @@ def defineDirectives():
     XMLConfig('meta.zcml', zope.app.component)()
     XMLConfig('meta.zcml', zope.app.security)()
     xmlconfig(StringIO("""<configure
-        xmlns='http://namespaces.zope.org/zope' >
+        xmlns='http://namespaces.zope.org/zope'
+        i18n_domain='zope'>
        <permission id="zope.Extravagant" title="extravagant" />
        <permission id="zope.Paltry" title="paltry" />
     </configure>"""))
