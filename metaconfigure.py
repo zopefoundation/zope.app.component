@@ -75,7 +75,8 @@ def proxify(ob, checker):
 
     return ob
 
-def subscriber(_context, factory, for_, provides=None, permission=None):
+def subscriber(_context, factory, for_, provides=None, permission=None,
+               trusted=False):
     factory = [factory]
 
     if permission is not None:
@@ -99,6 +100,9 @@ def subscriber(_context, factory, for_, provides=None, permission=None):
             for f in factories:
                 ob = f(ob)
             return ob
+
+    if trusted:
+        factory = TrustedAdapterFactory(factory)
 
     _context.action(
         discriminator = None,
