@@ -14,7 +14,7 @@
 """
 
 Revision information:
-$Id: test_servicemanagercontainer.py,v 1.3 2002/12/27 15:59:43 rdmurray Exp $
+$Id: test_servicemanagercontainer.py,v 1.4 2003/02/04 10:25:44 sidnei Exp $
 """
 
 from unittest import TestCase, TestSuite, main, makeSuite
@@ -82,7 +82,7 @@ class BaseTestServiceManagerContainer:
 
 class Test(BaseTestServiceManagerContainer, TestCase):
     def makeTestObject(self):
-        from zope.app.services.service \
+        from zope.app.services.servicecontainer \
              import ServiceManagerContainer
         return ServiceManagerContainer()
 
