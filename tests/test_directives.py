@@ -26,6 +26,9 @@ from zope.component.exceptions import ComponentLookupError
 from zope.component import getView, queryView, queryResource
 from zope.component import createObject
 from zope.component import getDefaultViewName
+from zope.component import getAdapter, queryAdapter
+from zope.component import getNamedAdapter, queryNamedAdapter
+from zope.component import getUtility, queryUtility
 
 from zope.app.tests.placelesssetup import PlacelessSetup
 from zope.component.tests.views import IV, IC, V1, VZMI, R1, RZMI
@@ -55,7 +58,6 @@ class Test(PlacelessSetup, unittest.TestCase):
         XMLConfig('meta.zcml', zope.app.security)()
 
     def testAdapter(self):
-        from zope.component import getAdapter, queryAdapter
 
         # Full import is critical!
         from zope.component.tests.components import Content, IApp, Comp
@@ -76,14 +78,13 @@ class Test(PlacelessSetup, unittest.TestCase):
 
     def testNamedAdapter(self):
 
-        from zope.component import getAdapter, queryAdapter
 
         # Full import is critical!
         from zope.component.tests.components import Content, IApp, Comp
 
         self.testAdapter()
         self.assertEqual(getAdapter(Content(), IApp).__class__, Comp)
-        self.assertEqual(queryAdapter(Content(), IV, None, name='test'),
+        self.assertEqual(queryNamedAdapter(Content(), IV, 'test'),
                          None)
 
         xmlconfig(StringIO(template % (
@@ -97,11 +98,10 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        self.assertEqual(getAdapter(Content(), IApp, name="test").__class__,
+        self.assertEqual(getNamedAdapter(Content(), IApp, "test").__class__,
                          Comp)
 
     def testProtectedAdapter(self):
-        from zope.component import getAdapter, queryAdapter
 
         # Full import is critical!
         from zope.component.tests.components import Content, IApp, Comp
@@ -139,7 +139,6 @@ class Test(PlacelessSetup, unittest.TestCase):
                           testing=1)
 
     def testUtility(self):
-        from zope.component import getUtility, queryUtility
 
         # Full import is critical!
         from zope.component.tests.components import IApp, comp
@@ -158,7 +157,6 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertEqual(getUtility(None, IApp), comp)
 
     def testNamedUtility(self):
-        from zope.component import getUtility, queryUtility
 
         # Full import is critical!
         from zope.component.tests.components import IApp, comp
@@ -180,7 +178,6 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertEqual(getUtility(None, IApp, "test"), comp)
 
     def testUtilityFactory(self):
-        from zope.component import getUtility, queryUtility
 
         # Full import is critical!
         from zope.component.tests.components import IApp, Comp
@@ -199,7 +196,6 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertEqual(getUtility(None, IApp).__class__, Comp)
 
     def testProtectedUtility(self):
-        from zope.component import getUtility, queryUtility
 
         # Full import is critical!
         from zope.component.tests.components import IApp, comp
