@@ -281,18 +281,12 @@ class AddComponentRegistration(BrowserView):
         registration manager. We don't want to hard code the name of
         this, so we'll simply scan the containing folder and add the
         registration to the first registration manager we find.
-
         """
-
         component = self.context
 
-        # XXX: Fix to use addRegistration()
         # Get the registration manager for this folder
-        folder = component.__parent__
-        rm = folder.registrationManager
-
-        name = INameChooser(rm).chooseName('', registration)
-        rm[name] = registration
+        rm = component.__parent__.registrationManager
+        rm.addRegistration(registration)
         return registration
 
     def nextURL(self):

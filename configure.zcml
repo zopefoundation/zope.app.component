@@ -14,11 +14,10 @@
         />
     <require
         permission="zope.ManageSite"
-        interface="zope.app.container.interfaces.IReadContainer" />
-    <require
-        permission="zope.ManageSite"
         interface="zope.app.container.interfaces.IWriteContainer
+                   zope.app.container.interfaces.IReadContainer
                    zope.app.container.interfaces.INameChooser" 
+        attributes="addRegistration"
         />
   </content>
 

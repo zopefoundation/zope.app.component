@@ -152,7 +152,6 @@ def SimpleRegistrationRemoveSubscriber(registration, event):
 def ComponentRegistrationRemoveSubscriber(componentRegistration, event):
     """Receive notification of remove event."""
     component = componentRegistration.component
-    # XXX: test failure
     try:
         dependents = IDependable(component)
     except TypeError:
@@ -164,7 +163,6 @@ def ComponentRegistrationRemoveSubscriber(componentRegistration, event):
 def ComponentRegistrationAddSubscriber(componentRegistration, event):
     """Receive notification of add event."""
     component = componentRegistration.component
-    # XXX: test failure
     try:
         dependents = IDependable(component)
     except TypeError:
@@ -254,7 +252,7 @@ class RegisterableContainer(bbb.registration.BBBRegisterableContainer):
         zope.event.notify(
             objectevent.ObjectCreatedEvent(self.registrationManager))
 
-# XXX: Needs tests
+
 class RegistrationManagerNamespace(object):
     """Used to traverse to a Registration Manager from a
        Registerable Container."""
