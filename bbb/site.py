@@ -134,7 +134,11 @@ class BBBSiteManager(object):
         'The method will be gone in X3.3.')
 
     def queryLocalService(self, name, default=None):
-        service = zapi.getUtility(IService, name, self)
+        if name in _builtinServices:
+            return self
+        service = zapi.queryUtility(IService, name, self)
+        if service is None:
+            return default
         if zapi.getSiteManager(service) is not self:
             return default
         return service
@@ -160,6 +164,8 @@ class BBBSiteManager(object):
         getInterfaceFor,
         'This method was pretty useless even before services were gone! '
         'The method will be gone in X3.3.')
+
+_builtinServices = ('Utilities', 'Adapters')
 
 
 class BBBUtilityRegistration(object):
