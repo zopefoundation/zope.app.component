@@ -112,7 +112,7 @@ def utility(_context, provides, component=None, factory=None,
         component = _context.resolve(component)
 
     if permission is not None:
-        if permission == 'Zope.Public':
+        if permission == 'zope.Public':
             permission = CheckerPublic
         checker = InterfaceChecker(provides, permission)
 
