@@ -95,25 +95,16 @@ class ISite(IPossibleSite):
     """
 
 class ILocalSiteManager(ISiteManager, IComponentManager,
+                        registration.ILocatedRegistry,
                         registration.IRegistry):
-    """Service Managers act as containers for Services.
+    """Site Managers act as containers for registerable components.
 
-    If a Service Manager is asked for a service, it checks for those it
-    contains before using a context-based lookup to find another service
+    If a Site Manager is asked for an adapter or utility, it checks for those it
+    contains before using a context-based lookup to find another site
     manager to delegate to.  If no other service manager is found they defer
     to the ComponentArchitecture ServiceManager which contains file based
     services.
     """
-
-    def addSubsite(subsite):
-        """Add a subsite of the site
-
-        Local sites are connected in a tree. Each site knows about
-        its containing sites and its subsites.
-        """
-
-    next = zope.interface.Attribute('The site that this site is a subsite of.')
-
     def findModule(name):
         """Find the module of the given name.
 

@@ -18,16 +18,8 @@ $Id$
 __docformat__ = 'restructuredtext'
 
 import zope.component
-from zope.app.component.interfaces import ISite
-from zope.component.exceptions import ComponentLookupError
-from zope.security.proxy import removeSecurityProxy
-from zope.app.traversing.interfaces import IContainmentRoot
-from zope.app.location.interfaces import ILocation
-from zope.app.location import locate
-from zope.interface import Interface
-from zope.component.servicenames import Adapters
-import warnings
 import zope.thread
+import zope.security
 
 class read_property(object):
     def __init__(self, func):
@@ -44,9 +36,7 @@ class SiteInfo(zope.thread.local):
     sm = zope.component.getGlobalSiteManager()
 
     def adapter_hook(self):
-        services = self.services
-        adapters = services.getService(Adapters)
-        adapter_hook = adapters.adapter_hook
+        adapter_hook = self.sm.adapters.adapter_hook
         self.adapter_hook = adapter_hook
         return adapter_hook
     
@@ -66,11 +56,11 @@ def setSite(site=None):
         # once site managers do less.  There's probably no good reason why
         # they can't be proxied.  Well, except maybe for performance.
         
-        site = removeSecurityProxy(site)
+        site = zope.security.proxy.removeSecurityProxy(site)
         sm = site.getSiteManager()
 
     siteinfo.site = site
-    siteinfo.services = sm
+    siteinfo.sm = sm
     try:
         del siteinfo.adapter_hook
     except AttributeError:
@@ -82,7 +72,7 @@ def getSite():
 def adapter_hook(interface, object, name='', default=None):
     try:
         return siteinfo.adapter_hook(interface, object, name, default)
-    except ComponentLookupError:
+    except zope.component.exceptions.ComponentLookupError:
         return default
 
 

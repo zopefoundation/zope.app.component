@@ -25,12 +25,12 @@ A local site manager has a number of roles:
 $Id$
 """
 import sys
-from zodbcode.module import PersistentModuleRegistry
+import zodbcode.module
 
 import zope.event
 import zope.interface
+import zope.component
 from zope.component.exceptions import ComponentLookupError
-from zope.component.site import SiteManager
 
 from zope.app import zapi
 from zope.app.component import adapter
@@ -42,15 +42,17 @@ from zope.app.container.constraints import ItemTypePrecondition
 from zope.app.container.contained import Contained
 from zope.app.container.interfaces import IContainer
 from zope.app.event import objectevent
-from zope.app.location import inside
+from zope.app.filerepresentation.interfaces import IDirectoryFactory
 from zope.app.traversing.interfaces import IContainmentRoot
 
 
-class SiteManagementFolder(RegisterableContainer, BTreeContainer):
-    implements(interfaces.ISiteManagementFolder)
+class SiteManagementFolder(registration.RegisterableContainer,
+                           BTreeContainer):
+    zope.interface.implements(interfaces.ISiteManagementFolder)
+
 
 class SMFolderFactory(object):
-    implements(IDirectoryFactory)
+    zope.interface.implements(IDirectoryFactory)
 
     def __init__(self, context):
         self.context = context
@@ -59,74 +61,119 @@ class SMFolderFactory(object):
         return SiteManagementFolder()
 
 
-class LocalSiteManager(BTreeContainer, PersistentModuleRegistry, SiteManager):
+class SiteManagerContainer(Contained):
+    """Implement access to the service manager (++etc++site).
+
+    This is a mix-in that implements the IPossibleSite
+    interface; for example, it is used by the Folder implementation.
+    """
+    zope.interface.implements(interfaces.IPossibleSite)
+
+    __sm = None
+
+    def getSiteManager(self):
+        if self.__sm is not None:
+            return self.__sm
+        else:
+            raise ComponentLookupError('no site manager defined')
+
+    def setSiteManager(self, sm):
+        if interfaces.ISite.providedBy(self):
+            raise TypeError("Already a site")
+
+        if zope.component.interfaces.ISiteManager.providedBy(sm):
+            self.__sm = sm
+            sm.__name__ = '++etc++site'
+            sm.__parent__ = self
+        else:
+            raise ValueError('setSiteManager requires an ISiteManager')
+
+        zope.interface.directlyProvides(
+            self, interfaces.ISite,
+            zope.interface.directlyProvidedBy(self))
+
+
+def findNextSiteManager(site):
+    next = None
+    while next is None:
+        if IContainmentRoot.providedBy(site):
+            # we're the root site, use the global sm
+            next = zapi.getGlobalSiteManager()
+
+        site = zapi.getParent(site)
+
+        if interfaces.ISite.providedBy(site):
+            next = site.getSiteManager()
+
+    return next
+    
+
+class LocalSiteManager(BTreeContainer,
+                       zodbcode.module.PersistentModuleRegistry,
+                       zope.component.site.SiteManager):
     """Local Site Manager implementation"""
     zope.interface.implements(
         interfaces.ILocalSiteManager,
-        interfaces.registrations.IRegisterableContainerContainer)
+        interfaces.registration.IRegisterableContainerContaining)
+
+    # See interfaces.registration.ILocatedRegistry
+    next = None
+    subs = ()
+    base = None
 
     def __init__(self, site):
         # Locate the site manager
         self.__parent__ = site
         self.__name__ = '++etc++site'
+
         # Make sure everything is setup correctly
         BTreeContainer.__init__(self)
-        PersistentModuleRegistry.__init__(self)
+        zodbcode.module.PersistentModuleRegistry.__init__(self)
+
+        # Setup located registry attributes
+        self.base = zapi.getGlobalSiteManager()
+        next = findNextSiteManager(site)
+        if not zope.component.site.IGlobalSiteManager.providedBy(next):
+            self.setNext(next)
+
         # Set up adapter registries
-        self.adapters = adapter.LocalAdapterRegistry()
-        self.utilities = adapter.LocalAdapterRegistry()
-        # Initialize all links
-        self.subSites = ()
-        self._setNext(site)
+        gsm = zapi.getGlobalSiteManager()
+        self.adapters = adapter.LocalAdapterRegistry(gsm.adapters)
+        self.utilities = adapter.LocalAdapterRegistry(gsm.utilities)
+
         # Setup default site management folder
         folder = SiteManagementFolder()
         zope.event.notify(objectevent.ObjectCreatedEvent(folder))
         self['default'] = folder
 
-    def _setNext(self, site):
-        """Find and set the next site manager"""
-        next = None
-        while next is None:
-            if IContainmentRoot.providedBy(site):
-                # we're the root site, use the global sm
-                next = zapi.getGlobalServices()
 
-            site = zapi.getParent(site)
+    def addSub(self, sub):
+        """See interfaces.registration.ILocatedRegistry"""
+        self.subs += (sub, )
 
-            if ISite.providedBy(site):
-                next = site.getSiteManager()
-                next.addSubsite(self)
-                return
+    def removeSub(self, sub):
+        """See interfaces.registration.ILocatedRegistry"""
+        self.subs = tuple(
+            [s for s in self.subs if s is not sub] )
 
+    def setNext(self, next, base=None):
+        """See interfaces.registration.ILocatedRegistry"""
+        if base is not None:
+            self.base = base
+        if self.next is not None:
+            self.next.removeSub(self)
+        if next is not None:
+            next.addSub(self)
         self.next = next
-        self.adapters.setNextRegistry(next.adapters)
-        self.utilities.setNextRegistry(next.utilities)
-
-
-    def addSubsite(self, sub):
-        """See ILocalSiteManager interface"""
-        subsite = sub.__parent__
-
-        # Update any sites that are now in the subsite:
-        subsites = []
-        for s in self.subSites:
-            if inside(s, subsite):
-                s.next = sub
-                sub.addSubsite(s)
-            else:
-                subsites.append(s)
-
-        subsites.append(sub)
-        self.subSites = tuple(subsites)
-        self.adapters.addSubRegistry(sub.adapters)
-        self.utilities.addSubRegistry(sub.utilities)
+        self.adapaters.setNext(next.adapters)
+        self.utilities.setNext(next.adapters)
 
     def __getRegistry(registration):
         """Determine the correct registry for the registration."""
-        if IAdapterRegistration.providedBy(registration):
-            return self.adapters
-        elif IUtilityRegistration.providedBy(registration):
+        if interfaces.IUtilityRegistration.providedBy(registration):
             return self.utilities
+        elif interfaces.IAdapterRegistration.providedBy(registration):
+            return self.adapters
         raise ValueError, \
               ("Unable to detect registration type or registration "
                "type is not supported. The registration object must provide "
@@ -261,7 +308,7 @@ class UtilityRegistration(registration.ComponentRegistration):
     zope.interface.implements(interfaces.IUtilityRegistration)
 
     ############################################################
-    # To make adapter code happy. Are we going too far?
+    # Make the adapter code happy.
     required = zope.interface.adapter.Null
     with = ()
     ############################################################
@@ -293,3 +340,38 @@ def clearThreadSiteSubscriber(event):
 
 # Clear the site thread global
 clearSite = setSite
+from zope.testing.cleanup import addCleanUp
+addCleanUp(clearSite)
+
+
+def SiteManagerAdapter(ob):
+    """An adapter from ILocation to ISiteManager.
+
+    The ILocation is interpreted flexibly, we just check for
+    ``__parent__``.
+    """
+    current = ob
+    while True:
+        if interfaces.ISite.providedBy(current):
+            return current.getSiteManager()
+        current = getattr(current, '__parent__', None)
+        if current is None:
+            raise ComponentLookupError(
+                "Could not adapt %r to ISiteManager" %ob)
+
+
+def threadSiteSubscriber(event):
+    """A subscriber to BeforeTraverseEvent
+
+    Sets the 'site' thread global if the object traversed is a site.
+    """
+    if interfaces.ISite.providedBy(event.object):
+        setSite(event.object)
+
+
+def clearThreadSiteSubscriber(event):
+    """A subscriber to EndRequestEvent
+
+    Cleans up the site thread global after the request is processed.
+    """
+    clearSite()

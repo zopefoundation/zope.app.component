@@ -1,0 +1,78 @@
+=============================
+Sites and Local Site Managers
+=============================
+
+
+
+Creating Sites
+--------------
+
+*Sites* are used to provide custom component setups for parts of your
+application or Web site. Every folder,
+
+  >>> from zope.app.folder import folder
+  >>> myfolder = folder.Folder()
+
+has the potential to become a site
+
+  >>> from zope.app.component import interfaces
+  >>> interfaces.IPossibleSite.providedBy(myfolder)
+  True
+
+but is not yet one:
+
+  >>> interfaces.ISite.providedBy(myfolder)
+  False
+
+If you would like your custom content component to be able to become a site,
+you can use the `SiteManagerContainer` mix-in class:
+
+  >>> from zope.app.component import site
+  >>> class MyContentComponent(site.SiteManagerContainer):
+  ...     pass
+
+  >>> myContent = MyContentComponent()
+  >>> interfaces.IPossibleSite.providedBy(myContent)
+  True
+  >>> interfaces.ISite.providedBy(myContent)
+  False
+
+
+
+
+    def test_get_and_set(self):
+        smc = self.makeTestObject()
+        self.failIf(ISite.providedBy(smc))
+        sm = ServiceManager()
+        smc.setSiteManager(sm)
+        self.failUnless(ISite.providedBy(smc))
+        self.failUnless(smc.getSiteManager() is sm)
+        verifyObject(ISite, smc)
+
+    def test_set_w_bogus_value(self):
+        smc=self.makeTestObject()
+        self.assertRaises(Exception, smc.setSiteManager, self)
+
+
+
+class Test(BaseTestServiceManagerContainer, TestCase):
+    def makeTestObject(self):
+        from zope.app.site.servicecontainer import ServiceManagerContainer
+        return ServiceManagerContainer()
+
+
+SiteManagerAdapter
+
+
+
+The Registry
+++++++++++++
+
+register
+unregister
+registrations
+registered
+
+setNext
+next
+subs
