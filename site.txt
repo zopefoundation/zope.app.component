@@ -136,17 +136,12 @@ can register some components. Let's start with a utility
   >>> import persistent
   >>> from zope.app.container.contained import Contained
   >>> class MyUtility(persistent.Persistent, Contained):
-  ...     __parent__ = __name__ = None
   ...     zope.interface.implements(IMyUtility,
   ...                               interfaces.ILocalUtility)
   ...     def __init__(self, title):
   ...         self.title = title
   ...     def __repr__(self):
   ...         return "%s('%s')" %(self.__class__.__name__, self.title)
-
-Note the definition of the __parent__ and __name__ attributes.  This
-is required because we have to declare that we implement ILocalUtility
-and ILocalUtility extends ILocation, which specified these attributes.
 
 Now we can create an instance of our utility and put it in the site
 management folder:
