@@ -136,8 +136,9 @@ class IAdapterRegistration(registration.IComponentRegistration):
 
     name = zope.schema.TextLine(
         title=_(u"Name"),
-        readonly=True,
-        required=False,
+        readonly=False,
+        required=True,
+        default=u''
         )
 
     permission = zope.schema.Choice(
@@ -167,8 +168,9 @@ class IUtilityRegistration(IAdapterRegistration):
     name = zope.schema.TextLine(
         title=_("Register As"),
         description=_("The name under which the utility will be known."),
-        readonly=True,
+        readonly=False,
         required=True,
+        default=u''
         )
 
     provided = zope.schema.Choice(

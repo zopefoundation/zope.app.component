@@ -22,6 +22,20 @@
         />
   </content>
 
+  <!-- ++registrations++ namespace registrations -->
+  <view
+      name="registrations" type="*"
+      for=".interfaces.registration.IRegisterableContainer"
+      provides="zope.app.traversing.interfaces.ITraversable"
+      factory=".registration.RegistrationManagerNamespace"
+      />
+  <adapter
+      name="registrations"
+      for=".interfaces.registration.IRegisterableContainer"
+      provides="zope.app.traversing.interfaces.ITraversable"
+      factory=".registration.RegistrationManagerNamespace"
+      />
+
   <class class=".registration.Registered">
     <allow attributes="registrations" />
   </class>

@@ -178,6 +178,7 @@ class ILocatedRegistry(zope.component.interfaces.IRegistry):
 
 class IRegistrationManager(IContainerNamesContainer):
     """Manage Registrations"""
+    contains(IRegistration)
 
     def addRegistration(registration):
         """Add a registration to the manager.
@@ -186,6 +187,12 @@ class IRegistrationManager(IContainerNamesContainer):
         registration will be known. The name of the registration inside this
         manager is returned.
         """
+
+
+class IRegistrationManagerContained(IContained):
+    """Objects that can be contained by the registration manager should
+    implement this interface."""
+    containers(IRegistrationManager)
 
 
 class IRegisterableContainer(IContainer):

@@ -15,231 +15,227 @@
 
 $Id$
 """
-from zope.interface import implements, Attribute
-from zope.interface.interfaces import IInterface
-from zope.app.pagetemplate.simpleviewclass import simple as SimpleView
-from zope.app.publisher.interfaces.browser import IBrowserView
+import zope.interface
+import zope.event
+from zope.component.interfaces import IFactory
+
 from zope.app import zapi
-from zope.app.copypastemove import rename
-from zope.app.pagetemplate.viewpagetemplatefile import ViewPageTemplateFile
-#from zope.app.component.browser import AddRegistration
-from zope.app.component.browser import ComponentAdding
-from zope.app.component.site import UtilityRegistration
-from zope.app.component.site import SiteManagementFolder
-from zope.app.component.interfaces.registration import ActiveStatus
-from zope.app.component.interfaces.registration import InactiveStatus
+from zope.app.component import site, interfaces
+from zope.app.container.browser import adding
+from zope.app.event import objectevent
 
-from zope.app.i18n import ZopeMessageIDFactory as _
-
-
-class IToolType(IInterface):
+class IToolType(zope.interface.interfaces.IInterface):
     """Interfaces implementing the tool type are considered tools."""
 
-class IToolView(IBrowserView):
 
-    title = Attribute("Title for the view.")
-    description = Attribute("Description for the view.")
+class IToolConfiguration(zope.interface.Interface):
+    """This is an object that represents a tool configuration"""
 
-    def update(self):
-        """Update the data."""
-
-    def getComponents(self):
-        """Return a list of components."""
-
-
-class IUtilityToolView(IToolView):
-
-    interface = Attribute("Interface the utility provides.")
+    #title
+    #
+    #description
+    #
+    #interface
+    #
+    #unique
 
 
-class ToolsOverview(object):
-    def getTools(self):
-        tools = []
-        for n, iface in zapi.getUtilitiesFor(IToolType):
-            name = iface.getName()
-            view = zapi.getView(self.context, 'manage%sTool.html' % name,
-                                self.request)
-            tools.append({'title':view.title,
-                          'description':view.description,
-                          'action':'./@@manage%sTool.html' % name })
-        tools.sort(lambda x, y: cmp(x['title'], y['title']))
-        return tools
+class ToolConfiguration(object):
+    """ """
+    zope.interface.implements(IToolConfiguration)
 
-class ToolsBacklink(object):
-    def getLink(self):
-        sm = zapi.getSiteManager()
-        iface = zapi.queryType(self.context, IToolType)
-        url = '%s/manage%sTool.html' %(zapi.getPath(sm), iface.getName())
+    def __init__(self, interface, title, description=None, unique=False,
+                 folder='tools'):
+        self.interface = interface
+        self.title = title
+        self.description = description
+        self.unique = unique
+        self.folder = folder
 
-        return self.request.response.redirect(url)
 
-class AbstractToolView(SimpleView):
-    """Abstract tools view."""
+class SiteManagementView(adding.Adding):
+    """A Site Management via Tools"""
 
-    index = ViewPageTemplateFile('tool.pt')
+    activeTool = None
+    addTool = False
+    renameList = []
 
-    title = None
-    description = None
-
-    can_rename = False
+    def __init__(self, context, request):
+        super(SiteManagementView, self).__init__(context, request)
+        if 'activeTool' in request:
+            self.activeTool = zapi.getUtility(IToolConfiguration,
+                                              request['activeTool'])
 
     def update(self):
-        status = ''
-        self.renameList = []
-
-        has_key = self.request.form.has_key
-        selected = self.request.form.get('selected', [])
-        doAdd = has_key('ADD')
-        doDelete = has_key('DELETE')
-        doRename = has_key('RENAME')
-        applyRename = has_key('APPLY_RENAME')
-        doActivate = has_key('ACTIVATE')
-        doDeactivate = has_key('DEACTIVATE')
-
-        if doAdd:
-            self.add()
-        elif not selected:
-            if (doDelete or doRename or applyRename
-                or doActivate or doDeactivate):
-                status = _('Please select at least one checkbox')
-        elif doDelete:
+        """ """
+        msg = u''
+        if "INSTALL-SUBMIT" in self.request:
+            self.install()
+            msg = u'Tools successufully installed.'
+        if "UNINSTALL-SUBMIT" in self.request:
+            self.uninstall()
+            msg = u'Tools successufully uninstalled.'
+        if "ADD-TOOL-SUBMIT" in self.request:
+            self.action(self.request['type_name'], self.request['id'])
+        elif "CANCEL-ADD-TOOL-SUBMIT" in self.request:
+            self.activeTool = None
+        elif "ACTIVATE-SUBMIT" in self.request:
+            self.changeStatus(interfaces.registration.ActiveStatus)
+            msg = u'Tools successfully activated.'
+        elif "DEACTIVATE-SUBMIT" in self.request:
+            self.changeStatus(interfaces.registration.InactiveStatus)
+            msg = u'Tools successfully deactivated.'
+        elif "ADD-SUBMIT" in self.request:
+            self.addTool = True
+        elif "DELETE-SUBMIT" in self.request:
             self.delete()
-            status = _('Deleted selected tools.')
-        elif doRename:
-            self.renameList = selected
-        elif applyRename:
-            self.rename()
-            status = _('Renamed selected tools.')
-        elif doActivate:
-            self.activate()
-            status = _('Activated registrations.')
-        elif doDeactivate:
-            self.deactivate()
-            status = _('Deactivated registrations.')
+        elif "RENAME-SUBMIT" in self.request:
+            if 'selected' in self.request:
+                self.renameList = self.request['selected']
+            if 'new_names' in self.request:
+                self.rename()
+                msg = u'Tools successullfy renamed.'
+        elif "RENAME-CANCEL-SUBMIT" in self.request:
+            self.activeTool = None
+        return msg
 
-        return status
+    def getSiteManagementFolder(self, tool):
+        """Get the site management folder for this tool."""
+        sm = zapi.getSiteManager()
+        if not tool.folder in sm:
+            folder = site.SiteManagementFolder()
+            zope.event.notify(objectevent.ObjectCreatedEvent(folder))
+            sm[tool.folder] = folder            
+        return sm[tool.folder]
 
+    def toolExists(self, interface, name=''):
+        """Check whether a tool already exists in this site"""
+        sm = zapi.getSiteManager()
+        for reg in sm.registrations():
+            if isinstance(reg, site.UtilityRegistration):
+                if reg.name == name and reg.provided == interface:
+                    return True
+        return False
 
-class UtilityToolView(AbstractToolView):
-    """Tools view for utilities."""
+    def getUniqueTools(self):
+        """Get unique tools info for display."""
+        results = [{'name': tool.interface.getName(),
+                    'title': tool.title,
+                    'description': tool.description,
+                    'exists': self.toolExists(tool.interface)
+                    }
+                   for name, tool in zapi.getUtilitiesFor(IToolConfiguration)
+                   if tool.unique]
+        results.sort(lambda x, y: cmp(x['title'], y['title']))
+        return results
 
-    implements(IUtilityToolView)
+    def getToolInstances(self, tool):
+        """Find every registered utility for a given tool configuration."""
+        regManager = self.context[tool.folder].registrationManager
+        return [
+            {'name': reg.name,
+             'url': zapi.absoluteURL(reg.component, self.request),
+             'rename': tool is self.activeTool and reg.name in self.renameList,
+             'active': reg.status == u'Active'
+            }
+            for reg in regManager.values()
+            if (zapi.isinstance(reg, site.UtilityRegistration) and
+                reg.provided.isOrExtends(tool.interface))]
 
-    can_rename = True
+    def getTools(self):
+        """Return a list of all tools"""
+        results = [{'name': tool.interface.getName(),
+                    'title': tool.title,
+                    'description': tool.description,
+                    'instances': self.getToolInstances(tool),
+                    'add': tool is self.activeTool and self.addTool,
+                    'rename': tool is self.activeTool and self.renameList
+                    }
+                   for name, tool in zapi.getUtilitiesFor(IToolConfiguration)
+                   if not tool.unique]
+        results.sort(lambda x, y: cmp(x['title'], y['title']))
+        return results
+
+    def install(self):
+        tool_names = self.request['selected']
+        for tool_name in tool_names:
+            self.activeTool = zapi.getUtility(IToolConfiguration, tool_name)
+            type_name = list(self.addingInfo())[0]['extra']['factory']
+            self.action(type_name)
+        self.activeTool = None
+
+    def uninstall(self):
+        type_names = self.request['selected']
+        self.request.form['selected'] = [u'']
+        for name, tool in zapi.getUtilitiesFor(IToolConfiguration):
+            if name in type_names:
+                self.activeTool = tool
+                self.delete()
+        self.activeTool = None
+
+    def changeStatus(self, status):
+        tool = self.activeTool
+        regManager = self.context[tool.folder].registrationManager
+        names = self.request.form['selected']
+        print names
+        for reg in regManager.values():
+            if reg.provided.isOrExtends(tool.interface) and reg.name in names:
+                print reg.name
+                reg.status = status
 
     def delete(self):
-        for name in self.request.form['selected']:
-            utils = zapi.getService(Utilities)
-            reg = utils.queryRegistrations(name, self.interface)
-
-            del_objs = []
-
-            # Delete registrations
-            for info in reg.info():
-                conf = info['registration']
-                obj = conf.component
-                conf.status = UnregisteredStatus
-                reg_folder = zapi.getParent(conf)
-                name = zapi.name(conf)
-                del reg_folder[name]
-                if obj not in [c.component
-                               for c in reg_folder.values()]:
-                    del_objs.append(obj)
-
-            # Delete object, if no other registration is available.
-            for obj in del_objs:
-                parent = zapi.getParent(obj)
-                name = zapi.name(obj)
-                del parent[name]
+        tool = self.activeTool
+        regManager = self.context[tool.folder].registrationManager
+        names = self.request.form['selected']
+        for reg in regManager.values():
+            if reg.provided.isOrExtends(tool.interface) and reg.name in names:
+                component = reg.component
+                reg.status = interfaces.registration.InactiveStatus
+                del regManager[zapi.name(reg)]
+                del zapi.getParent(component)[zapi.name(component)]
 
     def rename(self):
-        for name in self.request.form['old_names']:
-            newname = self.request.form['new_names'][
-                self.request.form['old_names'].index(name)]
-
-            utils = zapi.getService('Utilities')
-            reg = utils.queryRegistrations(name, self.interface)
-
-            # Rename registrations
-            for info in reg.info():
-                conf = info['registration']
-                orig_status = conf.status
-                conf.status = UnregisteredStatus
-                conf.name = newname
-                conf.status = orig_status
-
-    def activate(self):
-        for name in self.request.form['selected']:
-            utils = zapi.getService('Utilities')
-            reg = utils.queryRegistrations(name, self.interface)
-
-            # Activate registrations
-            for info in reg.info():
-                conf = info['registration']
-                conf.status = ActiveStatus
-
-    def deactivate(self):
-        for name in self.request.form['selected']:
-            utils = zapi.getService('Utilities')
-            reg = utils.queryRegistrations(name, self.interface)
-
-            # Deactivate registrations
-            for info in reg.info():
-                conf = info['registration']
-                conf.status = RegisteredStatus
-
-    def add(self):
-        self.request.response.redirect('./Add%sTool' %
-                                       self.interface.getName())
-
-    def getComponents(self):
-        utils = zapi.getService(Utilities)
-        items = []
-        for registration in [reg for reg in utils.registrations(localOnly=True)
-                             if reg.provided == self.interface]:
-
-            stack = utils.queryRegistrationsFor(registration)
-            parent = zapi.getParent(registration.component)
-            items.append({
-                'name': registration.name,
-                'url': zapi.getPath(registration.component),
-                'parent_url': zapi.getPath(parent),
-                'parent_name': zapi.name(parent),
-                'active': stack.active()})
-
-        return items
-
-
-class UtilityToolAdding(ComponentAdding):
-    """Adding subclass used for adding utilities."""
-
-    menu_id = None
-    title = "Add Tool"
-    folder = "tools"
-    _addFilterInterface = None
-
-
-    def addingInfo(self):
-        if self.folder not in self.context:
-            self.context[self.folder] = SiteManagementFolder()
-        self.context = self.context[self.folder]
-        return super(UtilityToolAdding, self).addingInfo()
+        tool = self.activeTool
+        regManager = self.context[tool.folder].registrationManager
+        new_names = self.request['new_names']
+        old_names = self.request['old_names']
+        for reg in regManager.values():
+            if reg.provided.isOrExtends(tool.interface) and \
+                   reg.name in old_names:
+                orig_status = reg.status
+                reg.status = interfaces.registration.InactiveStatus
+                reg.name = new_names[old_names.index(reg.name)]
+                reg.status = orig_status
 
     def add(self, content):
-        if not self._addFilterInterface.providedBy(content):
-            raise TypeError("%s is not a %s" %(
-                content, self._addFilterInterface.getName()))
-        self.context = self.context[self.folder]
-        util = super(UtilityToolAdding, self).add(content)
+        """See zope.app.container.interfaces.IAdding"""
+        sm = self.context
+        self.context = self.getSiteManagementFolder(self.activeTool)
+
+        util = super(SiteManagementView, self).add(content)
 
         # Add registration
-        registration = UtilityRegistration(self.contentName,
-                                           self._addFilterInterface,
-                                           util)
-        reg_view = AddRegistration(util, self.request)
-        reg_view.add(registration)
+        name = not self.activeTool.unique and self.contentName or u''
+        registration = site.UtilityRegistration(
+            name, self.activeTool.interface, util)
+        self.context.registrationManager.addRegistration(registration)
+        registration.status = interfaces.registration.ActiveStatus
 
+        self.context = sm
         return util
-
+        
     def nextURL(self):
-        return '../@@manage%sTool.html' %self._addFilterInterface.getName()
+        """See zope.app.container.interfaces.IAdding"""
+        return (zapi.absoluteURL(self.context, self.request)
+                + '/@@SiteManagement')
+
+    def addingInfo(self):
+        """See zope.app.container.interfaces.IAdding"""
+        sm = self.context
+        self.context = self.getSiteManagementFolder(self.activeTool)
+        results = super(SiteManagementView, self).addingInfo()
+        self.context = sm
+        for result in results:
+            factory = zapi.getUtility(IFactory, result['extra']['factory'])
+            if self.activeTool.interface in factory.getInterfaces():
+                yield result

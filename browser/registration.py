@@ -27,21 +27,19 @@ from zope.app.form.browser.widget import SimpleInputWidget
 from zope.app.i18n import ZopeMessageIDFactory as _
 from zope.app.pagetemplate.viewpagetemplatefile import ViewPageTemplateFile
 from zope.app.publisher.browser import BrowserView
+from zope.app.component import interfaces
 from zope.app.component.interfaces.registration import ActiveStatus
-from zope.app.component.interfaces.registration import IRegistered
-from zope.app.component.interfaces.registration import IRegistration
+from zope.app.component.interfaces.registration import InactiveStatus
 
 class RegistrationView(BrowserView):
     """View for registerable objects that have at most one registration.
 
     If the object has more than one registration, this performs a
     redirection to the 'registrations.html' view.
-
     """
-
     def __init__(self, context, request):
         super(RegistrationView, self).__init__(context, request)
-        useconfig = IRegistered(self.context)
+        useconfig = interfaces.registration.IRegistered(self.context)
         self.registrations = useconfig.registrations()
 
     def update(self):
@@ -50,7 +48,7 @@ class RegistrationView(BrowserView):
             self.request.response.redirect("registrations.html")
             return
         if "deactivate" in self.request:
-            self.registrations[0].status = RegisteredStatus
+            self.registrations[0].status = InactiveStatus
         elif "activate" in self.request:
             if not self.registrations:
                 # create a registration:
@@ -69,30 +67,24 @@ class RegistrationView(BrowserView):
 
         If there are no registrations, raises an error.
         """
-        return self.registrations[0]
+        return {'url': zapi.absoluteURL(self.registrations[0], self.request),
+                'details': zapi.queryMultiAdapter(
+                    (self.registrations[0], self.request), name='details')
+                }
 
 
 class Registered(object):
-    """View for registerable objects that more than one registration."""
+    """View for registerable objects with more than one registration."""
 
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-
-    def uses(self):
-        component = self.context
-        useconfig = IRegistered(component)
-        result = []
-        for path in useconfig.usages():
-            config = zapi.traverse(component, path)
-            description = config.usageSummary()
-            url = zapi.getView(config, 'absolute_url', self.request)
-            result.append({'path': path,
-                           'url': url(),
-                           'status': config.status,
-                           'description': description,
-                           })
-        return result
+    def registrations(self):
+        registered = interfaces.registration.IRegistered(self.context)
+        return [
+            {'name': zapi.name(reg),
+             'url': zapi.absoluteURL(reg, self.request),
+             'status': reg.status,
+             'details': zapi.queryMultiAdapter((reg, self.request),
+                                               name='details')}
+            for reg in registered.registrations()]
 
 
 class ChangeRegistrations(BrowserView):
@@ -126,11 +118,9 @@ class ChangeRegistrations(BrowserView):
         return message
 
     def update(self):
-
         message = self.applyUpdates()
 
-        self.configBase = str(zapi.getView(zapi.getServices(), 'absolute_url',
-                                           self.request))
+        self.configBase = zapi.absoluteURL(zapi.getSiteManager(), self.request)
 
         registrations = self.context.info()
 
@@ -185,7 +175,7 @@ class ComponentPathWidget(SimpleInputWidget):
         # Render as a link to the component
         field = self.context
         context = field.context
-        if IRegistration.providedBy(context):
+        if interfaces.registration.IRegistration.providedBy(context):
             # It's a registration object. Just get the corresponding attr
             path = getattr(context, field.__name__)
             # The path may be relative; then interpret relative to ../..
@@ -198,7 +188,7 @@ class ComponentPathWidget(SimpleInputWidget):
             # Always use a relative path (just the component name)
             path = zapi.name(context)
 
-        url = zapi.getView(component, 'absolute_url', self.request)
+        url = zapi.absoluteURL(component, self.request)
 
         return ('<a href="%s/@@SelectedManagementView.html">%s</a>'
                 % (url, path))
@@ -215,7 +205,7 @@ class ComponentPathWidget(SimpleInputWidget):
         """See zope.app.form.interfaces.IWidget"""
         field = self.context
         context = field.context
-        if IRegistration.providedBy(context):
+        if interfaces.registration.IRegistration.providedBy(context):
             # It's a registration object. Just get the corresponding attr
             path = getattr(context, field.getName())
         else:
@@ -242,7 +232,7 @@ class ComponentWidget(SimpleInputWidget):
         # Render as a link to the component
         field = self.context
         context = field.context
-        if IRegistration.providedBy(context):
+        if interfaces.registration.IRegistration.providedBy(context):
             # It's a registration object. Just get the corresponding attr
             component = getattr(context, field.__name__)
             path = zapi.getPath(component)
@@ -252,7 +242,7 @@ class ComponentWidget(SimpleInputWidget):
             # Always use a relative path (just the component name)
             path = zapi.name(context)
 
-        url = zapi.getView(component, 'absolute_url', self.request)
+        url = zapi.absoluteURL(component, self.request)
 
         return ('<a href="%s/@@SelectedManagementView.html">%s</a>'
                 % (url, path))
@@ -269,7 +259,7 @@ class ComponentWidget(SimpleInputWidget):
         """See zope.app.form.interfaces.IWidget"""
         field = self.context
         context = field.context
-        if IRegistration.providedBy(context):
+        if interfaces.registration.IRegistration.providedBy(context):
             # It's a registration object. Just get the corresponding attr
             return getattr(context, field.getName())
 
@@ -298,9 +288,10 @@ class AddComponentRegistration(BrowserView):
 
         component = self.context
 
+        # XXX: Fix to use addRegistration()
         # Get the registration manager for this folder
         folder = component.__parent__
-        rm = folder.getRegistrationManager()
+        rm = folder.registrationManager
 
         name = INameChooser(rm).chooseName('', registration)
         rm[name] = registration
@@ -312,19 +303,14 @@ class AddComponentRegistration(BrowserView):
 
 class RegistrationAdding(Adding):
     """Adding subclass for adding registrations."""
-
     menu_id = "add_registration"
 
     def nextURL(self):
-        return str(zapi.getView(self.context, "absolute_url", self.request))
+        return zapi.absoluteURL(self.context, self.request)
 
 
 class EditRegistration(BrowserView):
     """A view on a registration manager, used by registrations.pt."""
-
-    def __init__(self, context, request):
-        self.request = request
-        self.context = context
 
     def update(self):
         """Perform actions depending on user input."""
@@ -339,18 +325,6 @@ class EditRegistration(BrowserView):
         if 'remove_submit' in self.request:
             if not k: return msg
             self.remove_objects(k)
-        elif 'top_submit' in self.request:
-            if not k: return msg
-            self.context.moveTop(k)
-        elif 'bottom_submit' in self.request:
-            if not k: return msg
-            self.context.moveBottom(k)
-        elif 'up_submit' in self.request:
-            if not k: return msg
-            self.context.moveUp(k)
-        elif 'down_submit' in self.request:
-            if not k: return msg
-            self.context.moveDown(k)
         elif 'refresh_submit' in self.request:
             pass # Nothing to do
 
@@ -362,18 +336,12 @@ class EditRegistration(BrowserView):
         for name in key_list:
             del container[name]
 
-    def configInfo(self):
+    def registrationInfo(self):
         """Render View for each directives."""
-        result = []
-        for name, configobj in self.context.items():
-            url = str(zapi.getView(configobj, 'absolute_url', self.request))
-            active = configobj.status == ActiveStatus
-            summary1 = getattr(configobj, "usageSummary", None)
-            summary2 = getattr(configobj, "implementationSummary", None)
-            item = {'name': name, 'url': url, 'active': active}
-            if summary1:
-                item['line1'] = summary1()
-            if summary2:
-                item['line2'] = summary2()
-            result.append(item)
-        return result
+        return [
+            {'name': name,
+             'url': zapi.absoluteURL(reg, self.request),
+             'active': reg.status == ActiveStatus,
+             'details': zapi.queryMultiAdapter((reg, self.request),
+                                               name='details')}
+            for name, reg in self.context.items()]

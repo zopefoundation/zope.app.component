@@ -21,6 +21,7 @@ from zope.interface import Interface
     
 class IUtilityToolDirective(Interface):
     """Directive for creating new utility-based tools."""
+
     folder = zope.configuration.fields.PythonIdentifier(
         title=u"Destination Folder",
         description=u"""Destination Folder in which the tool instances are
@@ -45,3 +46,9 @@ class IUtilityToolDirective(Interface):
         description=u"Interface used to filter out the available entries in a \
                       tool",
         required=True)
+
+    unique = zope.configuration.fields.Bool(
+        title=u"Unique",
+        description=u"Specifies whether the tool is unique to a site manager.",
+        required=False,
+        default=False)

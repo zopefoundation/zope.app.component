@@ -11,48 +11,21 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Configuration handlers for 'tools' directive.
+"""Configuration handlers for 'tool' directive.
 
 $Id$
 """
-from zope.publisher.interfaces.browser import IBrowserRequest, IBrowserPublisher
-from zope.app.component.metaconfigure import view, interface as ifaceDirective
-from zope.app.publisher.browser.viewmeta import view as complexView
-
-from zope.component.interfaces import ISiteManager
-from tools import IToolView, IUtilityToolView, IToolType
-from tools import UtilityToolAdding, UtilityToolView
+from zope.app.component.metaconfigure import utility
+from zope.app.component.metaconfigure import interface as ifaceDirective
+from tools import IToolType, IToolConfiguration, ToolConfiguration
 
 
-def tool(_context, interface, folder="tools", title=None, description=None):
-    name = "manage" + interface.getName() + "Tool.html"
-    addName = "Add" + interface.getName() + "Tool"
-    
+def tool(_context, interface, title, description=None,
+         folder="tools", unique=False):
+    name = interface.getName()
     permission = 'zope.ManageContent'
+    tool = ToolConfiguration(interface, title, description, unique)
 
     ifaceDirective(_context, interface, IToolType)
-
-    class_ = type("UtilityToolView for %s" % interface.getName(),
-                  (UtilityToolView,),
-                  {'interface':interface,
-                   'folder':folder,
-                   'title':title,
-                   'description':description})
-    
-    view(_context, [class_], IBrowserRequest, name, [ISiteManager],
-         permission=permission,
-         allowed_interface=[IUtilityToolView, IBrowserPublisher],
-         allowed_attributes=['__call__', '__getitem__'])
-
-    class_ = type("UtilityToolAdding for %s" % interface.getName(),
-                  (UtilityToolAdding,),
-                  {'_addFilterInterface': interface,
-                   'folder':folder,
-                   'title':'Add %s Tool' % interface.getName()} )
-
-    addView = complexView(_context, ISiteManager, permission, addName,
-                          class_=class_)
-    addView.page(_context, 'index.html', 'index')
-    addView.page(_context, 'action.html', 'action')
-
-    addView()
+    utility(_context, IToolConfiguration, tool,
+            permission=permission, name=name)

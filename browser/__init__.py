@@ -47,11 +47,11 @@ class ComponentAdding(Adding):
         return self.added_object
 
     def nextURL(self):
-        v = zapi.queryView(
-            self.added_object, "registration.html", self.request)
+        v = zapi.queryMultiAdapter(
+            (self.added_object, self.request), name="registration.html")
         if v is not None:
-            url = str(
-                zapi.getView(self.added_object, 'absolute_url', self.request))
+            url = str(zapi.getMultiAdapter(
+                (self.added_object, self.request), name='absolute_url'))
             return url + "/@@registration.html"
 
         return super(ComponentAdding, self).nextURL()
@@ -116,7 +116,8 @@ class UtilityAdding(ComponentAdding):
             self.added_object, "addRegistration.html", self.request)
         if v is not None:
             url = str(
-                zapi.getView(self.added_object, 'absolute_url', self.request))
+                zapi.getAdapter((self.added_object, self.request),
+                                name='absolute_url'))
             return url + "/addRegistration.html"
 
         return super(UtilityAdding, self).nextURL()
@@ -179,177 +180,3 @@ class MakeSite(BrowserView):
         self.context.setSiteManager(sm)
         self.request.response.redirect(
             "++etc++site/@@SelectedManagementView.html")
-
-
-class Interfaces(object):
-    """Interface service view
-
-    >>> from zope.interface import Interface
-    >>> from zope.app.content.interfaces import IContentType
-    >>> class DCInterface(Interface):
-    ...     '''DCInterfaceDoc
-    ...
-    ...     This is a multi-line doc string.
-    ...     '''
-    ... 
-    >>> class DummyInterface(object):
-    ...     def items(self):
-    ...         return [('DCInterface', DCInterface)]
-    ...
-    >>> provideInterface('', DCInterface, IContentType)
-    >>> from zope.publisher.browser import TestRequest
-    >>> request = TestRequest()
-    >>> interface_view = Interfaces(DummyInterface(), request)
-    >>> from pprint import PrettyPrinter
-    >>> pprint=PrettyPrinter(width=50).pprint
-    >>> pprint(interface_view.getInterfaces())
-    [{'doc': 'DCInterfaceDoc',
-      'id': 'zope.app.site.browser.DCInterface',
-      'name': 'DCInterface'}]
-        
-
-    """
-
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-
-    def getInterfaces(self):
-        L = [(iface.__name__, iface.__module__+'.'+iface.__name__,
-              getattr(iface, '__doc__', '').split('\n')[0].strip()
-              )
-             for iface in searchInterface(self.context)]
-        L.sort()
-        return [{"id": id, "name": name, "doc": doc} for name, id, doc in L]
-
-class Detail(object):
-    """Interface Details
-
-    >>> from zope.schema import TextLine
-    >>> from zope.interface import Interface
-    >>> from zope.app.content.interfaces import IContentType
-    >>> from zope.i18n import MessageIDFactory
-    >>> from zope.interface.interfaces import IInterface
-    >>> _ = MessageIDFactory('zope')
-    >>> class TestInterface(Interface):
-    ...     '''Test Interface'''
-    ...     test_field = TextLine(title = _(u'Test Name'))
-    ...     def testMethod():
-    ...         'Returns test name'
-    ...
-    >>> class TestClass(object):
-    ...     def getInterface(self, id=None):
-    ...         return TestInterface
-    ...
-    >>> IInterface.providedBy(TestInterface)
-    True
-    >>> provideInterface('', TestInterface, IContentType)
-    >>> from zope.publisher.browser import TestRequest
-    >>> request = TestRequest()
-    >>> form = {'id': 'zope.app.site.browser.TestInterface'}
-    >>> request.form = form
-    >>> interface_details = Detail(TestClass(), request)
-    >>> interface_details.setup()
-    >>> interface_details.name
-    'TestInterface'
-    >>> interface_details.doc
-    'Test Interface'
-    >>> interface_details.iface.__name__
-    'TestInterface'
-    >>> [method['method'].__name__ for method in
-    ...     interface_details.methods]
-    ['testMethod']
-    >>> [field.__name__ for field in interface_details.schema]
-    ['test_field']
-    
-    """
-
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-    
-    def setup(self):
-        try:
-            id = self.request["id"]
-        except KeyError:
-            raise zapi.UserError("Please click on an interface name to view"
-                  " details.")
-        
-        iface = getInterface(self.context, id)
-
-        from zope.proxy import getProxiedObject
-        self.iface = getProxiedObject(iface)
-        
-        self.name = self.iface.__name__
-        self.doc = getattr(self.iface, '__doc__', '')
-        self.methods = []
-        self.schema = []
-
-        for name in self.iface:
-            defn = self.iface[name]
-            if IMethod.providedBy(defn):
-                title = defn.__doc__.split('\n')[0].strip()
-                self.methods.append({'method': defn, 'title': title})
-            elif IField.providedBy(defn):
-                self.schema.append(defn)
-
-class MethodDetail(object):
-    """Interface Method Details
-
-    >>> from zope.interface import Interface
-    >>> from zope.i18n import MessageIDFactory
-    >>> _ = MessageIDFactory('zope')
-    >>> class TestInterface(Interface):
-    ...     '''Test Interface'''
-    ...     def testMethod():
-    ...         'Returns test name'
-    ...
-    >>> class TestClass(object):
-    ...     def getInterface(self, id=None):
-    ...         return TestInterface
-    ...
-    >>> provideInterface('', TestInterface)
-    >>> from zope.publisher.browser import TestRequest
-    >>> request = TestRequest()
-    >>> form = {
-    ... 'interface_id': 'zope.app.site.browser.TestInterface',
-    ... 'method_id': 'testMethod'}
-    >>> request.form = form
-    >>> imethod_details = MethodDetail(TestClass(), request)
-    >>> imethod_details.setup()
-    >>> imethod_details.name
-    'testMethod'
-    >>> imethod_details.doc
-    'Returns test name'
-    >>> imethod_details.iface.__name__
-    'TestInterface'
-    >>> imethod_details.method.__name__
-    'testMethod'
-
-    """
-
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-    
-    def setup(self):
-        try:
-            interface_id = self.request["interface_id"]
-        except KeyError:
-            raise zapi.UserError("Please click on a method name in the Detail"
-                                 " tab to view method details.")
-        try:
-            method_id = self.request["method_id"]
-        except KeyError:
-            raise zapi.UserError("Please click on a method name to view"
-                  " details.")
-        
-        iface = getInterface(self.context, interface_id)
-
-        from zope.proxy import getProxiedObject
-        self.iface = getProxiedObject(iface)
-
-        self.method = self.iface[method_id]
-        self.name = self.method.__name__
-        self.doc = self.method.__doc__
-

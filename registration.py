@@ -23,13 +23,13 @@ from zope.security.checker import InterfaceChecker, CheckerPublic
 from zope.security.proxy import Proxy, removeSecurityProxy
 
 from zope.app import zapi
+from zope.app.component.interfaces import registration as interfaces
 from zope.app.container.btree import BTreeContainer
 from zope.app.container.contained import Contained
 from zope.app.dependable.interfaces import IDependable, DependencyError
 from zope.app.event import objectevent
 from zope.app.location import inside
-from zope.app.component.interfaces import registration as interfaces
-
+from zope.app.traversing.interfaces import TraversalError
 
 class RegistrationEvent(objectevent.ObjectEvent):
     """An event that is created when a registration-related activity occured."""
@@ -78,7 +78,8 @@ class RegistrationStatusProperty(object):
 
 class SimpleRegistration(Persistent, Contained):
     """Registration objects that just contain registration data"""
-    implements(interfaces.IRegistration)
+    implements(interfaces.IRegistration,
+               interfaces.IRegistrationManagerContained)
 
     # See interfaces.IRegistration
     status = RegistrationStatusProperty()
@@ -226,6 +227,21 @@ class RegisterableContainer(object):
         # See interfaces.IRegisterableContainer
         self.registrationManager = RegistrationManager()
         self.registrationManager.__parent__ = self
-        self.registrationManager.__name__ = 'RegistrationManager'
+        self.registrationManager.__name__ = '++registrations++'
         zope.event.notify(
             objectevent.ObjectCreatedEvent(self.registrationManager))
+
+# XXX: Needs tests
+class RegistrationManagerNamespace(object):
+    """Used to traverse to a Registration Manager from a
+       Registerable Container."""
+    __used_for__ = interfaces.IRegisterableContainer
+
+    def __init__(self, ob, request=None):
+        self.context = ob.registrationManager
+        
+    def traverse(self, name, ignore):
+        if name == '':
+            return self.context
+        raise TraversalError(self.context, name)
+        
