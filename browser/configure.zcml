@@ -4,8 +4,8 @@
 
 <!-- Registration Managemenet -->
 
-  <!-- BBB: Backward-compatibility: 12/07/2004 -->
-  <!-- XXX: temp. deactivated
+  <!-- BBB: Gone with 3.3 -->
+  <!-- XXX
   <zope:view
       for="zope.app.component.interfaces.registration.IComponentPath"
       type="zope.publisher.interfaces.browser.IBrowserRequest"
@@ -21,7 +21,7 @@
       factory=".registration.ComponentPathWidget"
       permission="zope.Public"
       />
-   -->
+  -->
   <!-- BBB: End of backward-compatibility block -->
 
   <zope:view
