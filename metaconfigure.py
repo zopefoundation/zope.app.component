@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: metaconfigure.py,v 1.15 2003/08/03 02:13:08 philikon Exp $
+$Id: metaconfigure.py,v 1.16 2003/08/04 15:07:54 philikon Exp $
 """
 
 from zope.configuration.exceptions import ConfigurationError
@@ -336,11 +336,3 @@ def skin(_context, name, layers, type):
         args = (Interfaces, 'provideInterface',
                 type.__module__+'.'+type.__name__, type)
         )
-
-# XXX this will have to incorporated into
-# zope.configuration.fields.GlobalObject
-def resolveInterface(_context, id):
-    interface = interfaceService.queryInterface(id, None)
-    if interface is None:
-        interface = _context.resolve(id)
-    return interface
