@@ -50,7 +50,7 @@ a list of all registered (active) components.
   >>> registry = ComponentRegistry()
 
 Effectively, a registry manages a set of active registrations. A simple
-UML diagram would be:
+UML diagram would be::
 
                           ---------------------------    
     --------------- *   1 |  IRegistration          |
@@ -225,6 +225,8 @@ This also means that our registry can provide a component multiple times:
 Here is a UML diagram of the registerable container and registration manager
 and their relationships to the other registration-related components we
 discussed.  
+
+::
 
     ----------------------------
     |  IRegisterableContainer  |

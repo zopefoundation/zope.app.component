@@ -291,11 +291,14 @@ It is also interesting to look at the use cases of moving and copying a
 site. To do that we create a second root folder and make it a site, so that
 site hierarchy is as follows:
 
+::
+
            _____ global site _____
           /                       \
       myfolder1                myfolder2
           |
       myfolder11
+
 
   >>> myfolder2 = folder.rootFolder()
   >>> myfolder2.setSiteManager(site.LocalSiteManager(myfolder2))
