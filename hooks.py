@@ -16,7 +16,6 @@
 $Id$
 """
 
-import warnings
 from zope.component import getService, getAdapter
 from zope.component.interfaces import IServiceService
 from zope.app.site.interfaces import ISite
@@ -29,20 +28,26 @@ from zope.app.location.interfaces import ILocation
 from zope.app.location import locate
 from zope.component.servicenames import Presentation
 from zope.interface import Interface
-from zope.thread import thread_globals
+import warnings
+import zope.thread
+
+siteinfo = zope.thread.local()
 
 def setSite(site=None):
     if site is None:
-        services = None
+        siteinfo.services = None
     else:
-        services = trustedRemoveSecurityProxy(site.getSiteManager())
-
-    thread_globals().services = services
+        siteinfo.services = trustedRemoveSecurityProxy(site.getSiteManager())
 
 def getSite():
-    services = thread_globals().services
+    try:
+        services = siteinfo.services
+    except AttributeError:
+        services = siteinfo.services = None
+        
     if services is None:
         return None
+
     return services.__parent__
     
 
@@ -50,14 +55,14 @@ def getServices_hook(context=None):
 
     if context is None:
         try:
-            services = thread_globals().services
+            services = siteinfo.services
         except AttributeError:
-            thread_globals().services = services = None
-            
+            services = siteinfo.services = None
+
         if services is None:
             return serviceManager
-        else:
-            return services
+
+        return services
 
     try:
         # This try-except is just backward compatibility really
