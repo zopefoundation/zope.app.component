@@ -215,8 +215,11 @@ def resource(_context, factory, type, name, layer='default',
               )
         ]
 
-def view(_context, factory, type, name, for_=None, layer='default',
+def view(_context, factory, type, name, for_, layer='default',
          permission=None, allowed_interface=None, allowed_attributes=None):
+
+    if for_ == '*':
+        for_ = None
 
     if ((allowed_attributes or allowed_interface)
         and (not permission)):
@@ -270,7 +273,10 @@ def view(_context, factory, type, name, for_=None, layer='default',
 
     return actions
 
-def defaultView(_context, type, name, for_=None, **__kw):
+def defaultView(_context, type, name, for_, **__kw):
+
+    if for_ == '*':
+        for_ = None
 
     if __kw:
         actions = view(_context, type=type, name=name, for_=for_, **__kw)
