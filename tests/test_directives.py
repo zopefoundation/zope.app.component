@@ -40,6 +40,7 @@ from zope.app.component.tests.views import IV, IC, V1, VZMI, R1, RZMI, IR
 from zope.component.tests.request import Request
 from zope.security.checker import ProxyFactory
 
+# TODO: tests for other directives needed
 
 atre = re.compile(' at [0-9a-fA-Fx]+')
 
@@ -92,8 +93,6 @@ def definePermissions():
     XMLConfig('meta.zcml', zope.app.component)()
 
 class Test(PlacelessSetup, unittest.TestCase):
-
-    # XXX: tests for other directives needed
 
     def setUp(self):
         super(Test, self).setUp()

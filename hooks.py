@@ -74,9 +74,6 @@ def getServices_hook(context=None):
 
 def queryView(object, name, request, default=None,
               providing=Interface, context=None):
-    # XXX test
-    #if context is None:
-    #    context = object
     views = getService(Presentation, context)
     view = views.queryView(object, name, request, default=default,
                            providing=providing)
