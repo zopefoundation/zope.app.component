@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: metaconfigure.py,v 1.20 2003/11/21 17:11:29 jim Exp $
+$Id: metaconfigure.py,v 1.21 2003/12/07 10:04:51 gotcha Exp $
 """
 
 from zope.configuration.exceptions import ConfigurationError
@@ -359,6 +359,14 @@ def defaultSkin(_context, name):
         discriminator = 'defaultSkin',
         callable = handler,
         args = (Presentation, 'setDefaultSkin', name)
+        )
+
+def usage(_context, name):
+
+    _context.action(
+        discriminator = ('usage', name),
+        callable = handler,
+        args = (Presentation, 'defineUsage', name)
         )
 
 #XXX you will be terminated soon
