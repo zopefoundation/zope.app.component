@@ -136,6 +136,7 @@ can register some components. Let's start with a utility
   >>> import persistent
   >>> from zope.app.container.contained import Contained
   >>> class MyUtility(persistent.Persistent, Contained):
+  ...     __parent__ = __name__ = None
   ...     zope.interface.implements(IMyUtility,
   ...                               interfaces.ILocalUtility)
   ...     def __init__(self, title):
@@ -143,14 +144,19 @@ can register some components. Let's start with a utility
   ...     def __repr__(self):
   ...         return "%s('%s')" %(self.__class__.__name__, self.title)
 
-which we first put in the site management folder:
+Note the definition of the __parent__ and __name__ attributes.  This
+is required because we have to declare that we implement ILocalUtility
+and ILocalUtility extends ILocation, which specified these attributes.
 
-  >>> default['myutil'] = MyUtility('My custom utility')
-  >>> myutil = default['myutil']
+Now we can create an instance of our utility and put it in the site
+management folder:
+
+  >>> myutil = MyUtility('My custom utility')
+  >>> default['myutil'] = myutil
 
 Then we have to create a registration for the utility and activate it:
 
-  >>> reg = site.UtilityRegistration('myutil', IMyUtility, myutil)
+  >>> reg = site.UtilityRegistration('u1', IMyUtility, myutil)
   >>> default.registrationManager.addRegistration(reg)
   'UtilityRegistration'
   >>> reg.status = interfaces.registration.ActiveStatus
@@ -161,7 +167,7 @@ its location to determine the correct registry to add the component to.
 
 Now we can ask the site manager for the utility:
 
-  >>> sm.queryUtility(IMyUtility, 'myutil')
+  >>> sm.queryUtility(IMyUtility, 'u1')
   MyUtility('My custom utility')
 
 Of course, the local site manager has also access to the global component
@@ -268,22 +274,22 @@ If we now register a second utility with the same name and interface with the
 new site manager folder,
 
   >>> default11 = sm11['default']
-  >>> default11['myutil'] = MyUtility('Utility, uno & uno')
-  >>> myutil11 = default11['myutil']
+  >>> myutil11 = MyUtility('Utility, uno & uno')
+  >>> default11['myutil'] = myutil11
 
-  >>> reg11 = site.UtilityRegistration('myutil', IMyUtility, myutil11)
+  >>> reg11 = site.UtilityRegistration('u1', IMyUtility, myutil11)
   >>> default11.registrationManager.addRegistration(reg11)
   'UtilityRegistration'
   >>> reg11.status = interfaces.registration.ActiveStatus
 
 then it will will be available in the second site manager
 
-  >>> sm11.queryUtility(IMyUtility, 'myutil')
+  >>> sm11.queryUtility(IMyUtility, 'u1')
   MyUtility('Utility, uno & uno')
 
 but not in the first one:
 
-  >>> sm.queryUtility(IMyUtility, 'myutil')
+  >>> sm.queryUtility(IMyUtility, 'u1')
   MyUtility('My custom utility')
 
 It is also interesting to look at the use cases of moving and copying a
