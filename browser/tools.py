@@ -83,7 +83,7 @@ class SiteManagementView(browser.ComponentAdding):
         if "ADD-TOOL-SUBMIT" in self.request:
             self.action(self.request['type_name'], self.request['id'])
         elif "CANCEL-ADD-TOOL-SUBMIT" in self.request:
-            request.response.expireCookie('SetActiveTool')
+            self.request.response.expireCookie('SetActiveTool')
             self.activeTool = None
         elif "ACTIVATE-SUBMIT" in self.request:
             self.changeStatus(interfaces.registration.ActiveStatus)
