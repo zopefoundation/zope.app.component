@@ -23,13 +23,21 @@ from zope.configuration.xmlconfig import XMLConfig
 from zope.component import createObject
 from zope.proxy import removeAllProxies
 from zope.app.tests.placelesssetup import PlacelessSetup
-from zope.security.management import newSecurityManager, system_user
+from zope.security.management import newInteraction, system_user
 
 from zope.app import zapi
 import zope.app.security
 import zope.app.component
 
 from zope.app.component.tests.exampleclass import ExampleClass
+
+
+class ParticipationStub:
+
+    def __init__(self, principal):
+        self.principal = principal
+        self.interaction = None
+
 
 def configfile(s):
     return StringIO("""<configure
@@ -42,7 +50,7 @@ def configfile(s):
 class Test(PlacelessSetup, unittest.TestCase):
     def setUp(self):
         super(Test, self).setUp()
-        newSecurityManager(system_user)
+        newInteraction(ParticipationStub(system_user))
         XMLConfig('meta.zcml', zope.app.component)()
         XMLConfig('meta.zcml', zope.app.security)()
 

@@ -29,6 +29,14 @@ import zope.app.component
 from zope.component import getService
 from zope.app.tests.placelesssetup import PlacelessSetup
 
+
+class ParticipationStub:
+
+    def __init__(self, principal):
+        self.principal = principal
+        self.interaction = None
+
+
 template = """<configure
    xmlns='http://namespaces.zope.org/zope'
    xmlns:test='http://www.zope.org/NS/Zope3/test'
@@ -180,8 +188,8 @@ class Test(PlacelessSetup, unittest.TestCase):
 
 
         # Need to "log someone in" to turn on checks
-        from zope.security.management import newSecurityManager
-        newSecurityManager('someuser')
+        from zope.security.management import newInteraction
+        newInteraction(ParticipationStub('someuser'))
 
         service = getService(None, "Foo")
         service = ProxyFactory(service) # simulate untrusted code!
@@ -191,9 +199,9 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertRaises(Forbidden, getattr, service, 'bar')
 
 
-
 def test_suite():
     loader=unittest.TestLoader()
     return loader.loadTestsFromTestCase(Test)
+
 if __name__=='__main__':
     unittest.TextTestRunner().run(test_suite())

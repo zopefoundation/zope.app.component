@@ -26,13 +26,21 @@ from zope.component.interfaces import IFactory
 from zope.component.exceptions import ComponentLookupError
 from zope.configuration.xmlconfig import xmlconfig, XMLConfig
 from zope.app.tests.placelesssetup import PlacelessSetup
-from zope.security.management import newSecurityManager, system_user
+from zope.security.management import system_user
+from zope.security.management import newInteraction
 from zope.app.component.interface import queryInterface
 
 # explicitly import ExampleClass and IExample using full paths
 # so that they are the same objects as resolve will get.
 from zope.app.component.tests.exampleclass import ExampleClass
 from zope.app.component.tests.exampleclass import IExample, IExample2
+
+
+class ParticipationStub:
+
+    def __init__(self, principal):
+        self.principal = principal
+        self.interaction = None
 
 
 def configfile(s):
@@ -46,7 +54,7 @@ def configfile(s):
 class TestContentDirective(PlacelessSetup, unittest.TestCase):
     def setUp(self):
         super(TestContentDirective, self).setUp()
-        newSecurityManager(system_user)
+        newInteraction(ParticipationStub(system_user))
         XMLConfig('meta.zcml', zope.app.component)()
         XMLConfig('meta.zcml', zope.app.security)()
 
@@ -64,7 +72,7 @@ class TestContentDirective(PlacelessSetup, unittest.TestCase):
 
 
     def testImplements(self):
-        self.assertEqual(queryInterface( 
+        self.assertEqual(queryInterface(
             "zope.app.component.tests.exampleclass.IExample"), None)
 
         f = configfile("""
@@ -75,7 +83,7 @@ class TestContentDirective(PlacelessSetup, unittest.TestCase):
         xmlconfig(f)
         self.failUnless(IExample.implementedBy(ExampleClass))
 
-        self.assertEqual(queryInterface( 
+        self.assertEqual(queryInterface(
             "zope.app.component.tests.exampleclass.IExample"), IExample)
 
 
@@ -133,7 +141,7 @@ class TestContentDirective(PlacelessSetup, unittest.TestCase):
 class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
     def setUp(self):
         super(TestFactorySubdirective, self).setUp()
-        newSecurityManager(system_user)
+        newInteraction(ParticipationStub(system_user))
         XMLConfig('meta.zcml', zope.app.component)()
         XMLConfig('meta.zcml', zope.app.security)()
 
