@@ -13,7 +13,7 @@
 ##############################################################################
 """Generic Components ZCML Handlers
 
-$Id: metaconfigure.py,v 1.34 2004/03/22 17:44:46 mmceahern Exp $
+$Id: metaconfigure.py,v 1.35 2004/03/22 22:31:49 mmceahern Exp $
 """
 from zope.interface import Interface
 from zope.component.service import UndefinedService
@@ -27,7 +27,6 @@ from zope.app import zapi
 from zope.app.component.interface import queryInterface
 from zope.app.security.permission import checkPermission 
 from zope.app.servicenames import Adapters, Presentation
-from zope.app.event.interfaces import ISubscriber
 
 PublicPermission = 'zope.Public'
 
@@ -80,13 +79,13 @@ def proxify(ob, checker):
 
     return ob
 
-def subscriber(_context, factory, for_, permission=None):
+def subscriber(_context, factory, provides, for_, permission=None):
     factory = [factory]
 
     if permission is not None:
         if permission == PublicPermission:
             permission = CheckerPublic
-        checker = InterfaceChecker(ISubscriber, permission)
+        checker = InterfaceChecker(provides, permission)
         factory.append(lambda c: proxify(c, checker))
 
     for_ = tuple(for_)
@@ -112,14 +111,14 @@ def subscriber(_context, factory, for_, permission=None):
         discriminator = None,
         callable = checkingHandler,
         args = (permission, Adapters, 'subscribe',
-                for_, ISubscriber, factory),
+                for_, provides, factory),
         )
     
-    # Stating that the adapter provides the ISubscriber interface.
+    # Stating that the adapter provides the specified interface.
     _context.action(
         discriminator = None,
         callable = provideInterface,
-        args = ('', ISubscriber)
+        args = ('', provides)
                )
     
     # For each interface, state that the adapter provides that interface.

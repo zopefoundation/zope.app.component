@@ -13,7 +13,7 @@
 ##############################################################################
 """Component Directives Tests
 
-$Id: test_directives.py,v 1.31 2004/03/22 17:44:50 mmceahern Exp $
+$Id: test_directives.py,v 1.32 2004/03/22 22:31:49 mmceahern Exp $
 """
 import re
 import unittest
@@ -108,6 +108,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         xmlconfig(StringIO(template % (
             """
             <subscriber
+              provides="zope.app.event.interfaces.ISubscriber"
               factory="zope.app.component.tests.adapter.A3"
               for="zope.component.tests.components.IContent
                    zope.app.component.tests.adapter.I1"
@@ -131,11 +132,13 @@ class Test(PlacelessSetup, unittest.TestCase):
         xmlconfig(StringIO(template % (
             """
             <subscriber
+              provides="zope.app.event.interfaces.ISubscriber"
               factory="zope.app.component.tests.adapter.A3"
               for="zope.component.tests.components.IContent
                    zope.app.component.tests.adapter.I1"
               />
             <subscriber
+              provides="zope.app.event.interfaces.ISubscriber"
               factory="zope.app.component.tests.adapter.A2"
               for="zope.component.tests.components.IContent
                    zope.app.component.tests.adapter.I1"

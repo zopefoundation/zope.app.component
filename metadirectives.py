@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: metadirectives.py,v 1.17 2004/03/22 17:44:48 mmceahern Exp $
+$Id: metadirectives.py,v 1.18 2004/03/22 22:31:49 mmceahern Exp $
 """
 from zope.interface import Interface
 from zope.configuration.fields import GlobalObject, Tokens, \
@@ -187,6 +187,13 @@ class ISubscriberDirective(Interface):
     factory = GlobalObject(
         title=u"Subscriber factory",
         description=u"A factory used to create the subscriber instance.",
+        required=True
+        )
+
+    provides = GlobalObject(
+        title=u"Interface the component provides",
+        description=u"""This attribute specifes the interface the adapter
+        instance must provide.""",
         required=True
         )
 
