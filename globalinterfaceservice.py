@@ -12,10 +12,13 @@
 #
 ##############################################################################
 """
-$Id: globalinterfaceservice.py,v 1.2 2002/12/25 14:12:45 jim Exp $
+$Id: globalinterfaceservice.py,v 1.3 2003/01/03 15:53:11 stevea Exp $
 """
 
 from zope.interface import Interface
+from zope.app.interfaces.component.globalinterfaceservice \
+        import IGlobalInterfaceService
+from zope.component.exceptions import ComponentLookupError
 
 class IInterfaceService(Interface):
     """Service that keeps track of used interfaces
@@ -51,15 +54,6 @@ class IInterfaceService(Interface):
 
         """
 
-
-__doc__ = IInterfaceService.__doc__ + __doc__
-
-
-"""
-$Id: globalinterfaceservice.py,v 1.2 2002/12/25 14:12:45 jim Exp $
-"""
-from zope.app.interfaces.component.globalinterfaceservice import IGlobalInterfaceService
-from zope.component.exceptions import ComponentLookupError
 
 class InterfaceService:
     __implements__ = IGlobalInterfaceService
