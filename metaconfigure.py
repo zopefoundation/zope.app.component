@@ -15,6 +15,8 @@
 
 $Id$
 """
+__docformat__ = 'restructuredtext'
+
 from zope.interface import Interface
 from zope.component.service import UndefinedService
 from zope.configuration.exceptions import ConfigurationError
@@ -61,7 +63,7 @@ def interface(_context, interface, type=None):
 
 
 def proxify(ob, checker):
-    """Try to get the object proxied with the checker, but not too soon
+    """Try to get the object proxied with the `checker`, but not too soon
 
     We really don't want to proxy the object unless we need to.
     """

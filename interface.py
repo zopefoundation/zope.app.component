@@ -15,6 +15,8 @@
 
 $Id$
 """
+__docformat__ = 'restructuredtext'
+
 from zope.component.exceptions import ComponentLookupError
 from zope.interface import directlyProvides
 from zope.interface.interfaces import IInterface
@@ -116,7 +118,7 @@ def getInterface(context, id):
     return iface
 
 def queryInterface(id, default=None):
-    """return interface or None
+    """return interface or ``None``
 
     >>> from zope.app.tests.placelesssetup import setUp, tearDown
     >>> tearDown()

@@ -15,6 +15,8 @@
 
 $Id$
 """
+__docformat__ = 'restructuredtext'
+
 import zope.configuration.fields
 import zope.interface
 import zope.schema

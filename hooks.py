@@ -15,6 +15,8 @@
 
 $Id$
 """
+__docformat__ = 'restructuredtext'
+
 import zope.component
 from zope.component import getService
 from zope.component.interfaces import IServiceService
