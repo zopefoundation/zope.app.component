@@ -15,6 +15,8 @@
 from zope.configuration.exceptions import ConfigurationError
 from zope.security.proxy import Proxy
 from zope.component import getService, getServiceManager
+from zope.component.servicenames import Adapters, Interfaces, Skins
+from zope.component.servicenames import Views, ResourceService, Factories
 from zope.configuration import namespace
 from zope.interface import Interface
 from zope.configuration.action import Action
@@ -58,7 +60,7 @@ def interface(_context, interface):
         Action(
           discriminator = None,
           callable = handler,
-          args = ('Interfaces', 'provideInterface', '', interface)
+          args = (Interfaces, 'provideInterface', '', interface)
         ),
       ]
 
@@ -85,13 +87,13 @@ def adapter(_context, factory, provides, for_, permission=None, name=''):
         Action(
             discriminator = ('adapter', for_, provides, name),
             callable = checkingHandler,
-            args = (permission, 'Adapters', 'provideAdapter',
+            args = (permission, Adapters, 'provideAdapter',
                     for_, provides, factory, name),
                ),
         Action(
             discriminator = None,
             callable = handler,
-            args = ('Interfaces', 'provideInterface', '', provides)
+            args = (Interfaces, 'provideInterface', '', provides)
               )
               ]
     if for_ is not None:
@@ -100,7 +102,7 @@ def adapter(_context, factory, provides, for_, permission=None, name=''):
         Action(
             discriminator = None,
             callable = handler,
-            args = ('Interfaces', 'provideInterface', '', for_)
+            args = (Interfaces, 'provideInterface', '', for_)
               )
          )
 
@@ -136,7 +138,7 @@ def utility(_context, provides, component=None, factory=None,
         Action(
             discriminator = None,
             callable = handler,
-            args = ('Interfaces', 'provideInterface',
+            args = (Interfaces, 'provideInterface',
                     provides.__module__+'.'+provides.__name__, provides)
               )
         ]
@@ -152,7 +154,7 @@ def factory(_context, component, id=None):
         Action(
             discriminator = ('factory', id),
             callable = handler,
-            args = ('Factories', 'provideFactory', id, component),
+            args = (Factories, 'provideFactory', id, component),
             )
         ]
 
@@ -204,13 +206,13 @@ def resource(_context, factory, type, name, layer='default',
         Action(
             discriminator = ('resource', name, type, layer),
             callable = checkingHandler,
-            args = (permission, 'Resources','provideResource',
+            args = (permission, ResourceService,'provideResource',
                     name, type, factory, layer),
             ),
         Action(
             discriminator = None,
             callable = handler,
-            args = ('Interfaces', 'provideInterface',
+            args = (Interfaces, 'provideInterface',
                     type.__module__+'.'+type.__name__, type)
               )
         ]
@@ -249,13 +251,13 @@ def view(_context, factory, type, name, for_, layer='default',
         Action(
             discriminator = ('view', for_, name, type, layer),
             callable = checkingHandler,
-            args = (permission, 'Views','provideView', for_, name,
+            args = (permission, Views,'provideView', for_, name,
                     type, factory, layer),
             ),
         Action(
             discriminator = None,
             callable = handler,
-            args = ('Interfaces', 'provideInterface',
+            args = (Interfaces, 'provideInterface',
                     type.__module__+'.'+type.__name__, type)
             )
             ]
@@ -265,7 +267,7 @@ def view(_context, factory, type, name, for_, layer='default',
         Action(
             discriminator = None,
             callable = handler,
-            args = ('Interfaces', 'provideInterface',
+            args = (Interfaces, 'provideInterface',
                     for_.__module__+'.'+for_.__name__,
                     for_)
               )
@@ -291,12 +293,12 @@ def defaultView(_context, type, name, for_, **__kw):
         Action(
         discriminator = ('defaultViewName', for_, type, name),
         callable = handler,
-        args = ('Views','setDefaultViewName', for_, type, name),
+        args = (Views,'setDefaultViewName', for_, type, name),
         ),
         Action(
             discriminator = None,
             callable = handler,
-            args = ('Interfaces', 'provideInterface',
+            args = (Interfaces, 'provideInterface',
                     type.__module__+'.'+type.__name__, type)
             )
                ]
@@ -306,7 +308,7 @@ def defaultView(_context, type, name, for_, **__kw):
         Action(
             discriminator = None,
             callable = handler,
-            args = ('Interfaces', 'provideInterface',
+            args = (Interfaces, 'provideInterface',
                     for_.__module__+'.'+for_.__name__, for_)
               )
          )
@@ -384,12 +386,12 @@ def skin(_context, name, layers, type):
         Action(
             discriminator = ('skin', name, type),
             callable = handler,
-            args = ('Skins','defineSkin',name, type, layers)
+            args = (Skins,'defineSkin',name, type, layers)
               ),
         Action(
             discriminator = None,
             callable = handler,
-            args = ('Interfaces', 'provideInterface',
+            args = (Interfaces, 'provideInterface',
                     type.__module__+'.'+type.__name__, type)
               )
              ]
