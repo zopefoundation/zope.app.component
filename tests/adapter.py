@@ -15,8 +15,9 @@
 
 $Id: adapter.py 26551 2004-07-15 07:06:37Z srichter $
 """
-
 import zope.interface
+import zope.component
+import components
 
 class I1(zope.interface.Interface):
     pass
@@ -25,7 +26,9 @@ class I2(zope.interface.Interface):
     pass
 
 class I3(zope.interface.Interface):
-    pass
+    def f1(): pass
+    def f2(): pass
+    def f3(): pass
 
 class IS(zope.interface.Interface):
     pass
@@ -42,8 +45,18 @@ class A2(Adapter):
     zope.interface.implements(I2)
 
 class A3(Adapter):
+    zope.component.adapts(components.IContent, I1, I2)
     zope.interface.implements(I3)
 
+class A4:
+    pass
+
+a4 = A4()
+
+class A5:
+    zope.interface.implements(I1, I2)
+
+a5 = A5()
 
 def Handler(content, *args):
     # uninteresting handler

@@ -178,13 +178,13 @@ class IAdapterDirective(zope.interface.Interface):
         title=_("Interface the component provides"),
         description=_("This attribute specifes the interface the adapter"
                       " instance must provide."),
-        required=True
+        required=False,
         )
 
     for_ = zope.configuration.fields.Tokens(
         title=_("Specifications to be adapted"),
         description=_("This should be a list of interfaces or classes"),
-        required=True,
+        required=False,
         value_type=zope.configuration.fields.GlobalObject(
           missing_value=object(),
           ),
@@ -227,7 +227,13 @@ class ISubscriberDirective(zope.interface.Interface):
     factory = zope.configuration.fields.GlobalObject(
         title=_("Subscriber factory"),
         description=_("A factory used to create the subscriber instance."),
-        required=True
+        required=False,
+        )
+
+    handler = zope.configuration.fields.GlobalObject(
+        title=_("Handler"),
+        description=_("A callable object that handles events."),
+        required=False,
         )
 
     provides = zope.configuration.fields.GlobalInterface(
@@ -273,7 +279,7 @@ class IUtilityDirective(IBasicComponentInformation):
     provides = zope.configuration.fields.GlobalInterface(
         title=_("Provided interface"),
         description=_("Interface provided by the utility."),
-        required=True
+        required=False,
         )
 
     name = zope.schema.TextLine(

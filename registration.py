@@ -18,6 +18,7 @@ $Id$
 from persistent import Persistent
 
 import zope.event
+from zope.component import subscribers
 from zope.interface import implements
 from zope.security.checker import InterfaceChecker, CheckerPublic
 from zope.security.proxy import Proxy, removeSecurityProxy
@@ -167,6 +168,13 @@ def ComponentRegistrationAddSubscriber(componentRegistration, event):
         return
     objectpath = zapi.getPath(componentRegistration)
     dependents.addDependent(objectpath)
+
+
+def componentRegistrationEventNotify(componentReg, event):
+    """Subscriber to dispatch registration events for components."""
+    adapters = subscribers((componentReg.component, event), None)
+    for adapter in adapters:
+        pass # getting them does the work
 
 
 def RegisterableMoveSubscriber(registerable, event):

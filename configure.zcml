@@ -48,21 +48,27 @@
       />
 
   <subscriber
-      factory=".registration.ComponentRegistrationRemoveSubscriber"
       for=".interfaces.registration.IComponentRegistration
            zope.app.container.interfaces.IObjectRemovedEvent"
+      handler=".registration.ComponentRegistrationRemoveSubscriber"
       />
 
   <subscriber
       for=".interfaces.registration.IComponentRegistration
            zope.app.container.interfaces.IObjectAddedEvent"
-      factory=".registration.ComponentRegistrationAddSubscriber"
+      handler=".registration.ComponentRegistrationAddSubscriber"
+      />
+
+  <subscriber
+      for=".interfaces.registration.IComponentRegistration
+           .interfaces.registration.IRegistrationEvent"
+      handler=".registration.componentRegistrationEventNotify"
       />
 
   <subscriber
       for=".interfaces.registration.IRegisterable
            zope.app.container.interfaces.IObjectMovedEvent"
-      factory=".registration.RegisterableMoveSubscriber"
+      handler=".registration.RegisterableMoveSubscriber"
       />
 
 
@@ -132,18 +138,18 @@
 
   <subscriber
       for="zope.app.publication.interfaces.IBeforeTraverseEvent"
-      factory=".site.threadSiteSubscriber"
+      handler=".site.threadSiteSubscriber"
       />
 
   <subscriber
       for="zope.app.publication.interfaces.IEndRequestEvent"
-      factory=".site.clearThreadSiteSubscriber"
+      handler=".site.clearThreadSiteSubscriber"
       />
 
   <subscriber
       for=".interfaces.ISite
            zope.app.container.interfaces.IObjectMovedEvent"
-      factory=".site.changeSiteConfigurationAfterMove"
+      handler=".site.changeSiteConfigurationAfterMove"
       />
 
 

@@ -19,6 +19,7 @@ __docformat__ = 'restructuredtext'
 
 from zope.component.interfaces import IDefaultViewName, IFactory
 from zope.configuration.exceptions import ConfigurationError
+import zope.interface
 from zope.interface import Interface
 from zope.interface.interfaces import IInterface
 
@@ -57,8 +58,27 @@ def proxify(ob, checker):
 
     return ob
 
-def subscriber(_context, factory, for_, provides=None, permission=None,
-               trusted=False):
+_handler=handler
+def subscriber(_context, for_, factory=None, handler=None, provides=None,
+               permission=None, trusted=False):
+
+    if factory is None:
+        if handler is None:
+            raise TypeError("No factory or handler provides")
+        if provides is not None:
+            raise TypeError("Cannot use handler with provides")
+        factory = handler
+    else:
+        if handler is not None:
+            raise TypeError("Cannot use handler with factory")
+        if provides is None:
+            import warnings
+            warnings.warn(
+                "Use of factory without provides to indicate a handler "
+                "is deprecated and will change it's meaning in Zope X3.3. "
+                "Use the handler attribute instead.",
+                DeprecationWarning)
+    
     factory = [factory]
 
     if permission is not None:
@@ -88,7 +108,7 @@ def subscriber(_context, factory, for_, provides=None, permission=None,
 
     _context.action(
         discriminator = None,
-        callable = handler,
+        callable = _handler,
         args = ('subscribe',
                 for_, provides, factory),
         )
@@ -109,15 +129,30 @@ def subscriber(_context, factory, for_, provides=None, permission=None,
                 args = ('', iface)
                 )
 
-def adapter(_context, factory, provides, for_, permission=None, name='',
-            trusted=False):
-    if permission is not None:
-        if permission == PublicPermission:
-            permission = CheckerPublic
-        checker = InterfaceChecker(provides, permission)
-        factory.append(lambda c: proxify(c, checker))
+def adapter(_context, factory, provides=None, for_=None, permission=None,
+            name='', trusted=False):
+
+    if for_ is None:
+        if len(factory) == 1:
+            try:
+                for_ = factory[0].__component_adapts__
+            except AttributeError:
+                pass
+
+        if for_ is None:
+            raise TypeError("No for attribute was provided and can't "
+                            "determine what the factory adapts.")
 
     for_ = tuple(for_)
+
+    if provides is None:
+        if len(factory) == 1:
+            p = list(zope.interface.implementedBy(factory[0]))
+            if len(p) == 1:
+                provides = p[0]
+
+        if provides is None:
+            raise TypeError("Missing 'provides' attribute")            
 
     # Generate a single factory from multiple factories:
     factories = factory
@@ -128,12 +163,13 @@ def adapter(_context, factory, provides, for_, permission=None, name='',
     elif len(factories) > 1 and len(for_) != 1:
         raise ValueError("Can't use multiple factories and multiple for")
     else:
-        def factory(ob):
-            for f in factories:
-                ob = f(ob)
-            return ob
-        # Store the original factory for documentation
-        factory.factory = factories[0]
+        factory = _rolledUpFactory(factories)
+
+    if permission is not None:
+        if permission == PublicPermission:
+            permission = CheckerPublic
+        checker = InterfaceChecker(provides, permission)
+        factory = _protectedFactory(factory, checker)
 
     if trusted:
         factory = TrustedAdapterFactory(factory)
@@ -158,12 +194,45 @@ def adapter(_context, factory, provides, for_, permission=None, name='',
                     args = ('', iface)
                     )
 
-def utility(_context, provides, component=None, factory=None,
+def _rolledUpFactory(factories):
+    # This has to be named 'factory', aparently, so as not to confuse
+    # apidoc :(
+    def factory(ob):
+        for f in factories:
+            ob = f(ob)
+        return ob
+    # Store the original factory for documentation
+    factory.factory = factories[0]
+    return factory
+
+def _protectedFactory(original_factory, checker):
+    # This has to be named 'factory', aparently, so as not to confuse
+    # apidoc :(
+    def factory(*args):
+        ob = original_factory(*args)
+        try:
+            ob.__Security_checker__ = checker
+        except AttributeError:
+            ob = Proxy(ob, checker)
+        
+        return ob
+    factory.factory = factory
+    return factory
+
+
+def utility(_context, provides=None, component=None, factory=None,
             permission=None, name=''):
     if factory:
         if component:
             raise TypeError("Can't specify factory and component.")
         component = factory()
+
+    if provides is None:
+        provides = list(zope.interface.providedBy(component))
+        if len(provides) == 1:
+            provides = provides[0]
+        else:
+            raise TypeError("Missing 'provides' attribute")
 
     if permission is not None:
         if permission == PublicPermission:
