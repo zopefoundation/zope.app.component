@@ -13,7 +13,7 @@
 ##############################################################################
 """Support for delegation among service managers
 
-$Id: nextservice.py,v 1.2 2002/12/25 14:12:45 jim Exp $
+$Id: nextservice.py,v 1.3 2003/03/11 21:08:40 jim Exp $
 """
 
 from zope.component.exceptions import ComponentLookupError
@@ -55,7 +55,7 @@ def getNextServiceManager(context):
     # get this service manager
     sm = getServiceManager_hook(context)
     if sm is serviceManager:
-        raise ComponentLookupError('service manager')
+        raise ComponentLookupError('Services')
 
     # get the service manager container, which ought to be the context
     # contaioner.
@@ -75,4 +75,4 @@ def getNextServiceManager(context):
     while (context is not None) and (context == container):
         context = getWrapperContainer(context)
 
-    return getServiceManager_hook(context)
+    return getServiceManager_hook(context, local=True)

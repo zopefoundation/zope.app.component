@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: hooks.py,v 1.2 2002/12/25 14:12:45 jim Exp $
+$Id: hooks.py,v 1.3 2003/03/11 21:08:40 jim Exp $
 """
 from zope.component.interfaces import IServiceService
 from zope.app.interfaces.services.service \
@@ -25,8 +25,9 @@ from zope.component.exceptions import ComponentLookupError
 from zope.component.service import serviceManager
 from zope.proxy.introspection import removeAllProxies
 from zope.security.proxy import trustedRemoveSecurityProxy
+from zope.app.traversing import IContainmentRoot
 
-def getServiceManager_hook(context):
+def getServiceManager_hook(context, local=False):
     """
     context based lookup, with fallback to component architecture
     service manager if no service manager found within context
@@ -47,6 +48,16 @@ def getServiceManager_hook(context):
                 name="++etc++Services",
                 )
 
-        context = getWrapperContainer(context)
+        container = getWrapperContainer(context)
+        if container is None:
+            if local:
+                # Check to make sure that when we run out of context, we
+                # have a root object:
+                if not IContainmentRoot.isImplementedBy(context):
+                    raise TypeError("Not enough context to get next "
+                                    "service manager")
+                break
+            
+        context = container
 
     return serviceManager
