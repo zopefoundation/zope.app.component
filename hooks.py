@@ -23,8 +23,7 @@ from zope.component.interfaces import IServiceService
 from zope.app.site.interfaces import ISite
 from zope.component.service import serviceManager
 from zope.component.exceptions import ComponentLookupError
-from zope.proxy import removeAllProxies
-from zope.security.proxy import trustedRemoveSecurityProxy
+from zope.security.proxy import removeSecurityProxy
 from zope.app.traversing.interfaces import IContainmentRoot
 from zope.app.location.interfaces import ILocation
 from zope.app.location import locate
@@ -63,7 +62,15 @@ def setSite(site=None):
     if site is None:
         services = serviceManager
     else:
-        site = trustedRemoveSecurityProxy(site)
+
+        # We remove the security proxy because there's no way for
+        # untrusted code to get at it without it being proxied again.
+
+        # We should really look look at this again though, especially
+        # once site managers do less.  There's probably no good reason why
+        # they can't be proxied.  Well, except maybe for performance.
+        
+        site = removeSecurityProxy(site)
         services = site.getSiteManager()
 
     siteinfo.site = site
@@ -84,8 +91,18 @@ def getServices_hook(context=None):
     # Deprecated support for a context that isn't adaptable to
     # IServiceService.  Return the default service manager.
     try:
-        return trustedRemoveSecurityProxy(IServiceService(context,
-                                                          serviceManager))
+
+
+        # We remove the security proxy because there's no way for
+        # untrusted code to get at it without it being proxied again.
+
+        # We should really look look at this again though, especially
+        # once site managers do less.  There's probably no good reason why
+        # they can't be proxied.  Well, except maybe for performance.
+
+
+        return removeSecurityProxy(IServiceService(context,
+                                                   serviceManager))
     except ComponentLookupError:
         return serviceManager
 
