@@ -32,21 +32,6 @@
       factory="zope.app.utility.vocabulary.UtilityVocabulary"
       interface="zope.interface.interfaces.IInterface" />
 
-  <hook
-      module="zope.component"
-      name="getServices"
-      implementation="zope.app.component.hooks.getServices_hook" />
-
-  <hook
-      module="zope.component"
-      name="adapter_hook"
-      implementation="zope.app.component.hooks.adapter_hook" />
-
-  <hook
-      module="zope.component"
-      name="queryView"
-      implementation="zope.app.component.hooks.queryView" />
-
   <interface interface="zope.interface.Interface" />
 
   <adapter
