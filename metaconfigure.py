@@ -151,12 +151,6 @@ def subscriber(_context, for_, factory=None, handler=None, provides=None,
 def adapter(_context, factory, provides=None, for_=None, permission=None,
             name='', trusted=False):
 
-    if permission is not None:
-        if permission == PublicPermission:
-            permission = CheckerPublic
-        checker = InterfaceChecker(provides, permission)
-        factory.append(lambda c: proxify(c, checker))
-
     if for_ is None:
         if len(factory) == 1:
             try:
@@ -178,6 +172,12 @@ def adapter(_context, factory, provides=None, for_=None, permission=None,
 
         if provides is None:
             raise TypeError("Missing 'provides' attribute")            
+
+    if permission is not None:
+        if permission == PublicPermission:
+            permission = CheckerPublic
+        checker = InterfaceChecker(provides, permission)
+        factory.append(lambda c: proxify(c, checker))
 
     # Generate a single factory from multiple factories:
     factories = factory

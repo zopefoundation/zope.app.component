@@ -503,6 +503,27 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertEqual(items, ['a', 'f'])
         self.assertEqual(removeSecurityProxy(adapter).__class__, Comp)
 
+    def testProtectedAdapter_wo_for_or_provides(self):
+
+        # Full import is critical!
+        from zope.component.tests.components import Content, IApp, Comp
+
+        self.assertEqual(IV(Content(), None), None)
+
+        xmlconfig(StringIO(template % (
+            """
+            <adapter
+              factory="zope.component.tests.components.Comp"
+              permission="zope.Public"
+              />
+            """
+            )))
+
+        adapter = ProxyFactory(IApp(Content()))
+        items = [item[0] for item in getTestProxyItems(adapter)]
+        self.assertEqual(items, ['a', 'f'])
+        self.assertEqual(removeSecurityProxy(adapter).__class__, Comp)
+
     def testAdapterUndefinedPermission(self):
         config = StringIO(template % (
              """
