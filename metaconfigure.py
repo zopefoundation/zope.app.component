@@ -13,7 +13,7 @@
 ##############################################################################
 """Generic Components ZCML Handlers
 
-$Id: metaconfigure.py,v 1.39 2004/04/07 21:38:14 jim Exp $
+$Id: metaconfigure.py,v 1.40 2004/04/15 13:25:03 srichter Exp $
 """
 from zope.interface import Interface
 from zope.component.service import UndefinedService
@@ -319,7 +319,7 @@ def view(_context, factory, type, name, for_, layer='default',
         discriminator = ('view', for_, name, type, layer, provides),
         callable = checkingHandler,
         args = (permission, Presentation, 'provideAdapter',
-                type, factory, name, for_, provides, layer),
+                type, factory, name, for_, provides, layer, _context.info),
         )
     _context.action(
         discriminator = None,
@@ -423,7 +423,7 @@ def layer(_context, name):
     _context.action(
         discriminator = ('layer', name),
         callable = handler,
-        args = (Presentation, 'defineLayer', name)
+        args = (Presentation, 'defineLayer', name, _context.info)
         )
 
 def skin(_context, name, layers):
@@ -433,12 +433,12 @@ def skin(_context, name, layers):
     _context.action(
         discriminator = ('skin', name),
         callable = handler,
-        args = (Presentation, 'defineSkin', name, layers)
+        args = (Presentation, 'defineSkin', name, layers, _context.info)
         )
 
 def defaultSkin(_context, name):
     _context.action(
         discriminator = 'defaultSkin',
         callable = handler,
-        args = (Presentation, 'setDefaultSkin', name)
+        args = (Presentation, 'setDefaultSkin', name, _context.info)
         )
