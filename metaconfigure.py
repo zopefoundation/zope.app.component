@@ -17,6 +17,7 @@ $Id$
 """
 __docformat__ = 'restructuredtext'
 
+from zope import component
 from zope.component.interfaces import IDefaultViewName, IFactory
 from zope.configuration.exceptions import ConfigurationError
 import zope.interface
@@ -81,11 +82,7 @@ def subscriber(_context, for_=None, factory=None, handler=None, provides=None,
                 DeprecationWarning)
 
     if for_ is None:
-        try:
-            for_ = factory.__component_adapts__
-        except AttributeError:
-            pass
-
+        for_ = component.adaptedBy(factory)
         if for_ is None:
             raise TypeError("No for attribute was provided and can't "
                             "determine what the factory (or handler) adapts.")
@@ -145,11 +142,8 @@ def adapter(_context, factory, provides=None, for_=None, permission=None,
 
     if for_ is None:
         if len(factory) == 1:
-            try:
-                for_ = factory[0].__component_adapts__
-            except AttributeError:
-                pass
-
+            for_ = component.adaptedBy(factory[0])
+       
         if for_ is None:
             raise TypeError("No for attribute was provided and can't "
                             "determine what the factory adapts.")
