@@ -20,7 +20,7 @@ import unittest
 from zope.app import zapi
 from zope.i18n.interfaces import ITranslationDomain
 from zope.app.registration.interfaces import ActiveStatus, RegisteredStatus
-from zope.app.tests.functional import BrowserTestCase
+from zope.app.testing.functional import BrowserTestCase
 
 class TestUtilityTool(BrowserTestCase):
 

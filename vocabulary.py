@@ -79,7 +79,7 @@ class UtilityVocabulary(object):
 
     Now we register some utilities for IObject
 
-    >>> from zope.app.tests import ztapi
+    >>> from zope.app.testing import ztapi
     >>> object1 = Object('object1')
     >>> ztapi.provideUtility(IObject, object1, 'object1')
     >>> object2 = Object('object2')
@@ -290,8 +290,8 @@ class UtilityNames:
     >>> IVocabularyTokenized.providedBy(vocab)
     True
 
-    >>> from zope.app.tests import placelesssetup
-    >>> from zope.app.tests import ztapi
+    >>> from zope.app.testing import placelesssetup
+    >>> from zope.app.testing import ztapi
     >>> placelesssetup.setUp()
 
     >>> ztapi.provideUtility(IMyUtility, MyUtility(), 'one')

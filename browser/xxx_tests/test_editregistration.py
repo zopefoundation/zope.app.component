@@ -15,7 +15,7 @@
 
 $Id$
 """
-from zope.app.tests import ztapi
+from zope.app.testing import ztapi
 from unittest import TestCase, TestSuite, main, makeSuite
 from zope.app.registration.browser import EditRegistration
 from zope.app.container.interfaces import IContainer

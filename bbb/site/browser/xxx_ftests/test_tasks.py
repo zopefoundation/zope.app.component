@@ -17,7 +17,7 @@ $Id: test_services.py 25177 2004-06-02 13:17:31Z jim $
 """
 import unittest
 
-from zope.app.tests.functional import BrowserTestCase
+from zope.app.testing.functional import BrowserTestCase
 
 
 class TasksTest(BrowserTestCase):

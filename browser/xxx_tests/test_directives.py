@@ -19,7 +19,7 @@ import unittest
 from zope.interface import Interface
 from zope.testing.doctestunit import DocTestSuite
 
-from zope.app.tests.placelesssetup import setUp, tearDown
+from zope.app.testing.placelesssetup import setUp, tearDown
 
 class FauxContext(object):
     def __init__(self):
