@@ -30,18 +30,28 @@ from zope.app.i18n import ZopeMessageIDFactory as _
 class IBasicComponentInformation(zope.interface.Interface):
 
     component = zope.configuration.fields.GlobalObject(
-        title=_("Component to be used"),
-        required=False
+        title=_("Component to use"),
+        description=_("Python name of the implementation object.  This"
+                      " must identify an object in a module using the"
+                      " full dotted name.  If specified, the"
+                      " ``factory`` field must be left blank."),
+        required=False,
         )
 
     permission = zope.app.security.fields.Permission(
         title=_("Permission"),
-        required=False
+        description=_("Permission required to use this component."),
+        required=False,
         )
 
     factory = zope.configuration.fields.GlobalObject(
         title=_("Factory"),
-        required=False
+        description=_("Python name of a factory which can create the"
+                      " implementation object.  This must identify an"
+                      " object in a module using the full dotted name."
+                      " If specified, the ``component`` field must"
+                      " be left blank."),
+        required=False,
         )
 
 class IBasicViewInformation(zope.interface.Interface):
@@ -60,13 +70,13 @@ class IBasicViewInformation(zope.interface.Interface):
     permission = zope.app.security.fields.Permission(
         title=_("Permission"),
         description=_("The permission needed to use the view."),
-        required=False
+        required=False,
         )
 
     class_ = zope.configuration.fields.GlobalObject(
         title=_("Class"),
         description=_("A class that provides attributes used by the view."),
-        required=False
+        required=False,
         )
 
     layer = zope.app.component.fields.LayerField(
@@ -75,7 +85,7 @@ class IBasicViewInformation(zope.interface.Interface):
         A skin is composed of layers. It is common to put skin
         specific views in a layer named after the skin. If the 'layer'
         attribute is not supplied, it defaults to 'default'."""),
-        required=False
+        required=False,
         )
 
     allowed_interface = zope.configuration.fields.Tokens(
@@ -89,7 +99,7 @@ class IBasicViewInformation(zope.interface.Interface):
         Multiple interfaces can be provided, separated by
         whitespace."""),
         required=False,
-        value_type=zope.configuration.fields.GlobalObject()
+        value_type=zope.configuration.fields.GlobalObject(),
         )
 
     allowed_attributes = zope.configuration.fields.Tokens(
@@ -101,7 +111,7 @@ class IBasicViewInformation(zope.interface.Interface):
         you can make the permission also apply to the extra attributes
         on the view object."""),
         required=False,
-        value_type=zope.configuration.fields.PythonIdentifier()
+        value_type=zope.configuration.fields.PythonIdentifier(),
         )
 
 class IBasicResourceInformation(zope.interface.Interface):
@@ -137,12 +147,12 @@ class IInterfaceDirective(zope.interface.Interface):
     
     interface = zope.configuration.fields.GlobalObject(
         title=_("Interface"),
-        required=True
+        required=True,
         )
 
     type = zope.configuration.fields.GlobalObject(
         title=_("Interface type"),
-        required=False
+        required=False,
         )
 
 class IAdapterDirective(zope.interface.Interface):
@@ -178,7 +188,7 @@ class IAdapterDirective(zope.interface.Interface):
         title=_("Permission"),
         description=_("This adapter is only available, if the principal"
                       " has this permission."),
-        required=False
+        required=False,
         )
 
     name = zope.schema.TextLine(
@@ -186,7 +196,7 @@ class IAdapterDirective(zope.interface.Interface):
         description=_("Adapters can have names.\n\n"
                       "This attribute allows you to specify the name for"
                       " this adapter."),
-        required=False
+        required=False,
         )
 
     trusted = zope.configuration.fields.Bool(
@@ -234,7 +244,7 @@ class ISubscriberDirective(zope.interface.Interface):
         title=_("Permission"),
         description=_("This subscriber is only available, if the"
                       " principal has this permission."),
-        required=False
+        required=False,
         )
 
     trusted = zope.configuration.fields.Bool(
@@ -252,16 +262,19 @@ class ISubscriberDirective(zope.interface.Interface):
         )
 
 class IUtilityDirective(IBasicComponentInformation):
-    """Register a utility"""
+    """Register a utility."""
 
     provides = zope.configuration.fields.GlobalObject(
-        title=_("Interface the component provides"),
+        title=_("Provided interface"),
+        description=_("Interface provided by the utility."),
         required=True
         )
 
     name = zope.schema.TextLine(
         title=_("Name"),
-        required=False
+        description=_("Name of the registration.  This is used by"
+                      " application code when locating a utility."),
+        required=False,
         )
 
 class IFactoryDirective(zope.interface.Interface):
@@ -269,26 +282,26 @@ class IFactoryDirective(zope.interface.Interface):
 
     component = zope.configuration.fields.GlobalObject(
         title=_("Component to be used"),
-        required=True
+        required=True,
         )
     
     id = zope.schema.Id(
         title=_("ID"),
-        required=False
+        required=False,
         )
 
     title = zope.configuration.fields.MessageID(
         title=_("Title"),
         description=_("Text suitable for use in the 'add content' menu of"
                       " a management interface"),
-        required=False
+        required=False,
         )
 
     description = zope.configuration.fields.MessageID(
         title=_("Description"),
         description=_("Longer narrative description of what this factory"
                       " does"),
-        required=False
+        required=False,
         )
 
 
@@ -298,7 +311,7 @@ class IViewDirective(IBasicViewInformation, IBasicResourceInformation):
     factory = zope.configuration.fields.Tokens(
         title=_("Factory"),
         required=False,
-        value_type=zope.configuration.fields.GlobalObject()
+        value_type=zope.configuration.fields.GlobalObject(),
         )
 
 class IDefaultViewDirective(IBasicResourceInformation):
@@ -316,7 +329,7 @@ class IDefaultViewDirective(IBasicResourceInformation):
         objects implementing this interface make use of this default
         setting. If this attribute is not specified, the default is available
         for all objects."""),
-        required=False
+        required=False,
         )
 
 
@@ -327,20 +340,20 @@ class IResourceDirective(IBasicComponentInformation,
     
     layer = zope.app.component.fields.LayerField(
         title=_("The layer the resource is in."),
-        required=False
+        required=False,
         )
 
     allowed_interface = zope.configuration.fields.Tokens(
         title=_("Interface that is also allowed if user has permission."),
         required=False,
-        value_type=zope.configuration.fields.GlobalObject()
+        value_type=zope.configuration.fields.GlobalObject(),
         )
 
     allowed_attributes = zope.configuration.fields.Tokens(
         title=_("View attributes that are also allowed if user"
                 " has permission."),
         required=False,
-        value_type=zope.configuration.fields.PythonIdentifier()
+        value_type=zope.configuration.fields.PythonIdentifier(),
         )
 
 
@@ -393,7 +406,7 @@ class IRequireSubdirective(zope.interface.Interface):
         description=_("""
         Specifies the permission by id that will be required to
         access or mutate the attributes and methods specified."""),
-        required=False
+        required=False,
         )
 
     attributes = zope.configuration.fields.Tokens(
@@ -401,7 +414,7 @@ class IRequireSubdirective(zope.interface.Interface):
         description=_("This is a list of attributes and methods"
                       " that can be accessed."),
         required=False,
-        value_type=zope.configuration.fields.PythonIdentifier()
+        value_type=zope.configuration.fields.PythonIdentifier(),
         )
         
     set_attributes = zope.configuration.fields.Tokens(
@@ -409,7 +422,7 @@ class IRequireSubdirective(zope.interface.Interface):
         description=_("This is a list of attributes that can be"
                       " modified/mutated."),
         required=False,
-        value_type=zope.configuration.fields.PythonIdentifier()
+        value_type=zope.configuration.fields.PythonIdentifier(),
         )
 
     interface = zope.configuration.fields.Tokens(
@@ -417,7 +430,7 @@ class IRequireSubdirective(zope.interface.Interface):
         description=_("The listed interfaces' methods and attributes"
                       " can be accessed."),
         required=False,
-        value_type=zope.configuration.fields.GlobalObject()
+        value_type=zope.configuration.fields.GlobalObject(),
         )
 
     set_schema = zope.configuration.fields.Tokens(
@@ -425,7 +438,7 @@ class IRequireSubdirective(zope.interface.Interface):
         description=_("The listed schemas' properties can be"
                       " modified/mutated."),
         required=False,
-        value_type=zope.configuration.fields.GlobalObject()
+        value_type=zope.configuration.fields.GlobalObject(),
         )
 
     like_class = zope.configuration.fields.GlobalObject(
@@ -434,7 +447,7 @@ class IRequireSubdirective(zope.interface.Interface):
         This argument says that this content class should be configured in the
         same way the specified class' security is. If this argument is
         specifed, no other argument can be used."""),
-        required=False
+        required=False,
         )
     
 class IAllowSubdirective(zope.interface.Interface):
@@ -447,13 +460,13 @@ class IAllowSubdirective(zope.interface.Interface):
     attributes = zope.configuration.fields.Tokens(
         title=_("Attributes"),
         required=False,
-        value_type=zope.configuration.fields.PythonIdentifier()
+        value_type=zope.configuration.fields.PythonIdentifier(),
         )
 
     interface = zope.configuration.fields.Tokens(
         title=_("Interface"),
         required=False,
-        value_type=zope.configuration.fields.GlobalObject()
+        value_type=zope.configuration.fields.GlobalObject(),
         )
 
 class IFactorySubdirective(zope.interface.Interface):
@@ -465,19 +478,19 @@ class IFactorySubdirective(zope.interface.Interface):
         the identifier for this factory in the ZMI factory
         identification scheme.  If not given, defaults to the literal
         string given as the content directive's 'class' attribute."""),
-        required=False
+        required=False,
         )
 
     title = zope.configuration.fields.MessageID(
         title=_("Title"),
         description=_("Text suitable for use in the 'add content' menu"
                       " of a management interface"),
-        required=False
+        required=False,
         )
 
     description = zope.configuration.fields.MessageID(
         title=_("Description"),
         description=_("Longer narrative description of what this"
                       " factory does"),
-        required=False
+        required=False,
         )
