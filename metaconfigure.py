@@ -17,6 +17,7 @@ from zope.security.proxy import Proxy
 from zope.component import getService, getServiceManager
 from zope.app.services.servicenames import Adapters, Interfaces, Skins
 from zope.app.services.servicenames import Views, Resources, Factories
+from zope.app.component.globalinterfaceservice import interfaceService
 from zope.configuration import namespace
 from zope.interface import Interface
 from zope.configuration.action import Action
@@ -55,7 +56,7 @@ def managerHandler(methodName, *args, **kwargs):
     method(*args, **kwargs)
 
 def interface(_context, interface):
-    interface = _context.resolve(interface)
+    interface = resolveInterface(_context, interface)
     return [
         Action(
           discriminator = None,
@@ -73,9 +74,9 @@ def adapter(_context, factory, provides, for_, permission=None, name=''):
             "A for interface must be provided. Use * for all objects.")
         
     if for_:
-        for_ = _context.resolve(for_)
+        for_ = resolveInterface(_context, for_)
 
-    provides = _context.resolve(provides)
+    provides = resolveInterface(_context, provides)
     factory = map(_context.resolve, factory.split())
 
     if permission is not None:
@@ -111,7 +112,7 @@ def adapter(_context, factory, provides, for_, permission=None, name=''):
 
 def utility(_context, provides, component=None, factory=None,
             permission=None, name=''):
-    provides = _context.resolve(provides)
+    provides = resolveInterface(_context, provides)
 
     if factory:
         if component:
@@ -169,7 +170,7 @@ def _checker(_context, permission, allowed_interface, allowed_attributes):
     for name in (allowed_attributes or '').split():
         require[name] = permission
     if allowed_interface:
-        for name in _context.resolve(allowed_interface).names(all=True):
+        for name in resolveInterface(_context, allowed_interface).names(all=True):
             require[name] = permission
 
     checker = Checker(require.get)
@@ -230,7 +231,8 @@ def view(_context, factory, type, name, for_, layer='default',
             "allowed_attributes"
             )
 
-    if for_ is not None: for_ = _context.resolve(for_)
+    if for_ is not None:
+        for_ = resolveInterface(_context, for_)
     type = _context.resolve(type)
 
     factory = map(_context.resolve, factory.strip().split())
@@ -286,7 +288,7 @@ def defaultView(_context, type, name, for_, **__kw):
         actions = []
 
     if for_ is not None:
-        for_ = _context.resolve(for_)
+        for_ = resolveInterface(_context, for_)
     type = _context.resolve(type)
 
     actions += [
@@ -316,7 +318,7 @@ def defaultView(_context, type, name, for_, **__kw):
     return actions
 
 def serviceType(_context, id, interface):
-    interface = _context.resolve(interface)
+    interface = resolveInterface(_context, interface)
     return [
         Action(
             discriminator = ('serviceType', id),
@@ -396,3 +398,9 @@ def skin(_context, name, layers, type):
               )
              ]
     return actions
+
+def resolveInterface(_context, id):
+    interface = interfaceService.queryInterface(id, None)
+    if interface is None:
+        interface = _context.resolve(id)
+    return interface
