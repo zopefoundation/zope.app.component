@@ -68,15 +68,13 @@ def test_SiteManagerAdapter():
       >>> SiteManagerAdapter(ob2) is sm
       True
 
-    If we are unable to find a site manager, a `ComponentLookupError` is
-    raised:
+    If we are unable to find a local site manager, then the global site
+    manager is returned.
     
+      >>> import zope.component
       >>> orphan = CustomFolder('orphan')
-      >>> SiteManagerAdapter(orphan) #doctest: +NORMALIZE_WHITESPACE
-      Traceback (most recent call last):
-      ...
-      ComponentLookupError:
-      'Could not adapt <CustomFolder orphan> to ISiteManager'
+      >>> SiteManagerAdapter(orphan) is zope.component.getGlobalSiteManager()
+      True
     """
 
 
