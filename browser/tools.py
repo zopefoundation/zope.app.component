@@ -63,8 +63,13 @@ class SiteManagementView(browser.ComponentAdding):
     def __init__(self, context, request):
         super(SiteManagementView, self).__init__(context, request)
         if 'activeTool' in request:
+            request.response.setCookie('SetActiveTool', request['activeTool'],
+                                       path="/")
             self.activeTool = zapi.getUtility(IToolConfiguration,
                                               request['activeTool'])
+        elif 'SetActiveTool' in request:
+            self.activeTool = zapi.getUtility(IToolConfiguration,
+                                              request['SetActiveTool'])
 
     def update(self):
         """ """
@@ -78,6 +83,7 @@ class SiteManagementView(browser.ComponentAdding):
         if "ADD-TOOL-SUBMIT" in self.request:
             self.action(self.request['type_name'], self.request['id'])
         elif "CANCEL-ADD-TOOL-SUBMIT" in self.request:
+            request.response.expireCookie('SetActiveTool')
             self.activeTool = None
         elif "ACTIVATE-SUBMIT" in self.request:
             self.changeStatus(interfaces.registration.ActiveStatus)
