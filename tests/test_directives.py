@@ -43,7 +43,8 @@ from zope.app.testing.placelesssetup import PlacelessSetup
 from zope.app.component.interface import queryInterface
 from zope.app.component.metaconfigure import interface
 from zope.app.component.tests.adapter import A1, A2, A3, I1, I3, IS, Handler
-from zope.app.component.tests.components import Content, IApp, Comp, comp
+from zope.app.component.tests.components import IContent, Content, Comp, comp
+from zope.app.component.tests.components import IApp
 from zope.app.component.tests.views import IV, IC, V1, R1, IR
 from zope.app.content.interfaces import IContentType
 
@@ -225,6 +226,25 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         self.assertEqual(content.args, ((a1,),))
         
+    def testSubscriberHavingARequiredClass(self):
+        xmlconfig(StringIO(template % (
+            '''
+            <subscriber
+              for="zope.app.component.tests.components.Content"
+              provides="zope.app.component.tests.adapter.I1"
+              factory="zope.app.component.tests.adapter.A1"
+              />
+            '''
+            )))
+
+        subs = zapi.subscribers((Content(),), I1)
+        self.assert_(isinstance(subs[0], A1))
+        
+        class MyContent:
+            implements(IContent)
+        
+        self.assertEqual(zapi.subscribers((MyContent(),), I1), [])
+
     def testMultiSubscriber(self):
         xmlconfig(StringIO(template % (
             '''
@@ -383,6 +403,28 @@ class Test(PlacelessSetup, unittest.TestCase):
                              '''
                              )),
                           )
+
+    def testAdapterHavingARequiredClass(self):
+        xmlconfig(StringIO(template % (
+            '''
+            <adapter
+              for="zope.app.component.tests.components.Content"
+              provides="zope.app.component.tests.adapter.I1"
+              factory="zope.app.component.tests.adapter.A1"
+              />
+            '''
+            )))
+
+        content = Content()
+        a1 = zapi.getAdapter(content, I1, '')
+        self.assert_(isinstance(a1, A1))
+
+        class MyContent:
+            implements(IContent)
+
+        self.assertRaises(ComponentLookupError, zapi.getAdapter,
+                          MyContent(), I1, '')
+
 
     def testMultiAdapter(self):
         xmlconfig(StringIO(template % (
@@ -857,6 +899,27 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         v = zapi.queryMultiAdapter((ob, Request(IR)), IV)
         self.assertEqual(v.__class__, V1)
+
+    def testViewHavingARequiredClass(self):
+        xmlconfig(StringIO(template % (
+            '''
+            <view
+              for="zope.app.component.tests.components.Content"
+              type="zope.app.component.tests.views.IR"
+              factory="zope.app.component.tests.adapter.A1"
+              />
+            '''
+            )))
+
+        content = Content()
+        a1 = zapi.getMultiAdapter((content, Request(IR)))
+        self.assert_(isinstance(a1, A1))
+
+        class MyContent:
+            implements(IContent)
+
+        self.assertRaises(ComponentLookupError, zapi.getMultiAdapter,
+                          (MyContent(), Request(IR)))
 
     def testInterfaceProtectedView(self):
         xmlconfig(StringIO(template %
