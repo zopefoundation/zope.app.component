@@ -11,7 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
+"""Factory tests.
 
 $Id$
 """
@@ -25,14 +25,14 @@ class IX(Interface):
 class IFoo(Interface):
     """an even more dummy interface just for testing """
 
-class X:
+class X(object):
     implements(IX)
     def __init__(self, *args, **kwargs):
         self.args=args
         self.kwargs=kwargs
 
 
-class ClassFactoryWrapper:
+class ClassFactoryWrapper(object):
     implements(IFactory)
     def __init__(self, klass):
         self.__klass=klass

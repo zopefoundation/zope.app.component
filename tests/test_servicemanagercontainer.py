@@ -22,7 +22,7 @@ from zope.component.exceptions import ComponentLookupError
 from zope.interface.verify import verifyObject
 from zope.interface import implements
 
-class ServiceManager:
+class ServiceManager(object):
 
     implements(IServiceService)
 
@@ -41,7 +41,7 @@ class ServiceManager:
     #
     ############################################################
 
-class BaseTestServiceManagerContainer:
+class BaseTestServiceManagerContainer(object):
 
     """This test is for objects that don't have service managers by
     default and that always give back the service manager they were

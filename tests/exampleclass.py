@@ -11,9 +11,13 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Example test classes
+
+$Id$
+"""
 from zope.interface import Interface
 
-class ExampleClass:
+class ExampleClass(object):
     pass
 
 class IExample(Interface):

@@ -11,11 +11,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
+"""Views test.
 
-Revision information: $Id$
+$Id$
 """
-
 from zope.interface import Interface, implements
 
 class IR(Interface):
@@ -27,7 +26,7 @@ class IV(Interface):
 
 class IC(Interface): pass
 
-class V1:
+class V1(object):
     implements(IV)
 
     def __init__(self, context, request):
@@ -44,7 +43,7 @@ class VZMI(V1):
     def index(self):
         return 'ZMI here'
 
-class R1:
+class R1(object):
 
     def index(self):
         return 'R1 here'

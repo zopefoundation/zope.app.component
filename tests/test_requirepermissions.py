@@ -52,7 +52,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         super(Test, self).setUp()
         defineDirectives()
 
-        class B:
+        class B(object):
             def m1(self):
                 return "m1"
             def m2(self):

@@ -42,7 +42,7 @@ def handler(serviceName, methodName, *args, **kwargs):
     method=getattr(zapi.getGlobalService(serviceName), methodName)
     method(*args, **kwargs)
 
-class ContentDirective:
+class ContentDirective(object):
 
     def __init__(self, _context, class_):
         self.__id = dottedName(class_)

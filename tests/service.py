@@ -11,12 +11,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
+"""Service stub for testing
 
 $Id$
 """
-__metaclass__ = type # All classes are new style when run with Python 2.2+
-
 from zope.interface import Interface, implements
 
 class IFooService(Interface):
@@ -24,7 +22,7 @@ class IFooService(Interface):
     def foo(): pass
     def foobar(): pass
 
-class FooService:
+class FooService(object):
 
     implements(IFooService)
 

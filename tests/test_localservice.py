@@ -11,10 +11,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
+"""Test local service code
+
 $Id$
 """
-
 import unittest
 from zope.component import getGlobalServices
 from zope.app.component.hooks import getServices_hook
@@ -30,7 +30,7 @@ from zope.app.tests.setup import placelessSetUp, placelessTearDown
 from zope.app.tests import ztapi
 from zope.app.component.hooks import setSite, getSite
 
-class ServiceManager:
+class ServiceManager(object):
     implements(ISiteManager)
 
     def __init__(self):
@@ -41,7 +41,7 @@ class ServiceManager:
             return self.dummy_service
         raise ComponentLookupError(name)
 
-class Folder:
+class Folder(object):
     implements(IPossibleSite)
 
     sm = None
@@ -54,7 +54,7 @@ class Folder:
         sm.__parent__ = self
         directlyProvides(self, ISite, directlyProvidedBy(self))
 
-class Package:
+class Package(object):
     pass
 
 class Root(Folder):
@@ -62,7 +62,7 @@ class Root(Folder):
     def getSiteManager(self):
         return getGlobalServices()
 
-class ServiceServiceStub:
+class ServiceServiceStub(object):
     implements(IServiceService)
 
 

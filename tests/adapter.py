@@ -31,7 +31,7 @@ class IS(zope.interface.Interface):
     pass
 
 
-class Adapter:
+class Adapter(object):
     def __init__(self, *args):
         self.context = args
 

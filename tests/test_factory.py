@@ -32,7 +32,7 @@ import zope.app.component
 from zope.app.component.tests.exampleclass import ExampleClass
 
 
-class ParticipationStub:
+class ParticipationStub(object):
 
     def __init__(self, principal):
         self.principal = principal
