@@ -11,15 +11,17 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-""" Test handler for 'factory' subdirective of 'content' directive """
+""" Test handler for 'factory' subdirective of 'content' directive
 
+$Id: test_factory.py,v 1.11 2004/03/09 12:39:25 srichter Exp $
+"""
 import unittest
 from cStringIO import StringIO
 
 from zope.configuration.xmlconfig import xmlconfig
 from zope.configuration.xmlconfig import XMLConfig
+from zope.component import createObject
 from zope.proxy import removeAllProxies
-from zope.app.services.servicenames import Factories
 from zope.app.tests.placelesssetup import PlacelessSetup
 from zope.security.management import newSecurityManager, system_user
 
@@ -50,13 +52,12 @@ class Test(PlacelessSetup, unittest.TestCase):
 <content class="zope.app.component.tests.exampleclass.ExampleClass">
     <factory
       id="Example"
-      permission="zope.Foo"
       title="Example content"
       description="Example description"
        />
 </content>''')
         xmlconfig(f)
-        obj = zapi.getService(None, Factories).createObject('Example')
+        obj = createObject(None, 'Example')
         obj = removeAllProxies(obj)
         self.failUnless(isinstance(obj, ExampleClass))
 

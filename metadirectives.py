@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: metadirectives.py,v 1.12 2004/03/02 14:25:49 srichter Exp $
+$Id: metadirectives.py,v 1.13 2004/03/09 12:39:25 srichter Exp $
 """
 
 from zope.interface import Interface
@@ -222,10 +222,6 @@ class IFactoryDirective(Interface):
         required=False
         )
 
-    permission = Id(
-        title=u"Permission",
-        required=False
-        )
 
 class IViewDirective(IBasicViewInformation, IBasicResourceInformation):
     """
@@ -429,14 +425,6 @@ class IFactorySubdirective(Interface):
         the identifier for this factory in the ZMI factory
         identification scheme.  If not given, defaults to the literal
         string given as the content directive's 'class' attribute.""",
-        required=False
-        )
-
-    permission = Id(
-        title=u"Permission",
-        description=u"""
-        permission id required to use this factory.  Although
-        optional, this attribute should normally be specified.""",
         required=False
         )
 

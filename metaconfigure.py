@@ -13,7 +13,7 @@
 ##############################################################################
 """Generic Components ZCML Handlers
 
-$Id: metaconfigure.py,v 1.28 2004/03/08 12:05:54 srichter Exp $
+$Id: metaconfigure.py,v 1.29 2004/03/09 12:39:25 srichter Exp $
 """
 from zope.interface import Interface
 from zope.component.service import UndefinedService
@@ -21,12 +21,12 @@ from zope.configuration.exceptions import ConfigurationError
 from zope.security.checker import InterfaceChecker, CheckerPublic, \
      Checker, NamesChecker
 from zope.security.proxy import Proxy, ProxyFactory
-from zope.component.factory import FactoryInfo
+from zope.component.interfaces import IFactory
 
 from zope.app import zapi
 from zope.app.component.interface import queryInterface
 from zope.app.security.permission import checkPermission 
-from zope.app.services.servicenames import Adapters, Factories, Presentation
+from zope.app.services.servicenames import Adapters, Presentation
 
 
 PublicPermission = 'zope.Public'
@@ -133,31 +133,15 @@ def utility(_context, provides, component=None, factory=None,
         args = (provides.__module__ + '.' + provides.getName(), provides)
                )
 
-def factory(_context, component, id=None, title=None, description=None, 
-            permission=None):
-    _context.action(
-        discriminator = ('factory', id),
-        callable = provideFactory,
-        args = (id, component, title, description, permission),
-        )
+def factory(_context, component, id, title=None, description=None):
+    if title is not None:
+        component.title = title
+        
+    if description is not None:
+        component.description = description
 
-def provideFactory(name, factory, title, description, permission):
-    # make sure the permission is defined
-    if permission is not None:
-        checkPermission(None, permission)
+    utility(_context, IFactory, component, permission=PublicPermission, name=id)
 
-    if permission == PublicPermission:
-        permission = CheckerPublic
-
-    if permission:
-        # XXX should getInterfaces be public, as below?
-        factory = ProxyFactory(
-            factory,
-            NamesChecker(('getInterfaces',),
-                         __call__=permission)
-            )
-    info = FactoryInfo(title, description)
-    zapi.getService(None, Factories).provideFactory(name, factory, info)
 
 def _checker(_context, permission, allowed_interface, allowed_attributes):
     if (not allowed_attributes) and (not allowed_interface):

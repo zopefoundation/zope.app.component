@@ -13,22 +13,19 @@
 ##############################################################################
 """ Register class directive.
 
-$Id: contentdirective.py,v 1.16 2004/03/08 12:05:54 srichter Exp $
+$Id: contentdirective.py,v 1.17 2004/03/09 12:39:25 srichter Exp $
 """
 from types import ModuleType
 from zope.interface import classImplements
-from zope.component.factory import FactoryInfo
-from zope.app.services.servicenames import Factories
+from zope.schema.interfaces import IField
 from zope.configuration.exceptions import ConfigurationError
-from zope.app.component.classfactory import ClassFactory
+
+from zope.app import zapi
+from zope.component.factory import Factory
 from zope.app.security.protectclass \
     import protectLikeUnto, protectName, protectSetAttribute
 from zope.app.component.interface import provideInterface
-from zope.app import zapi
-from zope.security.checker import CheckerPublic
-from zope.app.security.permission import checkPermission 
-
-from zope.schema.interfaces import IField
+from metaconfigure import factory
 
 PublicPermission = 'zope.Public'
 
@@ -44,11 +41,6 @@ class ProtectionDeclarationException(Exception):
 def handler(serviceName, methodName, *args, **kwargs):
     method=getattr(zapi.getService(None, serviceName), methodName)
     method(*args, **kwargs)
-
-def assertPermission(permission=None, *args, **kw):
-    """Check if permission is defined"""
-    if permission is not None:
-        checkPermission(None, permission)
 
 class ContentDirective:
 
@@ -171,37 +163,13 @@ class ContentDirective:
         "Handle empty/simple declaration."
         return ()
 
-    def factory(self, _context,
-                permission=None, title="", id=None, description=''):
+    def factory(self, _context, id=None, title="", description=''):
         """Register a zmi factory for this class"""
 
         id = id or self.__id
+        factoryObj = Factory(self.__class, title, description)
 
         # note factories are all in one pile, services and content,
         # so addable names must also act as if they were all in the
         # same namespace, despite the service/content division
-        _context.action(
-            discriminator = ('FactoryFromClass', id),
-            callable = provideClass,
-            args = (id, self.__class,
-                    permission, title, description)
-            )
-
-def provideClass(id, _class, permission=None,
-                 title='', description=''):
-    """Provide simple class setup
-
-    - create a component
-
-    - set component permission
-    """
-
-    assertPermission(permission)
-
-    if permission == PublicPermission:
-        permission = CheckerPublic
-
-    factory = ClassFactory(_class, title, description, permission)
-    info = FactoryInfo(title, description)
-
-    zapi.getService(None, Factories).provideFactory(id, factory, info)
+        factory(_context, factoryObj, id, title, description)

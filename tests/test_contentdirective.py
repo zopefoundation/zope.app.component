@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: test_contentdirective.py,v 1.15 2004/03/08 12:05:55 srichter Exp $
+$Id: test_contentdirective.py,v 1.16 2004/03/09 12:39:25 srichter Exp $
 """
 import unittest
 from StringIO import StringIO
@@ -22,11 +22,11 @@ import zope.app.security
 import zope.app.component
 
 from zope.app import zapi
+from zope.component.interfaces import IFactory
 from zope.component.exceptions import ComponentLookupError
 from zope.configuration.xmlconfig import xmlconfig, XMLConfig
 from zope.app.tests.placelesssetup import PlacelessSetup
 from zope.security.management import newSecurityManager, system_user
-from zope.app.services.servicenames import Factories
 from zope.app.component.interface import queryInterface
 
 # explicitly import ExampleClass and IExample using full paths
@@ -144,14 +144,13 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
 <content class="zope.app.component.tests.exampleclass.ExampleClass">
     <factory
       id="Example"
-      permission="zope.Foo"
       title="Example content"
       description="Example description"
     />
 </content>
                        """)
         xmlconfig(f)
-        factory = zapi.getService(None, Factories).getFactory('Example')
+        factory = zapi.getUtility(None, IFactory, 'Example')
         self.assertEquals(factory.title, "Example content")
         self.assertEquals(factory.description, "Example description")
 
@@ -161,52 +160,34 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
 
 <content class="zope.app.component.tests.exampleclass.ExampleClass">
     <factory
-      permission="zope.Foo"
       title="Example content"
       description="Example description"
     />
 </content>
                        """)
         xmlconfig(f)
-        fservice = zapi.getService(None, Factories)
-        self.assertRaises(ComponentLookupError, fservice.getFactory, 'Example')
-        factory = fservice.getFactory('zope.app.component.tests.exampleclass.ExampleClass')
+        self.assertRaises(ComponentLookupError, zapi.getUtility,
+                          None, IFactory, 'Example')
+        factory = zapi.getUtility(
+            None, IFactory,
+            'zope.app.component.tests.exampleclass.ExampleClass')
         self.assertEquals(factory.title, "Example content")
         self.assertEquals(factory.description, "Example description")
-
-    def testFactoryUndefinedPermission(self):
-
-        f = configfile("""
-<permission id="zope.Foo" title="Zope Foo Permission" />
-
-<content class="zope.app.component.tests.exampleclass.ExampleClass">
-    <factory
-      id="Example"
-      permission="zope.UndefinedPermission"
-      title="Example content"
-      description="Example description"
-    />
-</content>
-            """)
-        self.assertRaises(ValueError, xmlconfig, f, testing=1)
 
 
     def testFactoryPublicPermission(self):
 
         f = configfile("""
-<permission id="zope.Foo" title="Zope Foo Permission" />
-
 <content class="zope.app.component.tests.exampleclass.ExampleClass">
     <factory
       id="Example"
-      permission="zope.Public"
       title="Example content"
       description="Example description"
     />
 </content>
             """)
         xmlconfig(f)
-        factory = zapi.getService(None, Factories).getFactory('Example')
+        factory = zapi.getUtility(None, IFactory, 'Example')
         self.assert_(hasattr(factory, '__Security_checker__'))
 
 

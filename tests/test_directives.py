@@ -13,7 +13,7 @@
 ##############################################################################
 """Component Directives Tests
 
-$Id: test_directives.py,v 1.27 2004/03/08 12:05:55 srichter Exp $
+$Id: test_directives.py,v 1.28 2004/03/09 12:39:25 srichter Exp $
 """
 import re
 import unittest
@@ -546,27 +546,27 @@ class Test(PlacelessSetup, unittest.TestCase):
             zapi.queryResource(ob, 'test', Request(IV), None), None)
 
         xmlconfig(StringIO(template %
-            """
+            '''
             <resource
                 name="test"
                 factory="zope.app.component.tests.views.R1"
                 type="zope.app.component.tests.views.IR"
                 />
-            """
+            '''
             ))
 
         v = zapi.queryResource(ob, 'test', Request(IR), None, providing=IV)
         self.assertEqual(v, None)
 
         xmlconfig(StringIO(template %
-            """
+            '''
             <resource
                 name="test"
                 factory="zope.app.component.tests.views.R1"
                 type="zope.app.component.tests.views.IR"
                 provides="zope.app.component.tests.views.IV"
                 />
-            """
+            '''
             ))
 
         v = zapi.queryResource(ob, 'test', Request(IR), None, providing=IV)
@@ -579,25 +579,25 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertEqual(zapi.queryResource(ob, '', Request(IV), None), None)
 
         xmlconfig(StringIO(template %
-            """
+            '''
             <resource
                 factory="zope.app.component.tests.views.R1"
                 type="zope.app.component.tests.views.IR"
                 />
-            """
+            '''
             ))
 
         v = zapi.queryResource(ob, '', Request(IR), None, providing=IV)
         self.assertEqual(v, None)
 
         xmlconfig(StringIO(template %
-            """
+            '''
             <resource
                 factory="zope.app.component.tests.views.R1"
                 type="zope.app.component.tests.views.IR"
                 provides="zope.app.component.tests.views.IV"
                 />
-            """
+            '''
             ))
 
         v = zapi.queryResource(ob, '', Request(IR), None, providing=IV)
@@ -607,12 +607,12 @@ class Test(PlacelessSetup, unittest.TestCase):
     def testResourceUndefinedPermission(self):
 
         config = StringIO(template % (
-            """
+            '''
             <resource name="test"
                   factory="zope.app.component.tests.views.R1"
                   type="zope.app.component.tests.views.IV"
                   permission="zope.UndefinedPermission"/>
-            """
+            '''
             ))
         self.assertRaises(ValueError, xmlconfig, config, testing=1)
 
@@ -624,7 +624,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             zapi.queryResource(ob, 'test', Request(IV), None), None)
 
         xmlconfig(StringIO(template % (
-            """
+            '''
             <layer name="zmi" />
             <skin name="zmi" layers="zmi default" />
             <resource name="test"
@@ -634,7 +634,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             <resource name="test"
                   factory="zope.app.component.tests.views.R1"
                   type="zope.app.component.tests.views.IV"/>
-            """
+            '''
             )))
 
         self.assertEqual(
@@ -649,15 +649,15 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertRaises(ComponentLookupError, zapi.createObject, None, 'foo')
 
         xmlconfig(StringIO(template % (
-            """
+            '''
             <factory
                id="foo"
-               component="zope.component.tests.factory.f"
+               component="zope.app.component.tests.factory.f"
                />
-            """
+            '''
             )))
 
-        from zope.component.tests.factory import X
+        from factory import X
         self.assertEqual(zapi.createObject(None, 'foo').__class__, X)
 
 def test_suite():
