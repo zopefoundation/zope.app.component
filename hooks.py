@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: hooks.py,v 1.14 2003/12/17 10:07:01 jim Exp $
+$Id: hooks.py,v 1.15 2004/02/09 01:11:59 anthony Exp $
 """
 
 from zope.component import getService
@@ -37,7 +37,7 @@ def getServiceManager_hook(context, local=False, recurse=False):
 
     clean_context = removeAllProxies(context)
 
-    # if the context is actually a service or service manager...
+    # if the context is actually a service or site manager...
     if IServiceService.isImplementedBy(clean_context):
         return trustedRemoveSecurityProxy(context)
 
@@ -51,13 +51,13 @@ def getServiceManager_hook(context, local=False, recurse=False):
                 # have a root object:
                 if not IContainmentRoot.isImplementedBy(context):
                     raise TypeError("Not enough context to get next "
-                                    "service manager")
+                                    "site manager")
 
             # Fall back to global:
             sm = serviceManager
         else:
             # We have a container, so context is a wrapper.  We still
-            # don't have a service manager, so try again, recursively:
+            # don't have a site manager, so try again, recursively:
             sm = getServiceManager_hook(container, local, True)
 
     return sm
