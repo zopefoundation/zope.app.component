@@ -21,7 +21,6 @@ from cStringIO import StringIO
 from zope.configuration.xmlconfig import xmlconfig
 from zope.configuration.xmlconfig import XMLConfig
 from zope.component import createObject
-from zope.security.proxy import removeSecurityProxy
 from zope.app.tests.placelesssetup import PlacelessSetup
 
 from zope.app import zapi
@@ -64,9 +63,7 @@ class Test(PlacelessSetup, unittest.TestCase):
 </content>''')
         xmlconfig(f)
         obj = createObject(None, 'test.Example')
-        # isinstance() doesn't work with proxies, so remove if present
-        obj = removeSecurityProxy(obj)
-        self.failUnless(isinstance(obj, ExampleClass))
+        self.failUnless(zapi.isinstance(obj, ExampleClass))
 
 def test_suite():
     loader=unittest.TestLoader()
