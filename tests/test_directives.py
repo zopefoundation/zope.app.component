@@ -1069,7 +1069,7 @@ class Test(PlacelessSetup, unittest.TestCase):
 
     def testFactory(self):
 
-        self.assertRaises(ComponentLookupError, zapi.createObject, None, 'foo')
+        self.assertRaises(ComponentLookupError, zapi.createObject, 'foo')
 
         xmlconfig(StringIO(template % (
             '''
@@ -1081,7 +1081,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             )))
 
         from factory import X
-        self.assertEqual(zapi.createObject(None, 'foo.bar').__class__, X)
+        self.assertEqual(zapi.createObject('foo.bar').__class__, X)
 
 
 class ParticipationStub(object):
@@ -1116,7 +1116,7 @@ class TestFactoryDirective(PlacelessSetup, unittest.TestCase):
        />
 </content>''')
         xmlconfig(f)
-        obj = createObject(None, 'test.Example')
+        obj = createObject('test.Example')
         self.failUnless(zapi.isinstance(obj, exampleclass.ExampleClass))
 
 
