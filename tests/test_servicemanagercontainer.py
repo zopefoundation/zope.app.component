@@ -14,7 +14,7 @@
 """
 
 Revision information:
-$Id: test_servicemanagercontainer.py,v 1.2 2002/12/25 14:12:46 jim Exp $
+$Id: test_servicemanagercontainer.py,v 1.3 2002/12/27 15:59:43 rdmurray Exp $
 """
 
 from unittest import TestCase, TestSuite, main, makeSuite
@@ -51,21 +51,21 @@ class BaseTestServiceManagerContainer:
     given.
 
 
-    Subclasses need to define a method, '_Test__new', that takes no
+    Subclasses need to define a method, 'makeTestObject', that takes no
     arguments and that returns a new service manager
     container that has no service manager."""
 
     def testIServiceManagerContainerVerify(self):
-        verifyObject(IServiceManagerContainer, self._Test__new())
+        verifyObject(IServiceManagerContainer, self.makeTestObject())
 
     def testHas(self):
-        smc=self._Test__new()
+        smc=self.makeTestObject()
         self.failIf(smc.hasServiceManager())
         smc.setServiceManager(ServiceManager())
         self.failUnless(smc.hasServiceManager())
 
     def testGet(self):
-        smc=self._Test__new()
+        smc=self.makeTestObject()
         # since the managers are now wrapped, need to look at base object
         self.failUnless(getbaseobject(smc.queryServiceManager()) is None)
         self.assertRaises(ComponentLookupError, smc.getServiceManager)
@@ -75,13 +75,13 @@ class BaseTestServiceManagerContainer:
         self.failUnless(getbaseobject(smc.queryServiceManager(self)) is sm)
 
     def testSet(self):
-        smc=self._Test__new()
+        smc=self.makeTestObject()
         self.assertRaises(Exception, smc.setServiceManager, self)
 
 
 
 class Test(BaseTestServiceManagerContainer, TestCase):
-    def _Test__new(self):
+    def makeTestObject(self):
         from zope.app.services.service \
              import ServiceManagerContainer
         return ServiceManagerContainer()
