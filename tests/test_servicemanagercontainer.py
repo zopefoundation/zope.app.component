@@ -14,7 +14,7 @@
 """
 
 Revision information:
-$Id: test_servicemanagercontainer.py,v 1.8 2003/09/02 20:46:45 jim Exp $
+$Id: test_servicemanagercontainer.py,v 1.9 2004/02/11 01:14:01 jim Exp $
 """
 
 from unittest import TestCase, main, makeSuite
@@ -22,7 +22,6 @@ from zope.component.interfaces import IServiceService
 from zope.app.interfaces.services.service import IPossibleSite, ISite
 from zope.component.exceptions import ComponentLookupError
 from zope.interface.verify import verifyObject
-from zope.context import getbaseobject
 from zope.interface import implements
 
 class ServiceManager:
@@ -64,7 +63,7 @@ class BaseTestServiceManagerContainer:
         sm = ServiceManager()
         smc.setSiteManager(sm)
         self.failUnless(ISite.isImplementedBy(smc))
-        self.failUnless(getbaseobject(smc.getSiteManager()) is sm)
+        self.failUnless(smc.getSiteManager() is sm)
         verifyObject(ISite, smc)
 
     def test_set_w_bogus_value(self):
