@@ -12,16 +12,17 @@
 #
 ##############################################################################
 """
-$Id: globalinterfaceservice.py,v 1.18 2003/11/05 03:08:21 jeremy Exp $
+$Id: globalinterfaceservice.py,v 1.19 2003/11/21 17:11:25 jim Exp $
 """
 __metaclass__ = type
 
 from zope.component.exceptions import ComponentLookupError
 from zope.component import getService
 from zope.app.interfaces.component import IGlobalInterfaceService
-from zope.interface import implements, providedBy
+from zope.interface import implements, providedBy, implementedBy
 from zope.interface.interfaces import IInterface
 from zope.component.utility import utilityService
+from types import ClassType
 
 class InterfaceService:
     implements(IGlobalInterfaceService)
@@ -71,11 +72,13 @@ class InterfaceService:
             yield id, interface
 
     def _getAllDocs(self,interface):
-        docs = [str(interface.getName()).lower(),
+        docs = [str(interface.__name__).lower(),
                 str(interface.__doc__).lower()]
 
-        for name in interface:
-            docs.append(str(interface.getDescriptionFor(name).__doc__).lower())
+        if IInterface.isImplementedBy(interface):
+            for name in interface:
+                docs.append(
+                    str(interface.getDescriptionFor(name).__doc__).lower())
 
         return '\n'.join(docs)
 
@@ -93,7 +96,12 @@ class InterfaceService:
 
     def provideInterface(self, id, interface):
         if not id:
-            id = "%s.%s" % (interface.__module__, interface.getName())
+            id = "%s.%s" % (interface.__module__, interface.__name__)
+
+        if not IInterface.isImplementedBy(interface):
+            if not isinstance(interface, (type, ClassType)):
+                raise TypeError(id, "is not an interface or class")
+            interface = implementedBy(interface)
 
         self.__data[id]=(interface, self._getAllDocs(interface))
 
