@@ -11,10 +11,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
+"""Component architecture related 'zope' ZCML namespace directive interfaces
+
 $Id$
 """
-
 import zope.configuration.fields
 import zope.interface
 import zope.schema
@@ -39,9 +39,7 @@ class IBasicComponentInformation(zope.interface.Interface):
         )
 
 class IBasicViewInformation(zope.interface.Interface):
-    """
-    This is the basic information for all views.
-    """
+    """This is the basic information for all views."""
     
     for_ = zope.configuration.fields.Tokens(
         title=u"Specifications of the objects to be viewed",
@@ -235,9 +233,7 @@ class ISubscriberDirective(zope.interface.Interface):
         )
 
 class IUtilityDirective(IBasicComponentInformation):
-    """
-    Register a utility
-    """
+    """Register a utility"""
 
     provides = zope.configuration.fields.GlobalObject(
         title=u"Interface the component provides",
@@ -250,9 +246,7 @@ class IUtilityDirective(IBasicComponentInformation):
         )
 
 class IFactoryDirective(zope.interface.Interface):
-    """
-    Define a factory
-    """
+    """Define a factory"""
 
     component = zope.configuration.fields.GlobalObject(
         title=u"Component to be used",
@@ -280,9 +274,7 @@ class IFactoryDirective(zope.interface.Interface):
 
 
 class IViewDirective(IBasicViewInformation, IBasicResourceInformation):
-    """
-    Register a view for a component
-    """
+    """Register a view for a component"""
 
     factory = zope.configuration.fields.Tokens(
         title=u"Factory",
@@ -312,9 +304,7 @@ class IDefaultViewDirective(IBasicResourceInformation):
 
 class IResourceDirective(IBasicComponentInformation,
                          IBasicResourceInformation):
-    """
-    Register a resource
-    """
+    """Register a resource"""
     
     layer = zope.schema.TextLine(
         title=u"The layer the resource is in.",
@@ -347,9 +337,7 @@ class IServiceTypeDirective(zope.interface.Interface):
         )
 
 class IServiceDirective(IBasicComponentInformation):
-    """
-    Register a service
-    """
+    """Register a service"""
 
     serviceType = zope.schema.TextLine(
         title=u"ID of service type",
@@ -357,9 +345,7 @@ class IServiceDirective(IBasicComponentInformation):
         )
 
 class IClassDirective(zope.interface.Interface):
-    """
-    Make statements about a class
-    """
+    """Make statements about a class"""
 
     class_ = zope.configuration.fields.GlobalObject(
         title=u"Class",
@@ -367,8 +353,7 @@ class IClassDirective(zope.interface.Interface):
         )
 
 class IImplementsSubdirective(zope.interface.Interface):
-    """
-    Declare that the class given by the content directive's class
+    """Declare that the class given by the content directive's class
     attribute implements a given interface
     """
 
@@ -379,8 +364,7 @@ class IImplementsSubdirective(zope.interface.Interface):
         )
 
 class IRequireSubdirective(zope.interface.Interface):
-    """
-    Indicate that the a specified list of names or the names in a
+    """Indicate that the a specified list of names or the names in a
     given Interface require a given permission for access.
     """
 
@@ -453,9 +437,7 @@ class IAllowSubdirective(zope.interface.Interface):
         )
 
 class IFactorySubdirective(zope.interface.Interface):
-    """
-    Specify the factory used to create this content object
-    """
+    """Specify the factory used to create this content object"""
 
     id = zope.schema.TextLine(
         title=u"ID",
