@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: interface.py,v 1.2 2004/03/05 22:08:58 jim Exp $
+$Id: interface.py,v 1.3 2004/04/11 18:16:24 jim Exp $
 """
 __metaclass__ = type
 
@@ -20,7 +20,6 @@ from zope.component.exceptions import ComponentLookupError
 from zope.component import getService
 from zope.interface import directlyProvides
 from zope.interface.interfaces import IInterface
-from zope.component.utility import utilityService
 from types import ClassType
 from zope.app import zapi
 
@@ -40,14 +39,14 @@ def provideInterface(id, interface, iface_type=None):
     >>> IContentType.providedBy(I)
     False
     >>> interfaces = utilities.getUtilitiesFor(IContentType)
-    >>> interfaces
+    >>> list(interfaces)
     []
     >>> provideInterface('', I, IContentType)
     >>> IContentType.providedBy(I)
     True
-    >>> interfaces = utilities.getUtilitiesFor(IContentType)
+    >>> interfaces = list(utilities.getUtilitiesFor(IContentType))
     >>> [name for (name, iface) in interfaces]
-    ['zope.app.component.interface.I']
+    [u'zope.app.component.interface.I']
     >>> [iface.__name__ for (name, iface) in interfaces]
     ['I']
     >>> class I1(Interface):
@@ -57,9 +56,9 @@ def provideInterface(id, interface, iface_type=None):
     True
     >>> IContentType.providedBy(I1)
     False
-    >>> interfaces1 = utilities.getUtilitiesFor(IContentType)
+    >>> interfaces = list(utilities.getUtilitiesFor(IContentType))
     >>> [name for (name, iface) in interfaces]
-    ['zope.app.component.interface.I']
+    [u'zope.app.component.interface.I']
     >>> [iface.__name__ for (name, iface) in interfaces]
     ['I']
     >>> tearDown()
@@ -204,7 +203,7 @@ def searchInterfaceIds(context, search_string=None, base=None):
     >>> iface = searchInterfaceIds(None,
     ...                        'zope.app.component.interface.I5')
     >>> iface
-    ['zope.app.component.interface.I5']
+    [u'zope.app.component.interface.I5']
     >>> tearDown()
 
     """
