@@ -101,7 +101,7 @@ def getInterface(context, id):
     >>> getInterface(None, 'zope.app.component.interface.I4')
     Traceback (most recent call last):
     ...
-    ComponentLookupError: zope.app.component.interface.I4
+    ComponentLookupError: 'zope.app.component.interface.I4'
     >>> provideInterface('', I4, IContentType)
     >>> IContentType.providedBy(I4)
     True
