@@ -13,7 +13,7 @@
 ##############################################################################
 """Generic Components ZCML Handlers
 
-$Id: metaconfigure.py,v 1.31 2004/03/15 20:41:56 jim Exp $
+$Id: metaconfigure.py,v 1.32 2004/03/18 12:19:22 jim Exp $
 """
 from zope.interface import Interface
 from zope.component.service import UndefinedService
@@ -80,21 +80,6 @@ def proxify(ob, checker):
 
     return ob
 
-def reduce_factories(factories, for_):
-    if len(factories) == 1:
-        factory = factories[0]
-    elif len(factories) < 1:
-        raise ValueError("No factory specified")
-    elif len(factories) > 1 and len(for_) > 1:
-        raise ValueError("Can't use multiple factories and multiple for")
-    else:
-        def factory(ob):
-            for f in factories:
-                ob = f(ob)
-            return ob
-
-    return factory
-
 def adapter(_context, factory, provides, for_, permission=None, name=''):
     if permission is not None:
         if permission == PublicPermission:
@@ -104,11 +89,25 @@ def adapter(_context, factory, provides, for_, permission=None, name=''):
 
     for_ = tuple(for_)
 
+    # Generate a single factory from multiple factories:
+    factories = factory
+    if len(factories) == 1:
+        factory = factories[0]
+    elif len(factories) < 1:
+        raise ValueError("No factory specified")
+    elif len(factories) > 1 and len(for_) != 1:
+        raise ValueError("Can't use multiple factories and multiple for")
+    else:
+        def factory(ob):
+            for f in factories:
+                ob = f(ob)
+            return ob
+
     _context.action(
         discriminator = ('adapter', for_, provides, name),
         callable = checkingHandler,
         args = (permission, Adapters, 'register',
-                for_, provides, name, reduce_factories(factory, for_)),
+                for_, provides, name, factory),
         )
     _context.action(
         discriminator = None,
@@ -248,12 +247,25 @@ def view(_context, factory, type, name, for_, layer='default',
         raise ValueError("No for interfaces specified");
     for_ = tuple(for_)
 
+    # Generate a single factory from multiple factories:
+    factories = factory
+    if len(factories) == 1:
+        factory = factories[0]
+    elif len(factories) < 1:
+        raise ValueError("No factory specified")
+    elif len(factories) > 1 and len(for_) > 1:
+        raise ValueError("Can't use multiple factories and multiple for")
+    else:
+        def factory(ob, request):
+            for f in factories[:-1]:
+                ob = f(ob)
+            return factories[-1](ob, request)
+
     _context.action(
         discriminator = ('view', for_, name, type, layer, provides),
         callable = checkingHandler,
         args = (permission, Presentation, 'provideAdapter',
-                type, reduce_factories(factory, for_), name, for_,
-                provides, layer),
+                type, factory, name, for_, provides, layer),
         )
     _context.action(
         discriminator = None,
