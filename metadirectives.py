@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: metadirectives.py,v 1.16 2004/03/20 19:52:45 srichter Exp $
+$Id: metadirectives.py,v 1.17 2004/03/22 17:44:48 mmceahern Exp $
 """
 from zope.interface import Interface
 from zope.configuration.fields import GlobalObject, Tokens, \
@@ -176,6 +176,31 @@ class IAdapterDirective(Interface):
         title=u"Name",
         description=u"""Adapters can have names. This attribute allows you to
         specify the name for this adapter.""",
+        required=False
+        )
+
+class ISubscriberDirective(Interface):
+    """
+    Register a subscriber
+    """
+
+    factory = GlobalObject(
+        title=u"Subscriber factory",
+        description=u"A factory used to create the subscriber instance.",
+        required=True
+        )
+
+    for_ = Tokens(
+        title=u"Interfaces or classes that this subscriber depends on",
+        description=u"This should be a list of interfaces or classes",
+        required=True,
+        value_type=GlobalObject()
+        )
+
+    permission = Permission(
+        title=u"Permission",
+        description=u"""This subscriber is only available, if the principal has
+        this permission.""",
         required=False
         )
 
