@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: test_contentdirective.py,v 1.12 2004/02/25 23:02:23 faassen Exp $
+$Id: test_contentdirective.py,v 1.13 2004/03/05 15:53:50 eddala Exp $
 """
 
 import unittest
@@ -29,7 +29,7 @@ from zope.security.management import newSecurityManager, system_user
 from zope.app.security.exceptions import UndefinedPermissionError
 from zope.component import getService
 from zope.app.services.servicenames import Factories
-from zope.app.component.globalinterfaceservice import queryInterface
+from zope.app.component.interface import queryInterface
 
 # explicitly import ExampleClass and IExample using full paths
 # so that they are the same objects as resolve will get.
@@ -66,7 +66,7 @@ class TestContentDirective(PlacelessSetup, unittest.TestCase):
 
 
     def testImplements(self):
-        self.assertEqual(queryInterface(
+        self.assertEqual(queryInterface( 
             "zope.app.component.tests.exampleclass.IExample"), None)
 
         f = configfile("""
@@ -77,7 +77,7 @@ class TestContentDirective(PlacelessSetup, unittest.TestCase):
         xmlconfig(f)
         self.failUnless(IExample.isImplementedByInstancesOf(ExampleClass))
 
-        self.assertEqual(queryInterface(
+        self.assertEqual(queryInterface( 
             "zope.app.component.tests.exampleclass.IExample"), IExample)
 
 

@@ -13,19 +13,21 @@
 ##############################################################################
 """ Register class directive.
 
-$Id: contentdirective.py,v 1.13 2004/02/25 23:02:22 faassen Exp $
+$Id: contentdirective.py,v 1.14 2004/03/05 15:51:44 eddala Exp $
 """
 from types import ModuleType
 from zope.interface import classImplements
 from zope.component import getService
 from zope.component.factory import FactoryInfo
-from zope.app.services.servicenames import Interfaces, Factories
+from zope.app.services.servicenames import Factories
 from zope.configuration.exceptions import ConfigurationError
 from zope.app.component.classfactory import ClassFactory
 from zope.app.security.protectclass \
     import protectLikeUnto, protectName, protectSetAttribute
 from zope.app.security.registries.permissionregistry import permissionRegistry
+from zope.app.component.interface import provideInterface
 from zope.security.checker import CheckerPublic
+
 from zope.schema.interfaces import IField
 
 PublicPermission = 'zope.Public'
@@ -70,11 +72,8 @@ class ContentDirective:
                 )
             _context.action(
                 discriminator = None,
-                callable = handler,
-                args = (Interfaces, 'provideInterface',
-                        interface.__module__+
-                        '.'+
-                        interface.getName(),
+                callable = provideInterface,
+                args = (interface.__module__ + '.' + interface.getName(),
                         interface)
                 )
 
@@ -123,9 +122,8 @@ class ContentDirective:
             self.__protectName(n, permission_id)
         self.__context.action(
             discriminator = None,
-            callable = handler,
-            args = (Interfaces, 'provideInterface',
-                    interface.__module__+ '.'+ interface.getName(),
+            callable = provideInterface,
+            args = (interface.__module__ + '.' + interface.getName(),
                     interface)
             )
 
@@ -164,9 +162,8 @@ class ContentDirective:
                     )
         _context.action(
             discriminator = None,
-            callable = handler,
-            args = (Interfaces, 'provideInterface',
-                    schema.__module__+ '.'+ schema.getName(),
+            callable = provideInterface,
+            args = (schema.__module__ + '.' + schema.getName(),
                     schema)
             )
 

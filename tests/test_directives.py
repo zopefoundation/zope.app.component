@@ -72,12 +72,14 @@ def testInterface():
     >>> interface(context, I, IContentType)
     >>> context
     ((None,
-      <function handler>,
-      ('Interfaces',
-       'provideInterface',
-       '',
-       <InterfaceClass zope.app.component.tests.test_directives.I>)),)
-    >>> IContentType.isImplementedBy(I)
+      <function provideInterface>,
+      ('',
+       <InterfaceClass zope.app.component.tests.test_directives.I>,
+       <InterfaceClass zope.app.content.interfaces.IContentType>)),)
+    >>> from zope.interface.interfaces import IInterface
+    >>> IContentType.extends(IInterface)
+    True
+    >>> IInterface.isImplementedBy(I)
     True
     """
 

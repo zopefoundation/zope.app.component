@@ -13,16 +13,16 @@
 ##############################################################################
 """Generic Components ZCML Handlers
 
-$Id: metaconfigure.py,v 1.26 2004/03/03 17:07:49 srichter Exp $
+$Id: metaconfigure.py,v 1.27 2004/03/05 15:53:17 eddala Exp $
 """
 
 from zope.configuration.exceptions import ConfigurationError
 from zope.security.proxy import Proxy, ProxyFactory
 from zope.component import getService, getServiceManager
 from zope.component.factory import FactoryInfo
-from zope.app.services.servicenames import Adapters, Interfaces
+from zope.app.services.servicenames import Adapters
 from zope.app.services.servicenames import Factories, Presentation
-from zope.app.component.globalinterfaceservice import interfaceService
+from zope.app.component.interface import queryInterface
 from zope.security.checker import InterfaceChecker, CheckerPublic, \
      Checker, NamesChecker
 from zope.app.security.registries.permissionregistry import permissionRegistry
@@ -47,7 +47,7 @@ def handler(serviceName, methodName, *args, **kwargs):
 
 # We can't use the handler for serviceType, because serviceType needs
 # the interface service.
-from zope.app.component.globalinterfaceservice import provideInterface
+from zope.app.component.interface import provideInterface
 
 def checkingHandler(permission=None, *args, **kw):
     """Check if permission is defined"""
@@ -60,12 +60,10 @@ def managerHandler(methodName, *args, **kwargs):
     method(*args, **kwargs)
 
 def interface(_context, interface, type=None):
-    if type is not None:
-        zope.interface.directlyProvides(interface, type)
     _context.action(
         discriminator = None,
-        callable = handler,
-        args = (Interfaces, 'provideInterface', '', interface)
+        callable = provideInterface,
+        args = ('', interface, type)
         )
 
 
@@ -99,14 +97,14 @@ def adapter(_context, factory, provides, for_, permission=None, name=''):
         )
     _context.action(
         discriminator = None,
-        callable = handler,
-        args = (Interfaces, 'provideInterface', '', provides)
-        )
+        callable = provideInterface,
+        args = ('', provides)
+               )
     if for_ is not None:
         _context.action(
             discriminator = None,
-            callable = handler,
-            args = (Interfaces, 'provideInterface', '', for_)
+            callable = provideInterface,
+            args = ('', for_)
             )
 
 def utility(_context, provides, component=None, factory=None,
@@ -131,10 +129,9 @@ def utility(_context, provides, component=None, factory=None,
         )
     _context.action(
         discriminator = None,
-        callable = handler,
-        args = (Interfaces, 'provideInterface',
-                provides.__module__+'.'+provides.getName(), provides)
-        )
+        callable = provideInterface,
+        args = (provides.__module__ + '.' + provides.getName(), provides)
+               )
 
 def factory(_context, component, id=None, title=None, description=None, 
             permission=None):
@@ -211,16 +208,14 @@ def resource(_context, factory, type, name, layer='default',
         )
     _context.action(
         discriminator = None,
-        callable = handler,
-        args = (Interfaces, 'provideInterface',
-                type.__module__+'.'+type.__name__, type)
-        )
+        callable = provideInterface,
+        args = (type.__module__ + '.' + type.__name__, type)
+               )
     _context.action(
         discriminator = None,
-        callable = handler,
-        args = (Interfaces, 'provideInterface',
-                provides.__module__+'.'+provides.__name__, type)
-        )
+        callable = provideInterface,
+        args = (provides.__module__ + '.' + provides.__name__, type)
+               )
 
 def view(_context, factory, type, name, for_, layer='default',
          permission=None, allowed_interface=None, allowed_attributes=None,
@@ -257,23 +252,20 @@ def view(_context, factory, type, name, for_, layer='default',
         )
     _context.action(
         discriminator = None,
-        callable = handler,
-        args = (Interfaces, 'provideInterface',
-                type.__module__+'.'+type.__name__, type)
-        )
+        callable = provideInterface,
+        args = (type.__module__+'.'+type.__name__, type)
+               )
     _context.action(
         discriminator = None,
-        callable = handler,
-        args = (Interfaces, 'provideInterface',
-                provides.__module__+'.'+provides.__name__, type)
-        )
+        callable = provideInterface,
+        args = (provides.__module__+'.'+provides.__name__, type)
+               )
 
     if for_ is not None:
         _context.action(
             discriminator = None,
-            callable = handler,
-            args = (Interfaces, 'provideInterface',
-                    for_.__module__+'.'+for_.getName(),
+            callable = provideInterface,
+            args = (for_.__module__+'.'+for_.getName(),
                     for_)
             )
 
@@ -292,17 +284,15 @@ def defaultView(_context, type, name, for_, **__kw):
         )
     _context.action(
         discriminator = None,
-        callable = handler,
-        args = (Interfaces, 'provideInterface',
-                type.__module__+'.'+type.getName(), type)
+        callable = provideInterface,
+        args = (type.__module__+'.'+type.getName(), type)
         )
 
     if for_ is not None:
         _context.action(
             discriminator = None,
-            callable = handler,
-            args = (Interfaces, 'provideInterface',
-                    for_.__module__+'.'+for_.getName(), for_)
+            callable = provideInterface,
+            args = (for_.__module__+'.'+for_.getName(), for_)
             )
 
 def serviceType(_context, id, interface):
@@ -311,12 +301,14 @@ def serviceType(_context, id, interface):
         callable = managerHandler,
         args = ('defineService', id, interface),
         )
-    _context.action(
-        discriminator = None,
-        callable = provideInterface,
-        args = (interface.__module__+'.'+interface.getName(),
-                interface)
-        )
+
+    if interface.__name__ not in ['IUtilityService']:
+        _context.action(
+            discriminator = None,
+             callable = provideInterface,
+             args = (interface.__module__+'.'+interface.getName(),
+                     interface)
+             )
 
 def provideService(serviceType, component, permission):
     # This is needed so we can add a security proxy.
