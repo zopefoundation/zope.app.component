@@ -44,9 +44,12 @@ class LayerField(GlobalObject):
     >>> layers = None
     >>> class Resolver(object):
     ...     def resolve(self, path):
-    ...         if path.startswith('zope.app.layers') and \
-    ...             hasattr(layers, 'layer1') or \
-    ...             path == 'zope.app.component.fields.layer1':
+    ...         if '..' in path:
+    ...             raise ValueError('Empty module name')
+    ...         if (path.startswith('zope.app.layers') and
+    ...             hasattr(layers, 'layer1') or
+    ...             path == 'zope.app.component.fields.layer1' or
+    ...             path == '.fields.layer1'):
     ...             return layer1
     ...         raise ConfigurationError, 'layer1'
 
@@ -77,11 +80,17 @@ class LayerField(GlobalObject):
 
     Test 3: Get the layer from the utility service
     ----------------------------------------------
-    
+
     >>> from zope.app.tests import ztapi
     >>> ztapi.provideUtility(ILayer, layer1, 'layer1')
 
     >>> field.fromUnicode('layer1') is layer1
+    True
+
+    Test 4: Import the layer by using a short name
+    ----------------------------------------------
+
+    >>> field.fromUnicode('.fields.layer1') is layer1
     True
     """
 
@@ -93,17 +102,17 @@ class LayerField(GlobalObject):
         except ComponentLookupError:
             # The component architecture is not up and running.
             pass
-        else: 
+        else:
             if value is not None:
                 return value
 
         try:
             value = self.context.resolve('zope.app.layers.'+name)
-        except ConfigurationError, v:
+        except (ConfigurationError, ValueError), v:
             try:
                 value = self.context.resolve(name)
             except ConfigurationError, v:
                 raise zope.schema.ValidationError(v)
-        
+
         self.validate(value)
         return value
