@@ -75,41 +75,15 @@ class RegistrationStack(Contained, Persistent):
         return True
 
     def __nonzero__(self):
-        # XXX: Needs to be done
-        return bool(self.data)
+        return True
 
     def info(self):
-        # XXX: Needs to be done
-        result = [{'active': False,
-                   'registration': registration,
-                  }
-                  for registration in data
-                 ]
-
-        if result:
-            result[0]['active'] = True
-
-        return [r for r in result if r['registration'] is not None]
-
-    def data(self):
-        # XXX: Note done
-        # Need to convert old path-based data to object-based data
-        # It won't affect new objects that get instance-based data attrs
-        # on construction.
-
-        data = []
-        sm = zapi.getServices(self)
-        for path in self._data:
-            if isinstance(path, basestring):
-                try:
-                    data.append(zapi.traverse(sm, path))
-                except KeyError:
-                    # ignore objects we can't get to
-                    raise # for testing
-            else:
-                data.append(path)
-
-        return tuple(data)
+        # This registration stack stub does not really know about the
+        # registration it manages. Thus the registration component is None
+        # here. It might be that someone has a problem with this code, but I
+        # am sceptical that someone used this method manually.
+        return [{'active': True,
+                 'registration': None}]
 
 
 NULL_COMPONENT = object()
