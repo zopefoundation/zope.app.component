@@ -13,7 +13,7 @@
 ##############################################################################
 """Generic Components ZCML Handlers
 
-$Id: metaconfigure.py,v 1.30 2004/03/13 23:54:58 srichter Exp $
+$Id: metaconfigure.py,v 1.31 2004/03/15 20:41:56 jim Exp $
 """
 from zope.interface import Interface
 from zope.component.service import UndefinedService
@@ -80,6 +80,20 @@ def proxify(ob, checker):
 
     return ob
 
+def reduce_factories(factories, for_):
+    if len(factories) == 1:
+        factory = factories[0]
+    elif len(factories) < 1:
+        raise ValueError("No factory specified")
+    elif len(factories) > 1 and len(for_) > 1:
+        raise ValueError("Can't use multiple factories and multiple for")
+    else:
+        def factory(ob):
+            for f in factories:
+                ob = f(ob)
+            return ob
+
+    return factory
 
 def adapter(_context, factory, provides, for_, permission=None, name=''):
     if permission is not None:
@@ -88,24 +102,27 @@ def adapter(_context, factory, provides, for_, permission=None, name=''):
         checker = InterfaceChecker(provides, permission)
         factory.append(lambda c: proxify(c, checker))
 
-        
+    for_ = tuple(for_)
+
     _context.action(
         discriminator = ('adapter', for_, provides, name),
         callable = checkingHandler,
-        args = (permission, Adapters, 'provideAdapter',
-                for_, provides, factory, name),
+        args = (permission, Adapters, 'register',
+                for_, provides, name, reduce_factories(factory, for_)),
         )
     _context.action(
         discriminator = None,
         callable = provideInterface,
         args = ('', provides)
                )
-    if for_ is not None:
-        _context.action(
-            discriminator = None,
-            callable = provideInterface,
-            args = ('', for_)
-            )
+    if for_:
+        for iface in for_:
+            if iface is not None:
+                _context.action(
+                    discriminator = None,
+                    callable = provideInterface,
+                    args = ('', iface)
+                    )
 
 def utility(_context, provides, component=None, factory=None,
             permission=None, name=''):
@@ -140,7 +157,8 @@ def factory(_context, component, id, title=None, description=None):
     if description is not None:
         component.description = description
 
-    utility(_context, IFactory, component, permission=PublicPermission, name=id)
+    utility(_context, IFactory, component,
+            permission=PublicPermission, name=id)
 
 
 def _checker(_context, permission, allowed_interface, allowed_attributes):
@@ -205,9 +223,6 @@ def view(_context, factory, type, name, for_, layer='default',
          permission=None, allowed_interface=None, allowed_attributes=None,
          provides=Interface):
 
-    if for_ == '*':
-        for_ = None
-
     if ((allowed_attributes or allowed_interface)
         and (not permission)):
         raise ConfigurationError(
@@ -228,11 +243,17 @@ def view(_context, factory, type, name, for_, layer='default',
 
         factory[-1] = proxyView
 
+
+    if not for_:
+        raise ValueError("No for interfaces specified");
+    for_ = tuple(for_)
+
     _context.action(
         discriminator = ('view', for_, name, type, layer, provides),
         callable = checkingHandler,
-        args = (permission, Presentation, 'provideView', for_, name,
-                type, factory, layer, provides),
+        args = (permission, Presentation, 'provideAdapter',
+                type, reduce_factories(factory, for_), name, for_,
+                provides, layer),
         )
     _context.action(
         discriminator = None,
@@ -246,38 +267,41 @@ def view(_context, factory, type, name, for_, layer='default',
                )
 
     if for_ is not None:
-        _context.action(
-            discriminator = None,
-            callable = provideInterface,
-            args = (for_.__module__+'.'+for_.getName(),
-                    for_)
-            )
+        for iface in for_:
+            if iface is not None:
+                _context.action(
+                    discriminator = None,
+                    callable = provideInterface,
+                    args = ('', iface)
+                    )
 
 def defaultView(_context, type, name, for_, **__kw):
-
-    if for_ == '*':
-        for_ = None
 
     if __kw:
         view(_context, type=type, name=name, for_=for_, **__kw)
 
-    _context.action(
-        discriminator = ('defaultViewName', for_, type, name),
-        callable = handler,
-        args = (Presentation, 'setDefaultViewName', for_, type, name),
-        )
+    if len(for_) == 1:
+        _context.action(
+            discriminator = ('defaultViewName', for_[0], type, name),
+            callable = handler,
+            args = (Presentation, 'setDefaultViewName', for_[0], type, name),
+            )
+    else:
+        raise TypeError("Can't use multiple for in defaultView")
+    
     _context.action(
         discriminator = None,
         callable = provideInterface,
-        args = (type.__module__+'.'+type.getName(), type)
+        args = ('', type)
         )
 
-    if for_ is not None:
-        _context.action(
-            discriminator = None,
-            callable = provideInterface,
-            args = (for_.__module__+'.'+for_.getName(), for_)
-            )
+    for iface in for_:
+        if iface is not None:
+            _context.action(
+                discriminator = None,
+                callable = provideInterface,
+                args = ('', iface)
+                )
 
 def serviceType(_context, id, interface):
     _context.action(

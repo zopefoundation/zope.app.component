@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: metadirectives.py,v 1.13 2004/03/09 12:39:25 srichter Exp $
+$Id: metadirectives.py,v 1.14 2004/03/15 20:41:56 jim Exp $
 """
 
 from zope.interface import Interface
@@ -41,14 +41,13 @@ class IBasicViewInformation(Interface):
     """
     This is the basic information for all views.
     """
-
-    for_ = GlobalObject(
-        title=u"The interface this view applies to.",
-        description=u"""
-        The view will be for all objects that implement this
-        interface. If this is not supplied, the view applies to all
-        objects (XXX this ought to change).""",
-        required=False
+    
+    for_ = Tokens(
+        title=u"Specifications of the objects to be viewed",
+        description=u"""This should be a list of interfaces or classes
+        """,
+        required=True,
+        value_type=GlobalObject(missing_value=object())
         )
 
     permission = Id(
@@ -158,10 +157,12 @@ class IAdapterDirective(Interface):
         required=True
         )
 
-    for_ = GlobalObject(
-        title=u"Interface the component is used for",
-        description=u"""This is the interface from which is being adapted.""",
-        required=True
+    for_ = Tokens(
+        title=u"Specifications to be adapted",
+        description=u"""This should be a list of interfaces or classes
+        """,
+        required=True,
+        value_type=GlobalObject(missing_value=object())
         )
 
     permission = Id(
