@@ -13,7 +13,7 @@
 ##############################################################################
 """Support for delegation among service managers
 
-$Id: nextservice.py,v 1.3 2003/03/11 21:08:40 jim Exp $
+$Id: nextservice.py,v 1.4 2003/05/23 17:43:39 jim Exp $
 """
 
 from zope.component.exceptions import ComponentLookupError
@@ -74,5 +74,8 @@ def getNextServiceManager(context):
     # But we have to make sure we haven't got the same object..
     while (context is not None) and (context == container):
         context = getWrapperContainer(context)
+
+    if context is None:
+        return serviceManager
 
     return getServiceManager_hook(context, local=True)
