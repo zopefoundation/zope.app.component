@@ -278,9 +278,10 @@ class IDefaultViewDirective(IBasicResourceInformation):
     for_ = GlobalObject(
         title=u"The interface this view is the default for.",
         description=u"""
-        The view is the default view for the supplied interface. If
-        this is not supplied, the view applies to all objects (XXX
-        this ought to change).""",
+        Specifies the interface for which the default view is declared. All
+        objects implementing this interface make use of this default
+        setting. If this attribute is not specified, the default is available
+        for all objects.""",
         required=False
         )
 
