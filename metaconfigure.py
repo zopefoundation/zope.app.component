@@ -13,7 +13,7 @@
 ##############################################################################
 """Generic Components ZCML Handlers
 
-$Id: metaconfigure.py,v 1.25 2004/02/13 22:27:33 srichter Exp $
+$Id: metaconfigure.py,v 1.26 2004/03/03 17:07:49 srichter Exp $
 """
 
 from zope.configuration.exceptions import ConfigurationError
@@ -390,10 +390,3 @@ def usage(_context, name):
         callable = handler,
         args = (Presentation, 'defineUsage', name)
         )
-
-#XXX you will be terminated soon
-def resolveInterface(_context, id):
-    interface = interfaceService.queryInterface(id, None)
-    if interface is None:
-        interface = _context.resolve(id)
-    return interface
