@@ -38,7 +38,7 @@ def configfile(s):
 
 class Test(PlacelessSetup, unittest.TestCase):
     def setUp(self):
-        PlacelessSetup.setUp(self)
+        super(Test, self).setUp()
         newSecurityManager(system_user)
         XMLConfig('meta.zcml', zope.app.component)()
         XMLConfig('meta.zcml', zope.app.security)()

@@ -56,7 +56,7 @@ class Test(PlacelessSetup, unittest.TestCase):
     # XXX: tests for other directives needed
 
     def setUp(self):
-        PlacelessSetup.setUp(self)
+        super(Test, self).setUp()
         XMLConfig('meta.zcml', zope.app.component)()
         XMLConfig('meta.zcml', zope.app.security)()
 

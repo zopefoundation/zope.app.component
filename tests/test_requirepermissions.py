@@ -49,7 +49,7 @@ P2 = "zope.Paltry"
 class Test(PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
-        PlacelessSetup.setUp(self)
+        super(Test, self).setUp()
         defineDirectives()
 
         class B:
