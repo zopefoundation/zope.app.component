@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: globalinterfaceservice.py,v 1.12 2003/06/22 20:17:59 jeremy Exp $
+$Id: globalinterfaceservice.py,v 1.13 2003/07/03 22:46:06 sidnei Exp $
 """
 from __future__ import generators
 
@@ -44,14 +44,14 @@ class InterfaceService:
 
     def searchInterface(self, search_string=None, base=None):
         return [t[1] for t in self.items(search_string, base)]
-    
+
     def searchInterfaceIds(self, search_string=None, base=None):
         return [t[0] for t in self.items(search_string, base)]
 
     def items(self, search_string=None, base=None):
         if search_string:
             search_string = search_string.lower()
-            
+
         for id, (interface, doc) in self.__data.items():
             if search_string:
                 if doc.find(search_string) < 0:

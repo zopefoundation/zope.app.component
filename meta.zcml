@@ -14,23 +14,23 @@
     <directive name="factory" attributes="component id permission"
        handler="zope.app.component.metaconfigure.factory" />
 
-    <directive 
-       name="view" 
+    <directive
+       name="view"
        attributes="component type name for layer
                    permission allowed_interface allowed_attributes"
        handler="zope.app.component.metaconfigure.view" />
 
-    <directive name="defaultView" 
+    <directive name="defaultView"
                attributes="component type name for layer"
        handler="zope.app.component.metaconfigure.defaultView" />
 
-    <directive 
-       name="resource" 
+    <directive
+       name="resource"
        attributes="component type name layer
                    permission allowed_interface allowed_attributes"
        handler="zope.app.component.metaconfigure.resource" />
 
-    <directive name="skin" attributes="name type layers" 
+    <directive name="skin" attributes="name type layers"
         handler="zope.app.component.metaconfigure.skin" />
 
     <directive name="serviceType" attributes="id interface"
@@ -47,7 +47,7 @@
       <attribute
           name="class"
           required="yes"
-          description="resolvable name of a class" 
+          description="resolvable name of a class"
           />
 
       <subdirective name="implements">
@@ -60,7 +60,7 @@
         <attribute
             name="interface"
             required="yes"
-            description="resolvable name of an Interface" 
+            description="resolvable name of an Interface"
             />
       </subdirective>
 
@@ -74,23 +74,23 @@
         <attribute
             name="permission"
             required="yes"
-            description="a permission id" 
+            description="a permission id"
             />
 
         <attribute
             name="attributes"
-            description="space-separated list of attribute names" 
+            description="space-separated list of attribute names"
             />
 
         <attribute
             name="interface"
-            description="the resolvable name of an interface" 
+            description="the resolvable name of an interface"
             />
 
         <attribute name="like_class">
           <description>
                 a class on which the security requirements
-                for this class will be based 
+                for this class will be based
               </description>
           </attribute>
 
@@ -106,12 +106,12 @@
 
         <attribute
             name="attributes"
-            description="space-separated list of attribute names" 
+            description="space-separated list of attribute names"
             />
 
         <attribute
             name="interface"
-            description="the resolvable name of an interface" 
+            description="the resolvable name of an interface"
             />
 
       </subdirective>
@@ -127,7 +127,7 @@
           <description>
                 permission id required to use this factory.
                 Although optional, this attribute should normally
-                be specified. 
+                be specified.
                 </description>
           </attribute>
 
@@ -165,7 +165,7 @@
       <attribute
           name="class"
           required="yes"
-          description="resolvable name of a class" 
+          description="resolvable name of a class"
           />
 
       <subdirective name="implements">
@@ -178,7 +178,7 @@
         <attribute
             name="interface"
             required="yes"
-            description="resolvable name of an Interface" 
+            description="resolvable name of an Interface"
             />
       </subdirective>
 
@@ -192,23 +192,23 @@
         <attribute
             name="permission"
             required="yes"
-            description="a permission id" 
+            description="a permission id"
             />
 
         <attribute
             name="attributes"
-            description="space-separated list of attribute names" 
+            description="space-separated list of attribute names"
             />
 
         <attribute
             name="interface"
-            description="the resolvable name of an interface" 
+            description="the resolvable name of an interface"
             />
 
         <attribute name="like_class">
           <description>
                 a class on which the security requirements
-                for this class will be based 
+                for this class will be based
               </description>
           </attribute>
 
@@ -224,12 +224,12 @@
 
         <attribute
             name="attributes"
-            description="space-separated list of attribute names" 
+            description="space-separated list of attribute names"
             />
 
         <attribute
             name="interface"
-            description="the resolvable name of an interface" 
+            description="the resolvable name of an interface"
             />
 
       </subdirective>
