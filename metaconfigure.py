@@ -41,7 +41,7 @@ PublicPermission = 'zope.Public'
 
 
 def handler(serviceName, methodName, *args, **kwargs):
-    method=getattr(zapi.getService(None, serviceName), methodName)
+    method=getattr(zapi.getGlobalService(serviceName), methodName)
     method(*args, **kwargs)
 
 # We can't use the handler for serviceType, because serviceType needs

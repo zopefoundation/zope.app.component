@@ -28,7 +28,7 @@ def provideInterface(id, interface, iface_type=None):
 
     >>> from zope.app.tests.placelesssetup import setUp, tearDown
     >>> setUp()
-    >>> utilities = zapi.getService(None, zapi.servicenames.Utilities)
+    >>> utilities = zapi.getGlobalService(zapi.servicenames.Utilities)
     >>> from zope.interface import Interface
     >>> from zope.interface.interfaces import IInterface
     >>> from zope.app.content.interfaces import IContentType
@@ -79,7 +79,7 @@ def provideInterface(id, interface, iface_type=None):
     else:
         iface_type = IInterface
         
-    utilityService = zapi.getService(None, zapi.servicenames.Utilities)
+    utilityService = zapi.getGlobalService(zapi.servicenames.Utilities)
     utilityService.provideUtility(iface_type, interface, name=id)
 
 
@@ -89,7 +89,7 @@ def getInterface(context, id):
 
     >>> from zope.app.tests.placelesssetup import setUp, tearDown
     >>> setUp()
-    >>> utilities = zapi.getService(None, zapi.servicenames.Utilities)
+    >>> utilities = zapi.getGlobalService(zapi.servicenames.Utilities)
     >>> from zope.interface import Interface
     >>> from zope.app.content.interfaces import IContentType
     >>> class I4(Interface):
@@ -123,7 +123,7 @@ def queryInterface(id, default=None):
     >>> from zope.app.tests.placelesssetup import setUp, tearDown
     >>> tearDown()
     >>> setUp()
-    >>> utilities = zapi.getService(None, zapi.servicenames.Utilities)
+    >>> utilities = zapi.getGlobalService(zapi.servicenames.Utilities)
     >>> from zope.interface import Interface
     >>> from zope.interface.interfaces import IInterface
     >>> from zope.app.content.interfaces import IContentType
@@ -152,7 +152,7 @@ def searchInterface(context, search_string=None, base=None):
 
     >>> from zope.app.tests.placelesssetup import setUp, tearDown
     >>> setUp()
-    >>> utilities = zapi.getService(None, zapi.servicenames.Utilities)
+    >>> utilities = zapi.getGlobalService(zapi.servicenames.Utilities)
     >>> from zope.interface import Interface
     >>> from zope.interface.interfaces import IInterface
     >>> from zope.app.content.interfaces import IContentType
@@ -185,7 +185,7 @@ def searchInterfaceIds(context, search_string=None, base=None):
 
     >>> from zope.app.tests.placelesssetup import setUp, tearDown
     >>> setUp()
-    >>> utilities = zapi.getService(None, zapi.servicenames.Utilities)
+    >>> utilities = zapi.getGlobalService(zapi.servicenames.Utilities)
     >>> from zope.interface import Interface
     >>> from zope.interface.interfaces import IInterface
     >>> from zope.app.content.interfaces import IContentType
@@ -214,7 +214,7 @@ def searchInterfaceIds(context, search_string=None, base=None):
 
 
 def searchInterfaceUtilities(context, search_string=None, base=None):
-    utilityService = zapi.getService(None, zapi.servicenames.Utilities)   
+    utilityService = zapi.getGlobalService(zapi.servicenames.Utilities)   
     iface_utilities = utilityService.getUtilitiesFor(IInterface)
 
     if search_string:

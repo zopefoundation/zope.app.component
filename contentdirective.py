@@ -39,7 +39,7 @@ class ProtectionDeclarationException(Exception):
     pass
 
 def handler(serviceName, methodName, *args, **kwargs):
-    method=getattr(zapi.getService(None, serviceName), methodName)
+    method=getattr(zapi.getGlobalService(serviceName), methodName)
     method(*args, **kwargs)
 
 class ContentDirective:

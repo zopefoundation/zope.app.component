@@ -24,13 +24,12 @@ from zope.app.traversing import IContainmentRoot
 from zope.component.exceptions import ComponentLookupError
 from zope.component.interfaces import IServiceService
 from zope.component.service import serviceManager
-from zope.thread import thread_globals
 from zope.interface import implements, directlyProvides, directlyProvidedBy
 from zope.interface.verify import verifyObject
 from zope.app.event.interfaces import ISubscriber
-from zope.thread import thread_globals
 from zope.app.tests.setup import placelessSetUp, placelessTearDown
 from zope.app.tests import ztapi
+from zope.app.component.hooks import setSite, getSite
 
 class ServiceManager:
     implements(ISiteManager)
@@ -106,7 +105,7 @@ class Test(unittest.TestCase):
         ztapi.provideAdapter(None, IServiceService, serviceServiceAdapter)
 
     def tearDown(self):
-        thread_globals().site = None
+        setSite()
         placelessTearDown()
 
     def test_getServices(self):
@@ -114,7 +113,7 @@ class Test(unittest.TestCase):
         self.assertEqual(getServices_hook(self.root), serviceManager)
         self.assertEqual(getServices_hook(self.f1), self.sm1)
         self.assertEqual(getServices_hook(self.f2), self.sm2)
-        thread_globals().site = self.f2
+        setSite(self.f2)
         self.assertEqual(getServices_hook(None), self.sm2)
 
     def test_queryNextService(self):
@@ -235,8 +234,7 @@ class Test(unittest.TestCase):
 
         verifyObject(ISubscriber, threadSiteSubscriber)
 
-        globals = thread_globals()
-        self.assertEqual(globals.site, None)
+        self.assertEqual(getSite(), None)
 
         # A non-site is traversed
         ob = object()
@@ -244,7 +242,7 @@ class Test(unittest.TestCase):
         ev = BeforeTraverseEvent(ob, request)
         threadSiteSubscriber.notify(ev)
 
-        self.assertEqual(globals.site, None)
+        self.assertEqual(getSite(), None)
 
         # A site is traversed
         ss = ServiceServiceStub()
@@ -254,11 +252,11 @@ class Test(unittest.TestCase):
         ev = BeforeTraverseEvent(site, request)
         threadSiteSubscriber.notify(ev)
 
-        self.assertEqual(globals.site, site)
+        self.assertEqual(getSite(), site)
 
         clearSite()
 
-        self.assertEqual(globals.site, None)
+        self.assertEqual(getSite(), None)
 
 
 def test_suite():

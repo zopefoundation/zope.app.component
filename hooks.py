@@ -31,14 +31,33 @@ from zope.component.servicenames import Presentation
 from zope.interface import Interface
 from zope.thread import thread_globals
 
+def setSite(site=None):
+    if site is None:
+        services = None
+    else:
+        services = trustedRemoveSecurityProxy(site.getSiteManager())
+
+    thread_globals().services = services
+
+def getSite():
+    services = thread_globals().services
+    if services is None:
+        return None
+    return services.__parent__
+    
+
 def getServices_hook(context=None):
 
     if context is None:
-        site = thread_globals().site
-        if site is None:
+        try:
+            services = thread_globals().services
+        except AttributeError:
+            thread_globals().services = services = None
+            
+        if services is None:
             return serviceManager
         else:
-            return trustedRemoveSecurityProxy(site.getSiteManager())
+            return services
 
     try:
         # This try-except is just backward compatibility really

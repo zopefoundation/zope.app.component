@@ -23,8 +23,8 @@ from zope.component.interfaces import IServiceService
 from zope.proxy import removeAllProxies
 from zope.app.site.interfaces import ISite, ISiteManager
 from zope.app.event.interfaces import ISubscriber
-from zope.thread import thread_globals
 from zope.testing.cleanup import addCleanUp
+from zope.app.component.hooks import setSite
 
 # placeful service manager convenience tools
 
@@ -139,7 +139,7 @@ class ThreadSiteSubscriber:
     implements(ISubscriber)
     def notify(self, event):
         if ISite.providedBy(event.object):
-            thread_globals().site = event.object
+            setSite(event.object)
 
 
 threadSiteSubscriber = ThreadSiteSubscriber()
@@ -158,8 +158,7 @@ class ClearThreadSiteSubscriber:
 clearThreadSiteSubscriber = ClearThreadSiteSubscriber()
 
 
-def clearSite():
-    """Clear the site thread global"""
-    thread_globals().site = None
+# Clear the site thread global
+clearSite = setSite
 
 addCleanUp(clearSite)
