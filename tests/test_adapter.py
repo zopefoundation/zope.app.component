@@ -17,7 +17,7 @@ $Id$
 """
 __docformat__ = "reStructuredText"
 import unittest
-from transaction import get_transaction
+import transaction
 from ZODB.tests.util import DB
 
 import zope.component.testing as placelesssetup
@@ -563,7 +563,7 @@ def test_persistence():
     >>> L2.lookup([IF2], IB1, 'bob')
     'A112'
 
-    >>> get_transaction().commit()
+    >>> transaction.commit()
 
     Now, let's open another transaction:
 
@@ -600,7 +600,7 @@ def test_persistence():
     >>> L2.lookup([IF2], IB1, 'bob')
     'A11G'
 
-    >>> get_transaction().commit()
+    >>> transaction.commit()
 
     If we look back at the first connection, we should get the same data:
 
