@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: interface.py,v 1.1 2004/03/05 15:52:57 eddala Exp $
+$Id: interface.py,v 1.2 2004/03/05 22:08:58 jim Exp $
 """
 __metaclass__ = type
 
@@ -35,15 +35,15 @@ def provideInterface(id, interface, iface_type=None):
     >>> from zope.app.content.interfaces import IContentType
     >>> class I(Interface):
     ...     pass
-    >>> IInterface.isImplementedBy(I)
+    >>> IInterface.providedBy(I)
     True
-    >>> IContentType.isImplementedBy(I)
+    >>> IContentType.providedBy(I)
     False
     >>> interfaces = utilities.getUtilitiesFor(IContentType)
     >>> interfaces
     []
     >>> provideInterface('', I, IContentType)
-    >>> IContentType.isImplementedBy(I)
+    >>> IContentType.providedBy(I)
     True
     >>> interfaces = utilities.getUtilitiesFor(IContentType)
     >>> [name for (name, iface) in interfaces]
@@ -53,9 +53,9 @@ def provideInterface(id, interface, iface_type=None):
     >>> class I1(Interface):
     ...     pass
     >>> provideInterface('', I1)
-    >>> IInterface.isImplementedBy(I1)
+    >>> IInterface.providedBy(I1)
     True
-    >>> IContentType.isImplementedBy(I1)
+    >>> IContentType.providedBy(I1)
     False
     >>> interfaces1 = utilities.getUtilitiesFor(IContentType)
     >>> [name for (name, iface) in interfaces]
@@ -68,7 +68,7 @@ def provideInterface(id, interface, iface_type=None):
     if not id:
         id = "%s.%s" % (interface.__module__, interface.__name__)
 
-    if not IInterface.isImplementedBy(interface):
+    if not IInterface.providedBy(interface):
         if not isinstance(interface, (type, ClassType)):
             raise TypeError(id, "is not an interface or class")
         return
@@ -95,16 +95,16 @@ def getInterface(context, id):
     >>> from zope.app.content.interfaces import IContentType
     >>> class I4(Interface):
     ...     pass
-    >>> IInterface.isImplementedBy(I4)
+    >>> IInterface.providedBy(I4)
     True
-    >>> IContentType.isImplementedBy(I4)
+    >>> IContentType.providedBy(I4)
     False
     >>> getInterface(None, 'zope.app.component.interface.I4')
     Traceback (most recent call last):
     ...
     ComponentLookupError: zope.app.component.interface.I4
     >>> provideInterface('', I4, IContentType)
-    >>> IContentType.isImplementedBy(I4)
+    >>> IContentType.providedBy(I4)
     True
     >>> iface = queryInterface( """\
                 """ 'zope.app.component.interface.I4')
@@ -130,14 +130,14 @@ def queryInterface(id, default=None):
     >>> from zope.app.content.interfaces import IContentType
     >>> class I3(Interface):
     ...     pass
-    >>> IInterface.isImplementedBy(I3)
+    >>> IInterface.providedBy(I3)
     True
-    >>> IContentType.isImplementedBy(I3)
+    >>> IContentType.providedBy(I3)
     False
     >>> queryInterface('zope.app.component.interface.I3')
     
     >>> provideInterface('', I3, IContentType)
-    >>> IContentType.isImplementedBy(I3)
+    >>> IContentType.providedBy(I3)
     True
     >>> iface = queryInterface('zope.app.component.interface.I3')
     >>> iface.__name__
@@ -159,14 +159,14 @@ def searchInterface(context, search_string=None, base=None):
     >>> from zope.app.content.interfaces import IContentType
     >>> class I5(Interface):
     ...     pass
-    >>> IInterface.isImplementedBy(I5)
+    >>> IInterface.providedBy(I5)
     True
-    >>> IContentType.isImplementedBy(I5)
+    >>> IContentType.providedBy(I5)
     False
     >>> searchInterface(None, 'zope.app.component.interface.I5')
     []
     >>> provideInterface('', I5, IContentType)
-    >>> IContentType.isImplementedBy(I5)
+    >>> IContentType.providedBy(I5)
     True
     >>> iface = searchInterface(None,
     ...                        'zope.app.component.interface.I5')
@@ -192,14 +192,14 @@ def searchInterfaceIds(context, search_string=None, base=None):
     >>> from zope.app.content.interfaces import IContentType
     >>> class I5(Interface):
     ...     pass
-    >>> IInterface.isImplementedBy(I5)
+    >>> IInterface.providedBy(I5)
     True
-    >>> IContentType.isImplementedBy(I5)
+    >>> IContentType.providedBy(I5)
     False
     >>> searchInterface(None, 'zope.app.component.interface.I5')
     []
     >>> provideInterface('', I5, IContentType)
-    >>> IContentType.isImplementedBy(I5)
+    >>> IContentType.providedBy(I5)
     True
     >>> iface = searchInterfaceIds(None,
     ...                        'zope.app.component.interface.I5')
@@ -236,7 +236,7 @@ def getInterfaceAllDocs(interface):
     docs = [str(iface_id).lower(),
             str(interface.__doc__).lower()]
 
-    if IInterface.isImplementedBy(interface):
+    if IInterface.providedBy(interface):
         for name in interface:
             docs.append(
                 str(interface.getDescriptionFor(name).__doc__).lower())

@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: test_contentdirective.py,v 1.13 2004/03/05 15:53:50 eddala Exp $
+$Id: test_contentdirective.py,v 1.14 2004/03/05 22:08:59 jim Exp $
 """
 
 import unittest
@@ -75,7 +75,7 @@ class TestContentDirective(PlacelessSetup, unittest.TestCase):
 </content>
                        """)
         xmlconfig(f)
-        self.failUnless(IExample.isImplementedByInstancesOf(ExampleClass))
+        self.failUnless(IExample.implementedBy(ExampleClass))
 
         self.assertEqual(queryInterface( 
             "zope.app.component.tests.exampleclass.IExample"), IExample)
@@ -96,8 +96,8 @@ class TestContentDirective(PlacelessSetup, unittest.TestCase):
 </content>
                        """)
         xmlconfig(f)
-        self.failUnless(IExample.isImplementedByInstancesOf(ExampleClass))
-        self.failUnless(IExample2.isImplementedByInstancesOf(ExampleClass))
+        self.failUnless(IExample.implementedBy(ExampleClass))
+        self.failUnless(IExample2.implementedBy(ExampleClass))
 
         self.assertEqual(queryInterface(
             "zope.app.component.tests.exampleclass.IExample"), IExample)

@@ -14,7 +14,7 @@
 """
 
 Revision information:
-$Id: test_servicemanagercontainer.py,v 1.9 2004/02/11 01:14:01 jim Exp $
+$Id: test_servicemanagercontainer.py,v 1.10 2004/03/05 22:08:59 jim Exp $
 """
 
 from unittest import TestCase, main, makeSuite
@@ -59,10 +59,10 @@ class BaseTestServiceManagerContainer:
 
     def test_get_and_set(self):
         smc = self.makeTestObject()
-        self.failIf(ISite.isImplementedBy(smc))
+        self.failIf(ISite.providedBy(smc))
         sm = ServiceManager()
         smc.setSiteManager(sm)
-        self.failUnless(ISite.isImplementedBy(smc))
+        self.failUnless(ISite.providedBy(smc))
         self.failUnless(smc.getSiteManager() is sm)
         verifyObject(ISite, smc)
 

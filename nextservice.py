@@ -13,7 +13,7 @@
 ##############################################################################
 """Support for delegation among service managers
 
-$Id: nextservice.py,v 1.8 2003/09/21 17:31:26 jim Exp $
+$Id: nextservice.py,v 1.9 2004/03/05 22:08:58 jim Exp $
 """
 
 from zope.component.exceptions import ComponentLookupError
@@ -62,7 +62,7 @@ def getNextServiceManager(context):
 
     # But we're *really* paranoid, so we'll double check.
     while ((container is not None) and not
-           ISite.isImplementedBy(removeAllProxies(container))
+           ISite.providedBy(removeAllProxies(container))
            ):
         container = container.__parent__ # we should be
 

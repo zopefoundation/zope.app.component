@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: hooks.py,v 1.17 2004/03/02 17:51:50 philikon Exp $
+$Id: hooks.py,v 1.18 2004/03/05 22:08:58 jim Exp $
 """
 
 from zope.component import getService
@@ -36,10 +36,10 @@ def getServiceManager_hook(context, local=False, recurse=False):
     clean_context = removeAllProxies(context)
 
     # if the context is actually a service or site manager...
-    if IServiceService.isImplementedBy(clean_context):
+    if IServiceService.providedBy(clean_context):
         return trustedRemoveSecurityProxy(context)
 
-    elif (ISite.isImplementedBy(clean_context)):
+    elif (ISite.providedBy(clean_context)):
         return trustedRemoveSecurityProxy(context.getSiteManager())
     else:
         container = getattr(context, '__parent__', None)
@@ -47,7 +47,7 @@ def getServiceManager_hook(context, local=False, recurse=False):
             if local:
                 # Check to make sure that when we run out of context, we
                 # have a root object:
-                if not IContainmentRoot.isImplementedBy(context):
+                if not IContainmentRoot.providedBy(context):
                     raise TypeError("Not enough context to get next "
                                     "site manager")
 
@@ -68,7 +68,7 @@ def queryView(object, name, request, default=None, context=None,
     views = getService(context, Presentation)
     view = views.queryView(object, name, request, default=default,
                            providing=providing)
-    if ILocation.isImplementedBy(view):
+    if ILocation.providedBy(view):
         locate(view, object, name)
 
     return view

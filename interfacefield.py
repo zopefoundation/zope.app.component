@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: interfacefield.py,v 1.11 2003/12/16 10:32:05 srichter Exp $
+$Id: interfacefield.py,v 1.12 2004/03/05 22:08:58 jim Exp $
 """
 
 from zope.schema import Enumerated, Field, Tuple
@@ -48,7 +48,7 @@ class InterfaceField(Enumerated, Field):
         if basetype is None:
             basetype = Interface
 
-        if not IInterface.isImplementedBy(value):
+        if not IInterface.providedBy(value):
             raise ValidationError("Not an interface", value)
 
         if not value.extends(basetype, False):
@@ -84,7 +84,7 @@ class InterfacesField(Tuple):
             if item is None and none_ok:
                 continue
 
-            if not IInterface.isImplementedBy(item):
+            if not IInterface.providedBy(item):
                 raise ValidationError("Not an interface", item)
 
             if not item.extends(basetype, 0):

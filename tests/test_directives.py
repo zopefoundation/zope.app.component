@@ -67,7 +67,7 @@ def testInterface():
     >>> context = Context()
     >>> class I(Interface):
     ...     pass
-    >>> IContentType.isImplementedBy(I)
+    >>> IContentType.providedBy(I)
     False
     >>> interface(context, I, IContentType)
     >>> context
@@ -79,7 +79,7 @@ def testInterface():
     >>> from zope.interface.interfaces import IInterface
     >>> IContentType.extends(IInterface)
     True
-    >>> IInterface.isImplementedBy(I)
+    >>> IInterface.providedBy(I)
     True
     """
 
