@@ -29,7 +29,6 @@ import zope.app.component.localservice
 import zope.app.container.contained
 import zope.app.registration.interfaces
 import zope.app.site.interfaces
-import zope.app.registration
 import zope.component.interfaces
 import zope.component.adapter
 import zope.interface

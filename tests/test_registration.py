@@ -11,12 +11,21 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Local-adapter support
+"""Registration Tests
 
 $Id$
 """
+__docformat__ = "reStructuredText"
+import unittest
 
-from zope.app.component.bbb.adapter.adapter import IAdapterRegistration
-from zope.app.component.bbb.adapter.adapter import LocalAdapterRegistry
-from zope.app.component.bbb.adapter.adapter import LocalAdapterBasedService
+from zope.testing import doctest
 
+
+def test_suite():
+    return unittest.TestSuite((
+        doctest.DocFileSuite('../statusproperty.txt'),
+        doctest.DocFileSuite('../registration.txt'),
+        ))
+
+if __name__ == "__main__":
+    unittest.main(defaultTest='test_suite')

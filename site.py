@@ -26,37 +26,43 @@ A local manager has a number of roles:
 $Id$
 """
 import sys
-from transaction import get_transaction
 from zodbcode.module import PersistentModuleRegistry
 
 import zope.event
 import zope.interface
 from zope.component.exceptions import ComponentLookupError
 
-import zope.app.registration.interfaces
 from zope.app import zapi
 from zope.app.component.hooks import setSite
+from zope.app.component.interfaces.registration import IRegistry
+from zope.app.component.interfaces.registration import IRegisterableContainer
+from zope.app.component.registration import ComponentRegistration
+from zope.app.component.registration import RegistrationStack
 from zope.app.container.btree import BTreeContainer
 from zope.app.container.constraints import ItemTypePrecondition
 from zope.app.container.contained import Contained
 from zope.app.container.interfaces import IContainer
 from zope.app.event import objectevent
 from zope.app.location import inside
-from zope.app.registration.interfaces import IRegistry
-from zope.app.registration.registration import ComponentRegistration
-from zope.app.registration.registration import RegistrationStack
-from zope.app.site.folder import SiteManagementFolder
 from zope.app.traversing.interfaces import IContainmentRoot
 
 from zope.app.site.interfaces import IPossibleSite, ISite, ISiteManager
 
-class IRegisterableContainerContainer(zope.interface.Interface):
 
-    def __setitem__(name, folder):
-        """Add a site-management folder
-        """
-    __setitem__.precondition = ItemTypePrecondition(
-       zope.app.registration.interfaces.IRegisterableContainer)
+class SiteManagementFolder(RegisterableContainer, BTreeContainer):
+    implements(ISiteManagementFolder)
+
+class SMFolderFactory(object):
+    implements(IDirectoryFactory)
+
+    def __init__(self, context):
+        self.context = context
+
+    def __call__(self, name):
+        return SiteManagementFolder()
+
+class SiteManagementFolders(BTreeContainer):
+    pass 
 
 
 class LocalSiteManager(BTreeContainer, PersistentModuleRegistry):
@@ -184,6 +190,7 @@ class LocalSiteManager(BTreeContainer, PersistentModuleRegistry):
             return None
         return findModule(name)
 
+
     def __import(self, module_name):
         mod = self.findModule(module_name)
         if mod is None:
@@ -194,12 +201,45 @@ class LocalSiteManager(BTreeContainer, PersistentModuleRegistry):
         return mod
 
 
+    def findModule(self, name):
+        # Used by the persistent modules import hook
+
+        # Look for a .py file first:
+        manager = self.get(name+'.py')
+        if manager is not None:
+            # found an item with that name, make sure it's a module(manager):
+            if IModuleManager.providedBy(manager):
+                return manager.getModule()
+
+        # Look for the module in this folder:
+        manager = self.get(name)
+        if manager is not None:
+            # found an item with that name, make sure it's a module(manager):
+            if IModuleManager.providedBy(manager):
+                return manager.getModule()
+
+
+        # See if out container is a RegisterableContainer:
+        c = self.__parent__
+        if interfaces.IRegisterableContainer.providedBy(c):
+            return c.findModule(name)
+
+        # Use sys.modules in lieu of module service:
+        module = sys.modules.get(name)
+        if module is not None:
+            return module
+
+        raise ImportError(name)
+
+
+    def resolve(self, name):
+        l = name.rfind('.')
+        mod = self.findModule(name[:l])
+        return getattr(mod, name[l+1:])
+
+
 class AdapterRegistration(
     zope.app.registration.registration.SimpleRegistration):
-
-    zope.interface.implements(IAdapterRegistration)
-
-    serviceType = zapi.servicenames.Adapters
 
     with = () # Don't support multi-adapters yet
 
@@ -221,6 +261,9 @@ class AdapterRegistration(
         return factory
     factory = property(factory)
 
+    def getRegistry(self):
+        sm = self.getSiteManager()
+        return sm.adapters
 
 
 class UtilityRegistration(ComponentRegistration):
@@ -230,8 +273,6 @@ class UtilityRegistration(ComponentRegistration):
     be utilities.
     """
     zope.interface.implements(IUtilityRegistration)
-
-    serviceType = zapi.servicenames.Utilities
 
     ############################################################
     # To make adapter code happy. Are we going too far?
@@ -248,20 +289,9 @@ class UtilityRegistration(ComponentRegistration):
         self.name = name
         self.interface = interface
 
-    def usageSummary(self):
-        # Override IRegistration.usageSummary()
-        s = self.getInterface().getName()
-        if self.name:
-            s += " registered as '%s'" % self.name
-        s += ", implemented by %s" %self.component.__class__.__name__
-        s += " '%s'"%zapi.name(self.component)
-        return s
-
-    def getInterface(self):
-        # ComponentRegistration calls this when you specify a
-        # permission; it needs the interface to create a security
-        # proxy for the interface with the given permission.
-        return self.interface
+    def getRegistry(self):
+        sm = self.getSiteManager()
+        return sm.utilities
 
 
 def threadSiteSubscriber(event):

@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2004 Zope Corporation and Contributors.
+# Copyright (c) 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -11,12 +11,28 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Local-adapter support
+"""Service stub for testing
 
 $Id$
 """
+from zope.interface import Interface, implements
 
-from zope.app.component.bbb.adapter.adapter import IAdapterRegistration
-from zope.app.component.bbb.adapter.adapter import LocalAdapterRegistry
-from zope.app.component.bbb.adapter.adapter import LocalAdapterBasedService
+class IFooService(Interface):
 
+    def foo(): pass
+    def foobar(): pass
+
+class FooService(object):
+
+    implements(IFooService)
+
+    def foo(self): return "foo here"
+    def foobar(self): return "foobarred"
+
+    def bar(self): return "you shouldn't get this"
+
+fooService = FooService()
+
+class Foo2(FooService): pass
+
+foo2 = Foo2()

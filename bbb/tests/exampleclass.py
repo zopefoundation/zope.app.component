@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2004 Zope Corporation and Contributors.
+# Copyright (c) 2003 Zope Corporation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -11,12 +11,20 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Local-adapter support
+"""Example test classes
 
 $Id$
 """
+from zope.interface import Interface
 
-from zope.app.component.bbb.adapter.adapter import IAdapterRegistration
-from zope.app.component.bbb.adapter.adapter import LocalAdapterRegistry
-from zope.app.component.bbb.adapter.adapter import LocalAdapterBasedService
+class ExampleClass(object):
+    pass
 
+class IExample(Interface):
+    pass
+
+class IExample2(Interface):
+    pass
+
+class IExampleContainer(Interface):
+    pass

@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2004 Zope Corporation and Contributors.
+# Copyright (c) 2003 Zope Corporation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -11,12 +11,18 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Local-adapter support
+"""Interface utility tests
 
 $Id$
 """
+import unittest
+from zope.testing.doctestunit import DocTestSuite
 
-from zope.app.component.bbb.adapter.adapter import IAdapterRegistration
-from zope.app.component.bbb.adapter.adapter import LocalAdapterRegistry
-from zope.app.component.bbb.adapter.adapter import LocalAdapterBasedService
+def test_suite():
+    return unittest.TestSuite((
+        DocTestSuite('zope.app.component.interface'),
+        ))
+
+if __name__ == "__main__":
+    unittest.TextTestRunner().run(test_suite())
 

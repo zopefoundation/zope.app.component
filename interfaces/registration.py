@@ -1,0 +1,188 @@
+##############################################################################
+#
+# Copyright (c) 2002 Zope Corporation and Contributors.
+# All Rights Reserved.
+#
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
+#
+##############################################################################
+"""Interfaces for objects supporting registration
+
+$Id$
+"""
+import zope.component.interfaces
+from zope.interface import Interface, Attribute, implements
+from zope.schema import TextLine, Field, Choice, Dict
+from zope.schema.interfaces import ITextLine, IField
+
+from zope.app.annotation.interfaces import IAnnotatable
+from zope.app.annotation.interfaces import IAttributeAnnotatable
+from zope.app.container.interfaces import IContainerNamesContainer
+from zope.app.container.interfaces import IContained, IContainer
+from zope.app.container.constraints import contains, containers
+from zope.app.event.interfaces import IObjectEvent
+from zope.app.i18n import ZopeMessageIDFactory as _
+
+InactiveStatus = _('Inactive')
+ActiveStatus = _('Active')
+
+
+class IRegistrationEvent(IObjectEvent):
+    """An event that involves a registration"""
+
+class IRegistrationActivatedEvent(IRegistrationEvent):
+    """This event is fired, when a component's registration is activated."""
+
+class IRegistrationDeactivatedEvent(IRegistrationEvent):
+    """This event is fired, when a component's registration is deactivated."""
+
+
+class IRegistration(Interface):
+    """Registration object
+
+    A registration object represents a specific registration
+    decision, such as registering an adapter or defining a permission.
+
+    In addition to the attributes or methods defined here,
+    registration objects will include additional attributes
+    identifying how they should be used. For example, a service
+    registration will provide a service type. An adapter
+    registration will specify a used-for interface and a provided
+    interface.
+    """
+
+    status = Choice(
+        title=_("Registration status"),
+        values=(InactiveStatus, ActiveStatus),
+        default=InactiveStatus
+        )
+
+class IComponent(IField):
+    """A component path
+
+    This is just the interface for the ComponentPath field below.  We'll use
+    this as the basis for looking up an appropriate widget.
+    """
+
+class Component(Field):
+    """A component path
+
+    Values of the field are absolute unicode path strings that can be
+    traversed to get an object.
+    """
+    implements(IComponent)
+
+
+class IComponentRegistration(IRegistration):
+    """Registration object that uses a component path and a permission."""
+
+    permission = Choice(
+        title=_("The permission needed to use the component"),
+        vocabulary="Permissions",
+        required=False,
+        )
+
+    component = Component(
+        title=_("Registration Component"),
+        description=_("The component the registration is for."),
+        required=True)
+
+    def getInterface(self):
+        """Return the interface the component provides through this
+        registration.
+
+        If no interface was specified, return `None`.
+
+        The interface will be used to produce a proxy for the component, if
+        the `permission` is specified.
+        """
+
+
+class IRegistry(zope.component.interfaces.IRegistry):
+    """A component that can be configured using a registration manager."""
+
+    def register(registration):
+        """Register a component with the registry using a registration.
+
+        Once the registration is added to the registry, it will be active. If
+        the registration is already registered with the registry, this method
+        will quietly return.
+        """
+
+    def unregister(registration):
+        """Unregister a component from the registry.
+
+        Unregistering a registration automatically makes the component
+        inactive. If the registration is not registered, this method will
+        quietly return.
+        """
+
+    def registered(registration):
+        """Determine whether a registration is registered with the registry.
+
+        The method will return a Boolean value.
+        """
+
+
+class IRegistrationManager(IContainerNamesContainer):
+    """Manage Registrations"""
+
+    def addRegistration(registration):
+        """Add a registration to the manager.
+
+        The function will automatically choose a name as which the
+        registration will be known. The name of the registration inside this
+        manager is returned.
+        """
+
+
+class IRegisterableContainer(IContainer):
+    """Containers with registration managers
+
+    These are site-management folders of one sort or another.
+
+    The container allows clients to access the registration manager
+    without knowing it's name.
+
+    The registration manager container *also* supports local-module
+    lookup.
+    """
+
+    registrationManager = Field(
+        title=_("Registration Manager"),
+        description=_("The registration manager keeps track of all component "
+                    "registrations."))
+
+
+class IRegisterable(IContained):
+    """Mark a component as registerable.
+
+    All registerable components need to implement this interface. 
+    """
+    containers(IRegisterableContainer)
+
+
+class IRegisterableContainerContaining(IContainer):
+    """A container that can only contain `IRegisterable`s and
+    `IRegisterableContainer`s.
+
+    This interface was designed to be always used together with the
+    `IRegisterableContainer`.
+    """
+    contains(IRegisterable, IRegisterableContainer)
+    
+
+class IRegistered(Interface):
+    """An object that can track down its registrations.
+
+    The object need not implement this functionality itself, but must at
+    least support doing so via an adapter.
+    """
+
+    def registrations():
+        """Return a sequence of registration objects for this object."""

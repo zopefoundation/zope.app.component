@@ -21,8 +21,8 @@ from zope.component.interfaces import ISiteManager
 from zope.app.container.interfaces import IContainer
 from zope.app.container.constraints import ContainerTypesConstraint
 from zope.app.container.constraints import ItemTypePrecondition
-from zope.app.registration import interfaces as registration
-
+from zope.app.i18n import ZopeMessageIDFactory as _
+import registration
 
 class IComponentManager(zope.interface.Interface):
 
@@ -39,7 +39,7 @@ class IComponentManager(zope.interface.Interface):
                this place should be queried, or just the local one.
         """
 
-class IBindingAware(Interface):
+class IBindingAware(zope.interface.Interface):
 
     def bound(name):
         """Inform a service component that it is providing a service
@@ -59,7 +59,7 @@ class IPossibleSite(zope.interface.Interface):
     """An object that could be a site
     """
 
-    def setSiteManager(sm):
+    def setSiteManager(sitemanager):
         """Sets the service manager for this object.
         """
 
@@ -109,12 +109,6 @@ class ILocalSiteManager(ISiteManager, IComponentManager,
         returns default.
         """
 
-    def queryLocalService(service_type, default=None):
-        """Return a local service, if there is one
-
-        A local service is one configured in the local service manager.
-        """
-
     def addSubsite(subsite):
         """Add a subsite of the site
 
@@ -122,8 +116,30 @@ class ILocalSiteManager(ISiteManager, IComponentManager,
         its containing sites and its subsites.
         """
 
-    next = Attribute('The site that this site is a subsite of.')
+    next = zope.interface.Attribute('The site that this site is a subsite of.')
 
+    def findModule(name):
+        """Find the module of the given name.
+
+        If the module can be find in the folder or a parent folder
+        (within the site manager), then return it, otherwise, delegate
+        to the module service.
+
+        This must return None when the module is not found.
+
+        """
+
+    def resolve(name):
+        """Resolve a dotted object name.
+
+        A dotted object name is a dotted module name and an object
+        name within the module.
+
+        TODO: We really should switch to using some other character than
+        a dot for the delimiter between the module and the object
+        name.
+
+        """
 
 class ISiteManagementFolder(registration.IRegisterableContainer,
                             IContainer):
@@ -155,6 +171,9 @@ class ILocalUtility(registration.IRegisterable):
     IRegistered can be used; otherwise, they must provide
     another way to be adaptable to IRegistered.
     """
+
+
+
 
 
 class IAdapterRegistration(registration.IRegistration):

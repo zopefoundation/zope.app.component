@@ -27,8 +27,8 @@ from zope.app import zapi
 from zope.app.adapter.adapter import LocalAdapterService
 from zope.app.component.localservice import queryNextService
 from zope.app.registration.registration import ComponentRegistration
-from zope.app.utility.interfaces import ILocalUtilityService
-from zope.app.utility.interfaces import IUtilityRegistration
+from interfaces import ILocalUtilityService
+from interfaces import IUtilityRegistration
 
 class LocalUtilityService(UtilityService, LocalAdapterService):
     """Local Utility Service

@@ -23,7 +23,7 @@ from zope.app.container.interfaces import INameChooser
 from zope.app.registration.interfaces import UnregisteredStatus
 from zope.app.registration.interfaces import RegisteredStatus
 from zope.app.registration.interfaces import ActiveStatus
-from zope.app.site.interfaces import ILocalService
+from zope.app.component.bbb.site.interfaces import ILocalService
 from zope.app.utility.interfaces import ILocalUtility
 from zope.app.site.service import ServiceRegistration
 from zope.app.publisher.browser import BrowserView

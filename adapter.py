@@ -16,25 +16,25 @@
 $Id$
 """
 __docformat__ = 'restructuredtext' 
-
+import sys
 from persistent.dict import PersistentDict
 from persistent import Persistent
-from zope.app import zapi
-from zope.app.registration.registration import NotifyingRegistrationStack
-from zope.interface.adapter import adapterImplied, Default
-from zope.interface.adapter import Surrogate, AdapterRegistry
-from zope.security.proxy import removeSecurityProxy
-import sys
-import zope.app.component.localservice
-import zope.app.container.contained
-import zope.app.registration.interfaces
-import zope.app.site.interfaces
-import zope.app.registration
-import zope.component.interfaces
+
 import zope.component.adapter
 import zope.interface
 import zope.schema
+from zope.interface.adapter import adapterImplied, Default
+from zope.interface.adapter import Surrogate, AdapterRegistry
+from zope.security.proxy import removeSecurityProxy
+
+import zope.app.component.localservice
+import zope.app.container.contained
+import zope.app.site.interfaces
+import zope.component.interfaces
+from zope.app import zapi
+from zope.app.component.interfaces.registration import IRegistry
 from zope.app.i18n import ZopeMessageIDFactory as _
+
 
 class LocalSurrogate(Surrogate):
     """Local surrogates
@@ -61,20 +61,18 @@ class LocalSurrogate(Surrogate):
         self.adapters = adapters
         Surrogate.clean(self)
 
-class LocalAdapterRegistry(AdapterRegistry, Persistent):
-    """Local/persistent surrogate registry
-    """
 
-    zope.interface.implements(
-        zope.app.registration.interfaces.IRegistry,
-        )
+class LocalAdapterRegistry(AdapterRegistry, Persistent):
+    """Local/persistent surrogate registry"""
+
+    zope.interface.implements(IRegistry)
     
     _surrogateClass = LocalSurrogate
 
     # Next local registry, may be None
-    next = None
+    nextRegistry = None
 
-    subs = ()
+    subRegistries = ()
 
     def __init__(self, base, next=None):
 
@@ -82,11 +80,11 @@ class LocalAdapterRegistry(AdapterRegistry, Persistent):
         self.base = base
 
         self.adapters = {}
-        self.stacks = PersistentDict()
+        self.registrations = PersistentDict()
         AdapterRegistry.__init__(self)
-        self.setNext(next)
+        self.setNextRegistry(next)
 
-    def setNext(self, next, base=None):
+    def setNextRegistry(self, next, base=None):
         if base is not None:
             self.base = base
         if self.next is not None:
@@ -96,10 +94,10 @@ class LocalAdapterRegistry(AdapterRegistry, Persistent):
         self.next = next
         self.adaptersChanged()
 
-    def addSub(self, sub):
+    def addSubRegistry(self, sub):
         self.subs += (sub, )
 
-    def removeSub(self, sub):
+    def removeSubRegistry(self, sub):
         self.subs = tuple([s for s in self.subs if s is not sub])
 
     def __getstate__(self):
@@ -118,34 +116,6 @@ class LocalAdapterRegistry(AdapterRegistry, Persistent):
     
     def baseFor(self, spec):
         return self.base.get(spec)
-
-    def queryRegistrationsFor(self, registration, default=None):
-        stacks = self.stacks.get(registration.required)
-        if stacks:
-            stack = stacks.get((False, registration.with, registration.name,
-                                registration.provided))
-            if stack is not None:
-                return stack
-
-        return default
-
-    _stackType = NotifyingRegistrationStack
-
-    def createRegistrationsFor(self, registration):
-        stacks = self.stacks.get(registration.required)
-        if stacks is None:
-            stacks = PersistentDict()
-            self.stacks[registration.required] = stacks
-
-        key = (False, registration.with, registration.name,
-               registration.provided)
-        stack = stacks.get(key)
-        if stack is None:
-            stack = self._stackType(self)
-            stacks[key] = stack
-
-        return stack
-
 
     def _updateAdaptersFromLocalData(self, adapters):
         for required, stacks in self.stacks.iteritems():
@@ -168,7 +138,7 @@ class LocalAdapterRegistry(AdapterRegistry, Persistent):
                     
                     radapters[key] = removeSecurityProxy(registration.factory)
 
-    def adaptersChanged(self, *args):
+    def adaptersChanged(self):
 
         adapters = {}
         if self.next is not None:
@@ -186,8 +156,6 @@ class LocalAdapterRegistry(AdapterRegistry, Persistent):
 
             for sub in self.subs:
                 sub.adaptersChanged()
-
-    notifyActivated = notifyDeactivated = adaptersChanged
 
     def baseChanged(self):
         """Someone changed the base service

@@ -29,7 +29,7 @@ from zope.security.proxy import Proxy, removeSecurityProxy
 
 from zope.app import zapi
 from zope.app.annotation.interfaces import IAttributeAnnotatable
-from zope.app.component.localservice import getLocalServices
+#from zope.app.component.localservice import getLocalServices
 from zope.app.container.contained import Contained
 from zope.app.container.contained import setitem, contained, uncontained
 from zope.app.copypastemove import ObjectCopier

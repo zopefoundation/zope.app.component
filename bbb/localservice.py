@@ -21,7 +21,7 @@ from zope.interface import implements
 from zope.component.exceptions import ComponentLookupError
 from zope.component.service import serviceManager
 from zope.component.interfaces import IServiceService
-from zope.app.site.interfaces import ISite, ISiteManager
+from zope.app.component.bbb.site.interfaces import ISite, ISiteManager
 from zope.testing.cleanup import addCleanUp
 from zope.app.component.hooks import setSite
 from zope.component.service import IGlobalServiceManager

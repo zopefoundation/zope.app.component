@@ -18,7 +18,7 @@ $Id$
 __docformat__ = 'restructuredtext'
 
 import zope.component
-from zope.app.site.interfaces import ISite
+from zope.app.component.interfaces import ISite
 from zope.component.exceptions import ComponentLookupError
 from zope.security.proxy import removeSecurityProxy
 from zope.app.traversing.interfaces import IContainmentRoot
@@ -41,7 +41,7 @@ class read_property(object):
 
 class SiteInfo(zope.thread.local):
     site = None
-    services = serviceManager
+    #services = serviceManager
 
     def adapter_hook(self):
         services = self.services

@@ -11,12 +11,20 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Local-adapter support
+"""Test fields.
 
 $Id$
 """
+import unittest
+from zope.testing.doctestunit import DocTestSuite
+from zope.app.tests import placelesssetup
 
-from zope.app.component.bbb.adapter.adapter import IAdapterRegistration
-from zope.app.component.bbb.adapter.adapter import LocalAdapterRegistry
-from zope.app.component.bbb.adapter.adapter import LocalAdapterBasedService
+def test_suite():
+    return unittest.TestSuite((
+        DocTestSuite('zope.app.component.fields',
+                     setUp=placelesssetup.setUp,
+                     tearDown=placelesssetup.tearDown),
+        ))
 
+if __name__ == '__main__':
+    unittest.main(defaultTest='test_suite')
