@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: test_nextservice.py,v 1.5 2003/05/01 19:35:08 faassen Exp $
+$Id: test_nextservice.py,v 1.6 2003/05/27 14:18:12 jim Exp $
 """
 
 from unittest import TestCase, main, makeSuite
@@ -23,7 +23,7 @@ from zope.app.traversing import IContainmentRoot
 from zope.component.exceptions import ComponentLookupError
 from zope.component.interfaces import IServiceService
 from zope.component.service import serviceManager
-from zope.proxy.context import Wrapper
+from zope.context import Wrapper
 
 
 class ServiceManager:

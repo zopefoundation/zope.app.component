@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: hooks.py,v 1.6 2003/05/23 17:52:33 jim Exp $
+$Id: hooks.py,v 1.7 2003/05/27 14:18:12 jim Exp $
 """
 
 from zope.component import getService
@@ -21,8 +21,8 @@ from zope.component.interfaces import IServiceService
 from zope.component.exceptions import ComponentLookupError
 from zope.component.servicenames import Adapters
 from zope.app.interfaces.services.service import IServiceManagerContainer
-from zope.proxy.context import getWrapperContainer, ContextWrapper
-from zope.proxy.context import isWrapper, getWrapperData
+from zope.context import getWrapperContainer, ContextWrapper
+from zope.context import isWrapper, getWrapperData
 from zope.component.service import serviceManager
 from zope.proxy.introspection import removeAllProxies
 from zope.security.proxy import trustedRemoveSecurityProxy

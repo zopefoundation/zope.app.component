@@ -14,7 +14,7 @@
 """
 
 Revision information:
-$Id: test_servicemanagercontainer.py,v 1.5 2003/05/01 19:35:08 faassen Exp $
+$Id: test_servicemanagercontainer.py,v 1.6 2003/05/27 14:18:12 jim Exp $
 """
 
 from unittest import TestCase, main, makeSuite
@@ -22,7 +22,7 @@ from zope.component.interfaces import IServiceService
 from zope.app.interfaces.services.service import IServiceManagerContainer
 from zope.component.exceptions import ComponentLookupError
 from zope.interface.verify import verifyObject
-from zope.proxy.context import getbaseobject
+from zope.context import getbaseobject
 
 class ServiceManager:
 
