@@ -26,6 +26,7 @@ from zope.component.interfaces import IFactory
 from zope.app import zapi
 from zope.app.component.interface import queryInterface
 from zope.app.servicenames import Adapters, Presentation
+from zope.app.security.adapter import TrustedAdapterFactory
 
 PublicPermission = 'zope.Public'
 
@@ -120,7 +121,8 @@ def subscriber(_context, factory, for_, provides=None, permission=None):
                 args = ('', iface)
                 )
 
-def adapter(_context, factory, provides, for_, permission=None, name=''):
+def adapter(_context, factory, provides, for_, permission=None, name='',
+            trusted=False):
     if permission is not None:
         if permission == PublicPermission:
             permission = CheckerPublic
@@ -144,6 +146,9 @@ def adapter(_context, factory, provides, for_, permission=None, name=''):
             return ob
         # Store the original factory for documentation
         factory.factory = factories[0]
+
+    if trusted:
+        factory = TrustedAdapterFactory(factory)
 
     _context.action(
         discriminator = ('adapter', for_, provides, name),

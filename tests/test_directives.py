@@ -195,6 +195,42 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         self.assertEqual(IApp(Content()).__class__, Comp)
 
+    def testTrustedAdapter(self):
+        # Full import is critical!
+        from zope.component.tests.components import Content
+        from zope.app.component.tests.adapter import A1, I1
+
+        xmlconfig(StringIO(template % (
+            """
+            <adapter
+              factory="zope.app.component.tests.adapter.A1"
+              provides="zope.app.component.tests.adapter.I1"
+              for="zope.component.tests.components.IContent"
+              trusted="yes"
+              />
+            """
+            )))
+
+        # With an unproxied object, busoness as usual
+        ob = Content()
+        self.assertEqual(type(I1(ob)), type(A1()))
+
+        # Now with a proxied object:
+        from zope.security.checker import ProxyFactory
+        p = ProxyFactory(ob)
+
+        # we get a proxied adapter:
+        a = I1(p)
+        from zope.security.proxy import Proxy
+        self.assertEqual(type(a), Proxy)
+
+        # around an unproxied object:
+        from zope.security.proxy import getProxiedObject
+        a = getProxiedObject(a)
+        a.context[0] is ob
+        
+        
+
     def testAdapter_w_multiple_factories(self):
         from zope.app.component.tests.adapter import A1, A2, A3
         from zope.component.tests.components import Content, IApp
