@@ -259,7 +259,7 @@ class IFactoryDirective(zope.interface.Interface):
         required=True
         )
     
-    id = zope.schema.TextLine(
+    id = zope.schema.Id(
         title=u"ID",
         required=False
         )
@@ -457,7 +457,7 @@ class IFactorySubdirective(zope.interface.Interface):
     Specify the factory used to create this content object
     """
 
-    id = zope.schema.TextLine(
+    id = zope.schema.Id(
         title=u"ID",
         description=u"""
         the identifier for this factory in the ZMI factory

@@ -146,15 +146,15 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
 <permission id="zope.Foo" title="Zope Foo Permission" />
 
 <content class="zope.app.component.tests.exampleclass.ExampleClass">
-    <factory
-      id="Example"
+  <factory
+      id="test.Example"
       title="Example content"
       description="Example description"
-    />
+      />
 </content>
                        """)
         xmlconfig(f)
-        factory = zapi.getUtility(IFactory, 'Example')
+        factory = zapi.getUtility(IFactory, 'test.Example')
         self.assertEquals(factory.title, "Example content")
         self.assertEquals(factory.description, "Example description")
 
@@ -183,14 +183,14 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
         f = configfile("""
 <content class="zope.app.component.tests.exampleclass.ExampleClass">
     <factory
-      id="Example"
+      id="test.Example"
       title="Example content"
       description="Example description"
     />
 </content>
             """)
         xmlconfig(f)
-        factory = zapi.getUtility(IFactory, 'Example')
+        factory = zapi.getUtility(IFactory, 'test.Example')
         self.assert_(hasattr(factory, '__Security_checker__'))
 
 

@@ -57,13 +57,13 @@ class Test(PlacelessSetup, unittest.TestCase):
 <permission id="zope.Foo" title="Zope Foo Permission" />
 <content class="zope.app.component.tests.exampleclass.ExampleClass">
     <factory
-      id="Example"
+      id="test.Example"
       title="Example content"
       description="Example description"
        />
 </content>''')
         xmlconfig(f)
-        obj = createObject(None, 'Example')
+        obj = createObject(None, 'test.Example')
         obj = removeAllProxies(obj)
         self.failUnless(isinstance(obj, ExampleClass))
 
