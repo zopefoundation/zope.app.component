@@ -13,7 +13,7 @@
 ##############################################################################
 """Generic Components ZCML Handlers
 
-$Id: metaconfigure.py,v 1.40 2004/04/15 13:25:03 srichter Exp $
+$Id: metaconfigure.py,v 1.41 2004/04/23 11:38:58 jim Exp $
 """
 from zope.interface import Interface
 from zope.component.service import UndefinedService
@@ -321,16 +321,18 @@ def view(_context, factory, type, name, for_, layer='default',
         args = (permission, Presentation, 'provideAdapter',
                 type, factory, name, for_, provides, layer, _context.info),
         )
+    if type is not None:
+        _context.action(
+            discriminator = None,
+            callable = provideInterface,
+            args = ('', type)
+            )
+        
     _context.action(
         discriminator = None,
         callable = provideInterface,
-        args = (type.__module__+'.'+type.__name__, type)
-               )
-    _context.action(
-        discriminator = None,
-        callable = provideInterface,
-        args = (provides.__module__+'.'+provides.__name__, type)
-               )
+        args = ('', provides)
+        )
 
     if for_ is not None:
         for iface in for_:
