@@ -19,7 +19,7 @@ import unittest
 import zope.app.component
 import zope.app.security
 
-from zope.app.component.globalinterfaceservice import queryInterface
+from zope.app.component.interface import queryInterface
 from zope.app.component.tests import module
 from zope.app.tests.placelesssetup import PlacelessSetup
 from zope.security.checker import selectChecker

@@ -12,23 +12,13 @@
 #
 ##############################################################################
 import unittest
-
-from zope.app.interfaces.component import IGlobalInterfaceService
-from zope.app.component.globalinterfaceservice import InterfaceService
-from zope.app.component.tests.absIInterfaceService \
-     import IInterfaceServiceTests
-
-from zope.interface.verify import verifyObject
-
-class Test(IInterfaceServiceTests, unittest.TestCase):
-    """Test Interface for InterfaceService Instance."""
-
-    def getServices(self):
-        s = InterfaceService()
-        return s, s
-
-    def testInterfaceVerification(self):
-        verifyObject(IGlobalInterfaceService, InterfaceService())
+from zope.testing.doctestunit import DocTestSuite
 
 def test_suite():
-    return unittest.makeSuite(Test)
+    return unittest.TestSuite((
+        DocTestSuite('zope.app.component.interface'),
+        ))
+
+if __name__ == "__main__":
+    unittest.TextTestRunner().run(test_suite())
+
