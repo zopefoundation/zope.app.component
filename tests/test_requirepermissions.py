@@ -35,14 +35,14 @@ def defineDirectives():
     XMLConfig('meta.zcml', zope.app.security)()
     xmlconfig(StringIO("""<zopeConfigure
         xmlns='http://namespaces.zope.org/zope' >
-       <permission id="extravagant" title="extravagant" />
-       <permission id="paltry" title="paltry" />
+       <permission id="zope.extravagant" title="extravagant" />
+       <permission id="zope.paltry" title="paltry" />
     </zopeConfigure>"""))
 
 NOTSET = []
 
-P1 = "extravagant"
-P2 = "paltry"
+P1 = "zope.extravagant"
+P2 = "zope.paltry"
 
 class Test(PlacelessSetup, unittest.TestCase):
 
