@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: hooks.py,v 1.13 2003/11/21 17:11:28 jim Exp $
+$Id: hooks.py,v 1.14 2003/12/17 10:07:01 jim Exp $
 """
 
 from zope.component import getService
@@ -28,6 +28,7 @@ from zope.app.traversing import IContainmentRoot
 from zope.app.interfaces.location import ILocation
 from zope.app.location import locate
 from zope.component.servicenames import Presentation
+from zope.interface import Interface
 
 def getServiceManager_hook(context, local=False, recurse=False):
 
@@ -62,11 +63,13 @@ def getServiceManager_hook(context, local=False, recurse=False):
     return sm
 
 
-def queryView(object, name, request, default=None, context=None):
+def queryView(object, name, request, default=None, context=None,
+              providing=Interface):
     if context is None:
         context = object
     views = getService(context, Presentation)
-    view = views.queryView(object, name, request, default=default)
+    view = views.queryView(object, name, request, default=default,
+                           providing=providing)
     if ILocation.isImplementedBy(view):
         locate(view, object, name)
 
