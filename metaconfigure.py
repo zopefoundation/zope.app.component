@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: metaconfigure.py,v 1.21 2003/12/07 10:04:51 gotcha Exp $
+$Id: metaconfigure.py,v 1.22 2003/12/17 10:06:20 jim Exp $
 """
 
 from zope.configuration.exceptions import ConfigurationError
@@ -25,6 +25,7 @@ from zope.security.checker import InterfaceChecker, CheckerPublic, \
      Checker, NamesChecker
 from zope.app.security.registries.permissionregistry import permissionRegistry
 from zope.component.service import UndefinedService
+import zope.interface
 
 PublicPermission = 'zope.Public'
 
@@ -175,7 +176,8 @@ def _checker(_context, permission, allowed_interface, allowed_attributes):
 
 def resource(_context, factory, type, name, layer='default',
              permission=None,
-             allowed_interface=None, allowed_attributes=None):
+             allowed_interface=None, allowed_attributes=None,
+             provides=zope.interface.Interface):
 
     if ((allowed_attributes or allowed_interface)
         and (not permission)):
@@ -195,20 +197,27 @@ def resource(_context, factory, type, name, layer='default',
         factory = proxyResource
 
     _context.action(
-        discriminator = ('resource', name, type, layer),
+        discriminator = ('resource', name, type, layer, provides),
         callable = checkingHandler,
         args = (permission, Presentation, 'provideResource',
-                name, type, factory, layer),
+                name, type, factory, layer, provides),
         )
     _context.action(
         discriminator = None,
         callable = handler,
         args = (Interfaces, 'provideInterface',
-                type.__module__+'.'+type.getName(), type)
+                type.__module__+'.'+type.__name__, type)
+        )
+    _context.action(
+        discriminator = None,
+        callable = handler,
+        args = (Interfaces, 'provideInterface',
+                provides.__module__+'.'+provides.__name__, type)
         )
 
 def view(_context, factory, type, name, for_, layer='default',
-         permission=None, allowed_interface=None, allowed_attributes=None):
+         permission=None, allowed_interface=None, allowed_attributes=None,
+         provides=zope.interface.Interface):
 
     if for_ == '*':
         for_ = None
@@ -234,16 +243,22 @@ def view(_context, factory, type, name, for_, layer='default',
         factory[-1] = proxyView
 
     _context.action(
-        discriminator = ('view', for_, name, type, layer),
+        discriminator = ('view', for_, name, type, layer, provides),
         callable = checkingHandler,
         args = (permission, Presentation, 'provideView', for_, name,
-                type, factory, layer),
+                type, factory, layer, provides),
         )
     _context.action(
         discriminator = None,
         callable = handler,
         args = (Interfaces, 'provideInterface',
-                type.__module__+'.'+type.getName(), type)
+                type.__module__+'.'+type.__name__, type)
+        )
+    _context.action(
+        discriminator = None,
+        callable = handler,
+        args = (Interfaces, 'provideInterface',
+                provides.__module__+'.'+provides.__name__, type)
         )
 
     if for_ is not None:

@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: metadirectives.py,v 1.8 2003/12/14 08:48:59 srichter Exp $
+$Id: metadirectives.py,v 1.9 2003/12/17 10:06:20 jim Exp $
 """
 
 from zope.interface import Interface
@@ -105,11 +105,21 @@ class IBasicResourceInformation(Interface):
     name = TextLine(
         title=u"The name of the resource.",
         description=u"The name shows up in URLs/paths. For example 'foo'.",
-        required=True
+        required=True,
+        default=u'',
+        )
+
+    provides = GlobalObject(
+        title=u"The interface this provides.",
+        description=u"""
+        A view can provide an interface.  This would be used for
+        views that support other views.""",
+        required=False,
+        default=Interface,
         )
 
     type = GlobalObject(
-        title=u"Type of the resource",
+        title=u"Request type",
         required=True
         )
 
@@ -209,7 +219,8 @@ class IViewDirective(IBasicViewInformation, IBasicResourceInformation):
         value_type=GlobalObject()
         )
 
-class IResourceDirective(IBasicComponentInformation, IBasicResourceInformation):
+class IResourceDirective(IBasicComponentInformation,
+                         IBasicResourceInformation):
     """
     Register a resource
     """
