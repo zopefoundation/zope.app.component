@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: interfacefield.py,v 1.3 2002/12/30 18:43:05 stevea Exp $
+$Id: interfacefield.py,v 1.4 2003/01/05 18:56:47 stevea Exp $
 """
 
 from zope.schema import ValueSet, Tuple
@@ -48,15 +48,14 @@ class InterfacesField(Tuple):
 
     value_type = Interface
 
-    def __init__(self, value_type=Interface, *args, **kw):
-        super(InterfacesField, self).__init__(*args, **kw)
+    def __init__(self, value_type=Interface, default=(), *args, **kw):
+        super(InterfacesField, self).__init__(default=default, *args, **kw)
         self.validate((value_type,))
         self.value_type = value_type
         # Not using schema.Sequence.value_types
 
     def _validate(self, value):
         super(InterfacesField, self)._validate(value)
-
         for item in value:
             if not IInterface.isImplementedBy(item):
                 raise ValidationError("Not an interface", item)
