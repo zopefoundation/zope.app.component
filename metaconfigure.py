@@ -13,7 +13,7 @@
 ##############################################################################
 """Generic Components ZCML Handlers
 
-$Id: metaconfigure.py,v 1.41 2004/04/23 11:38:58 jim Exp $
+$Id: metaconfigure.py,v 1.42 2004/04/24 23:19:27 srichter Exp $
 """
 from zope.interface import Interface
 from zope.component.service import UndefinedService
@@ -289,12 +289,17 @@ def view(_context, factory, type, name, for_, layer='default',
         checker = _checker(_context, permission,
                            allowed_interface, allowed_attributes)
 
-        def proxyView(context, request, factory=factory[-1], checker=checker):
-            return proxify(factory(context, request), checker)
-        # Keep track of the factory for documentation
-        proxyView.factory = factory[-1]
+        class ProxyView(object):
+            """Class to create simple proxy views."""
 
-        factory[-1] = proxyView
+            def __init__(self, factory, checker):
+                self.factory = factory
+                self.checker = checker
+
+            def __call__(self, *objects):
+                return proxify(self.factory(*objects), self.checker)
+
+        factory[-1] = ProxyView(factory[-1], checker)
 
 
     if not for_:
