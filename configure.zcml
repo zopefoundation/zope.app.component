@@ -8,7 +8,7 @@
 <service serviceType='Utilities'
          permission='zope.Public'
          component='zope.component.utility.utilityService' />
-           
+
 <serviceType id='Adapters'
              interface='zope.component.interfaces.IAdapterService' />
 <service serviceType='Adapters'
@@ -27,18 +27,18 @@
          permission='zope.Public'
          component='zope.component.skin.skinService' />
 
-<serviceType id='Views' 
+<serviceType id='Views'
              interface='zope.component.interfaces.IViewService' />
 <service serviceType='Views'
          permission='zope.Public'
          component='zope.component.view.viewService' />
-         
+
 <serviceType id='Resources'
              interface='zope.component.interfaces.IResourceService' />
 <service serviceType='Resources'
          permission='zope.Public'
          component='zope.component.resource.resourceService' />
-         
+
 <hook module="zope.component"
       name="getServiceManager"
       implementation="zope.app.component.hooks.getServiceManager_hook" />
@@ -46,8 +46,8 @@
 <serviceType
     id='Interfaces'
     interface='zope.app.interfaces.component.IInterfaceService' />
-   
-<service 
+
+<service
    serviceType='Interfaces'
    permission='zope.Public'
    component='zope.app.component.globalinterfaceservice.interfaceService' />
