@@ -18,10 +18,12 @@ from cStringIO import StringIO
 
 from zope.configuration.xmlconfig import xmlconfig
 from zope.configuration.xmlconfig import XMLConfig
+from zope.proxy import removeAllProxies
 from zope.app.services.servicenames import Factories
 from zope.app.tests.placelesssetup import PlacelessSetup
 from zope.security.management import newSecurityManager, system_user
 
+from zope.app import zapi
 import zope.app.security
 import zope.app.component
 
@@ -43,9 +45,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         XMLConfig('meta.zcml', zope.app.security)()
 
     def testFactory(self):
-        from zope.component import getService
-        from zope.proxy import removeAllProxies
-        f = configfile("""
+        f = configfile('''
 <permission id="zope.Foo" title="Zope Foo Permission" />
 <content class="zope.app.component.tests.exampleclass.ExampleClass">
     <factory
@@ -54,10 +54,9 @@ class Test(PlacelessSetup, unittest.TestCase):
       title="Example content"
       description="Example description"
        />
-</content>
-                       """)
+</content>''')
         xmlconfig(f)
-        obj = getService(None, Factories).createObject('Example')
+        obj = zapi.getService(None, Factories).createObject('Example')
         obj = removeAllProxies(obj)
         self.failUnless(isinstance(obj, ExampleClass))
 

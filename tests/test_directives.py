@@ -11,39 +11,35 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Component Directives Tests
 
+$Id: test_directives.py,v 1.27 2004/03/08 12:05:55 srichter Exp $
+"""
+import re
 import unittest
+import pprint
 from cStringIO import StringIO
+
+from zope.interface import Interface, implements
+from zope.testing.doctestunit import DocTestSuite
+from zope.app.component.metaconfigure import interface
+from zope.app.content.interfaces import IContentType
 
 from zope.configuration.xmlconfig import xmlconfig, XMLConfig
 from zope.configuration.exceptions import ConfigurationError
-from zope.app.security.exceptions import UndefinedPermissionError
 
 from zope.proxy import getProxiedObject
 from zope.security.proxy import getTestProxyItems
 
 import zope.app.component
 from zope.component.exceptions import ComponentLookupError
-from zope.component import getView, queryView, queryResource
-from zope.component import createObject
-from zope.component import getDefaultViewName
-from zope.component import getNamedAdapter, queryNamedAdapter
-from zope.component import getUtility, queryUtility
 
+from zope.app import zapi
 from zope.app.tests.placelesssetup import PlacelessSetup
 from zope.app.component.tests.views import IV, IC, V1, VZMI, R1, RZMI, IR
 from zope.component.tests.request import Request
-from zope.interface import implements
 from zope.security.checker import ProxyFactory
 
-
-import re
-import pprint
-
-from zope.interface import Interface
-from zope.testing.doctestunit import DocTestSuite
-from zope.app.component.metaconfigure import interface
-from zope.app.content.interfaces import IContentType
 
 atre = re.compile(' at [0-9a-fA-Fx]+')
 
@@ -131,7 +127,7 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         self.testAdapter()
         self.assertEqual(IApp(Content()).__class__, Comp)
-        self.assertEqual(queryNamedAdapter(Content(), IV, 'test'),
+        self.assertEqual(zapi.queryNamedAdapter(Content(), IV, 'test'),
                          None)
 
         xmlconfig(StringIO(template % (
@@ -145,8 +141,9 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        self.assertEqual(getNamedAdapter(Content(), IApp, "test").__class__,
-                         Comp)
+        self.assertEqual(
+            zapi.getNamedAdapter(Content(), IApp, "test").__class__,
+            Comp)
 
     def testProtectedAdapter(self):
 
@@ -182,15 +179,14 @@ class Test(PlacelessSetup, unittest.TestCase):
               />
             """
             ))
-        self.assertRaises(UndefinedPermissionError, xmlconfig, config,
-                          testing=1)
+        self.assertRaises(ValueError, xmlconfig, config, testing=1)
 
     def testUtility(self):
 
         # Full import is critical!
         from zope.component.tests.components import IApp, comp
 
-        self.assertEqual(queryUtility(None, IV, None), None)
+        self.assertEqual(zapi.queryUtility(None, IV, None), None)
 
         xmlconfig(StringIO(template % (
             """
@@ -201,7 +197,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        self.assertEqual(getUtility(None, IApp), comp)
+        self.assertEqual(zapi.getUtility(None, IApp), comp)
 
     def testNamedUtility(self):
 
@@ -210,7 +206,7 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         self.testUtility()
 
-        self.assertEqual(queryUtility(None, IV, None, name='test'), None)
+        self.assertEqual(zapi.queryUtility(None, IV, None, name='test'), None)
 
         xmlconfig(StringIO(template % (
             """
@@ -222,14 +218,14 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        self.assertEqual(getUtility(None, IApp, "test"), comp)
+        self.assertEqual(zapi.getUtility(None, IApp, "test"), comp)
 
     def testUtilityFactory(self):
 
         # Full import is critical!
         from zope.component.tests.components import IApp, Comp
 
-        self.assertEqual(queryUtility(None, IV, None), None)
+        self.assertEqual(zapi.queryUtility(None, IV, None), None)
 
         xmlconfig(StringIO(template % (
             """
@@ -240,14 +236,14 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        self.assertEqual(getUtility(None, IApp).__class__, Comp)
+        self.assertEqual(zapi.getUtility(None, IApp).__class__, Comp)
 
     def testProtectedUtility(self):
 
         # Full import is critical!
         from zope.component.tests.components import IApp, comp
 
-        self.assertEqual(queryUtility(None, IV, None), None)
+        self.assertEqual(zapi.queryUtility(None, IV, None), None)
 
         xmlconfig(StringIO(template % (
             """
@@ -259,7 +255,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        utility = ProxyFactory(getUtility(None, IApp))
+        utility = ProxyFactory(zapi.getUtility(None, IApp))
         items = [item[0] for item in getTestProxyItems(utility)]
         self.assertEqual(items, ['a', 'f'])
         self.assertEqual(getProxiedObject(utility), comp)
@@ -274,14 +270,14 @@ class Test(PlacelessSetup, unittest.TestCase):
               />
             """
             ))
-        self.assertRaises(UndefinedPermissionError, xmlconfig, config,
+        self.assertRaises(ValueError, xmlconfig, config,
                           testing=1)
 
 
     def testView(self):
 
         ob = Ob()
-        self.assertEqual(queryView(ob, 'test', Request(IV), None), None)
+        self.assertEqual(zapi.queryView(ob, 'test', Request(IV), None), None)
 
         xmlconfig(StringIO(template %
             """
@@ -292,13 +288,14 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             ))
 
-        self.assertEqual(queryView(ob, 'test', Request(IV), None).__class__,
-                         V1)
+        self.assertEqual(
+            zapi.queryView(ob, 'test', Request(IV), None).__class__,
+            V1)
 
     def testViewThatProvidesAnInterface(self):
 
         ob = Ob()
-        self.assertEqual(queryView(ob, 'test', Request(IV), None), None)
+        self.assertEqual(zapi.queryView(ob, 'test', Request(IV), None), None)
 
         xmlconfig(StringIO(template %
             """
@@ -310,7 +307,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             ))
 
-        v = queryView(ob, 'test', Request(IR), None, providing=IV)
+        v = zapi.queryView(ob, 'test', Request(IR), None, providing=IV)
         self.assertEqual(v, None)
 
         xmlconfig(StringIO(template %
@@ -324,7 +321,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             ))
 
-        v = queryView(ob, 'test', Request(IR), None, providing=IV)
+        v = zapi.queryView(ob, 'test', Request(IR), None, providing=IV)
 
         self.assertEqual(v.__class__,
                          V1)
@@ -332,7 +329,7 @@ class Test(PlacelessSetup, unittest.TestCase):
     def testUnnamedViewThatProvidesAnInterface(self):
 
         ob = Ob()
-        self.assertEqual(queryView(ob, '', Request(IV), None), None)
+        self.assertEqual(zapi.queryView(ob, '', Request(IV), None), None)
 
         xmlconfig(StringIO(template %
             """
@@ -343,7 +340,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             ))
 
-        v = queryView(ob, '', Request(IR), None, providing=IV)
+        v = zapi.queryView(ob, '', Request(IR), None, providing=IV)
         self.assertEqual(v, None)
 
         xmlconfig(StringIO(template %
@@ -356,7 +353,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             ))
 
-        v = queryView(ob, '', Request(IR), None, providing=IV)
+        v = zapi.queryView(ob, '', Request(IR), None, providing=IV)
 
         self.assertEqual(v.__class__, V1)
 
@@ -373,7 +370,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             ))
 
-        v = ProxyFactory(getView(Ob(), 'test', Request(IV)))
+        v = ProxyFactory(zapi.getView(Ob(), 'test', Request(IV)))
         self.assertEqual(v.index(), 'V1 here')
         self.assertRaises(Exception, getattr, v, 'action')
 
@@ -390,7 +387,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             ))
 
-        v = ProxyFactory(getView(Ob(), 'test', Request(IV)))
+        v = ProxyFactory(zapi.getView(Ob(), 'test', Request(IV)))
         self.assertEqual(v.action(), 'done')
         self.assertRaises(Exception, getattr, v, 'index')
 
@@ -408,7 +405,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             ))
 
-        v = getView(Ob(), 'test', Request(IV))
+        v = zapi.getView(Ob(), 'test', Request(IV))
         self.assertEqual(v.index(), 'V1 here')
         self.assertEqual(v.action(), 'done')
 
@@ -426,7 +423,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             ))
 
-        v = getView(Ob(), 'test', Request(IV))
+        v = zapi.getView(Ob(), 'test', Request(IV))
         self.assertEqual(v.index(), 'V1 here')
         self.assertEqual(v.action(), 'done')
 
@@ -458,15 +455,14 @@ class Test(PlacelessSetup, unittest.TestCase):
                   />
             """
             ))
-        self.assertRaises(UndefinedPermissionError, xmlconfig, config,
-                          testing=1)
+        self.assertRaises(ValueError, xmlconfig, config, testing=1)
 
 
 
     def testDefaultView(self):
 
         ob = Ob()
-        self.assertEqual(queryView(ob, 'test', Request(IV), None), None)
+        self.assertEqual(zapi.queryView(ob, 'test', Request(IV), None), None)
 
         xmlconfig(StringIO(template % (
             """
@@ -477,14 +473,15 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        self.assertEqual(queryView(ob, 'test', Request(IV), None).__class__,
-                         V1)
-        self.assertEqual(getDefaultViewName(ob, Request(IV)), 'test')
+        self.assertEqual(
+            zapi.queryView(ob, 'test', Request(IV), None).__class__,
+            V1)
+        self.assertEqual(zapi.getDefaultViewName(ob, Request(IV)), 'test')
 
     def testDefaultViewOnly(self):
 
         ob = Ob()
-        self.assertEqual(queryView(ob, 'test', Request(IV), None), None)
+        self.assertEqual(zapi.queryView(ob, 'test', Request(IV), None), None)
 
         xmlconfig(StringIO(template % (
             """
@@ -494,13 +491,13 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        self.assertEqual(queryView(ob, 'test', Request(IV), None), None)
-        self.assertEqual(getDefaultViewName(ob, Request(IV)), 'test')
+        self.assertEqual(zapi.queryView(ob, 'test', Request(IV), None), None)
+        self.assertEqual(zapi.getDefaultViewName(ob, Request(IV)), 'test')
 
     def testSkinView(self):
 
         ob = Ob()
-        self.assertEqual(queryView(ob, 'test', Request(IV), None), None)
+        self.assertEqual(zapi.queryView(ob, 'test', Request(IV), None), None)
 
         xmlconfig(StringIO(template % (
             """
@@ -518,16 +515,18 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        self.assertEqual(queryView(ob, 'test', Request(IV), None).__class__,
-                         V1)
         self.assertEqual(
-            queryView(ob, 'test', Request(IV, 'zmi'), None).__class__,
+            zapi.queryView(ob, 'test', Request(IV), None).__class__,
+            V1)
+        self.assertEqual(
+            zapi.queryView(ob, 'test', Request(IV, 'zmi'), None).__class__,
             VZMI)
 
     def testResource(self):
 
         ob = Ob()
-        self.assertEqual(queryResource(ob, 'test', Request(IV), None), None)
+        self.assertEqual(
+            zapi.queryResource(ob, 'test', Request(IV), None), None)
         xmlconfig(StringIO(template % (
             """
             <resource name="test"
@@ -536,14 +535,15 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        self.assertEqual(queryResource(ob, 'test', Request(IV), None
-                                       ).__class__,
+        self.assertEqual(zapi.queryResource(ob, 'test', Request(IV), None
+                                            ).__class__,
                          R1)
 
     def testResourceThatProvidesAnInterface(self):
 
         ob = Ob()
-        self.assertEqual(queryResource(ob, 'test', Request(IV), None), None)
+        self.assertEqual(
+            zapi.queryResource(ob, 'test', Request(IV), None), None)
 
         xmlconfig(StringIO(template %
             """
@@ -555,7 +555,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             ))
 
-        v = queryResource(ob, 'test', Request(IR), None, providing=IV)
+        v = zapi.queryResource(ob, 'test', Request(IR), None, providing=IV)
         self.assertEqual(v, None)
 
         xmlconfig(StringIO(template %
@@ -569,14 +569,14 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             ))
 
-        v = queryResource(ob, 'test', Request(IR), None, providing=IV)
+        v = zapi.queryResource(ob, 'test', Request(IR), None, providing=IV)
 
         self.assertEqual(v.__class__, R1)
 
     def testUnnamedResourceThatProvidesAnInterface(self):
 
         ob = Ob()
-        self.assertEqual(queryResource(ob, '', Request(IV), None), None)
+        self.assertEqual(zapi.queryResource(ob, '', Request(IV), None), None)
 
         xmlconfig(StringIO(template %
             """
@@ -587,7 +587,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             ))
 
-        v = queryResource(ob, '', Request(IR), None, providing=IV)
+        v = zapi.queryResource(ob, '', Request(IR), None, providing=IV)
         self.assertEqual(v, None)
 
         xmlconfig(StringIO(template %
@@ -600,7 +600,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             ))
 
-        v = queryResource(ob, '', Request(IR), None, providing=IV)
+        v = zapi.queryResource(ob, '', Request(IR), None, providing=IV)
 
         self.assertEqual(v.__class__, R1)
 
@@ -614,14 +614,14 @@ class Test(PlacelessSetup, unittest.TestCase):
                   permission="zope.UndefinedPermission"/>
             """
             ))
-        self.assertRaises(UndefinedPermissionError, xmlconfig, config,
-                          testing=1)
+        self.assertRaises(ValueError, xmlconfig, config, testing=1)
 
 
     def testSkinResource(self):
 
         ob = Ob()
-        self.assertEqual(queryResource(ob, 'test', Request(IV), None), None)
+        self.assertEqual(
+            zapi.queryResource(ob, 'test', Request(IV), None), None)
 
         xmlconfig(StringIO(template % (
             """
@@ -638,15 +638,15 @@ class Test(PlacelessSetup, unittest.TestCase):
             )))
 
         self.assertEqual(
-            queryResource(ob, 'test', Request(IV), None).__class__,
+            zapi.queryResource(ob, 'test', Request(IV), None).__class__,
             R1)
         self.assertEqual(
-            queryResource(ob, 'test', Request(IV, 'zmi'), None).__class__,
+            zapi.queryResource(ob, 'test', Request(IV, 'zmi'), None).__class__,
             RZMI)
 
     def testFactory(self):
 
-        self.assertRaises(ComponentLookupError, createObject, None, 'foo')
+        self.assertRaises(ComponentLookupError, zapi.createObject, None, 'foo')
 
         xmlconfig(StringIO(template % (
             """
@@ -658,7 +658,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             )))
 
         from zope.component.tests.factory import X
-        self.assertEqual(createObject(None, 'foo').__class__, X)
+        self.assertEqual(zapi.createObject(None, 'foo').__class__, X)
 
 def test_suite():
     return unittest.TestSuite((

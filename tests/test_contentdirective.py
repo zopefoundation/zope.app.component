@@ -13,21 +13,19 @@
 ##############################################################################
 """
 
-$Id: test_contentdirective.py,v 1.14 2004/03/05 22:08:59 jim Exp $
+$Id: test_contentdirective.py,v 1.15 2004/03/08 12:05:55 srichter Exp $
 """
-
 import unittest
 from StringIO import StringIO
 
 import zope.app.security
 import zope.app.component
 
+from zope.app import zapi
 from zope.component.exceptions import ComponentLookupError
 from zope.configuration.xmlconfig import xmlconfig, XMLConfig
 from zope.app.tests.placelesssetup import PlacelessSetup
 from zope.security.management import newSecurityManager, system_user
-from zope.app.security.exceptions import UndefinedPermissionError
-from zope.component import getService
 from zope.app.services.servicenames import Factories
 from zope.app.component.interface import queryInterface
 
@@ -153,7 +151,7 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
 </content>
                        """)
         xmlconfig(f)
-        factory = getService(None, Factories).getFactory('Example')
+        factory = zapi.getService(None, Factories).getFactory('Example')
         self.assertEquals(factory.title, "Example content")
         self.assertEquals(factory.description, "Example description")
 
@@ -170,7 +168,7 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
 </content>
                        """)
         xmlconfig(f)
-        fservice = getService(None, Factories)
+        fservice = zapi.getService(None, Factories)
         self.assertRaises(ComponentLookupError, fservice.getFactory, 'Example')
         factory = fservice.getFactory('zope.app.component.tests.exampleclass.ExampleClass')
         self.assertEquals(factory.title, "Example content")
@@ -190,8 +188,7 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
     />
 </content>
             """)
-        self.assertRaises(UndefinedPermissionError, xmlconfig, f,
-                          testing=1)
+        self.assertRaises(ValueError, xmlconfig, f, testing=1)
 
 
     def testFactoryPublicPermission(self):
@@ -209,7 +206,7 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
 </content>
             """)
         xmlconfig(f)
-        factory = getService(None, Factories).getFactory('Example')
+        factory = zapi.getService(None, Factories).getFactory('Example')
         self.assert_(hasattr(factory, '__Security_checker__'))
 
 

@@ -13,20 +13,20 @@
 ##############################################################################
 """ Register class directive.
 
-$Id: contentdirective.py,v 1.15 2004/03/05 22:08:58 jim Exp $
+$Id: contentdirective.py,v 1.16 2004/03/08 12:05:54 srichter Exp $
 """
 from types import ModuleType
 from zope.interface import classImplements
-from zope.component import getService
 from zope.component.factory import FactoryInfo
 from zope.app.services.servicenames import Factories
 from zope.configuration.exceptions import ConfigurationError
 from zope.app.component.classfactory import ClassFactory
 from zope.app.security.protectclass \
     import protectLikeUnto, protectName, protectSetAttribute
-from zope.app.security.registries.permissionregistry import permissionRegistry
 from zope.app.component.interface import provideInterface
+from zope.app import zapi
 from zope.security.checker import CheckerPublic
+from zope.app.security.permission import checkPermission 
 
 from zope.schema.interfaces import IField
 
@@ -42,13 +42,13 @@ class ProtectionDeclarationException(Exception):
     pass
 
 def handler(serviceName, methodName, *args, **kwargs):
-    method=getattr(getService(None, serviceName), methodName)
+    method=getattr(zapi.getService(None, serviceName), methodName)
     method(*args, **kwargs)
 
 def assertPermission(permission=None, *args, **kw):
     """Check if permission is defined"""
     if permission is not None:
-        permissionRegistry.ensurePermissionDefined(permission)
+        checkPermission(None, permission)
 
 class ContentDirective:
 
@@ -204,4 +204,4 @@ def provideClass(id, _class, permission=None,
     factory = ClassFactory(_class, title, description, permission)
     info = FactoryInfo(title, description)
 
-    getService(None, Factories).provideFactory(id, factory, info)
+    zapi.getService(None, Factories).provideFactory(id, factory, info)

@@ -13,21 +13,21 @@
 ##############################################################################
 """Generic Components ZCML Handlers
 
-$Id: metaconfigure.py,v 1.27 2004/03/05 15:53:17 eddala Exp $
+$Id: metaconfigure.py,v 1.28 2004/03/08 12:05:54 srichter Exp $
 """
-
+from zope.interface import Interface
+from zope.component.service import UndefinedService
 from zope.configuration.exceptions import ConfigurationError
-from zope.security.proxy import Proxy, ProxyFactory
-from zope.component import getService, getServiceManager
-from zope.component.factory import FactoryInfo
-from zope.app.services.servicenames import Adapters
-from zope.app.services.servicenames import Factories, Presentation
-from zope.app.component.interface import queryInterface
 from zope.security.checker import InterfaceChecker, CheckerPublic, \
      Checker, NamesChecker
-from zope.app.security.registries.permissionregistry import permissionRegistry
-from zope.component.service import UndefinedService
-import zope.interface
+from zope.security.proxy import Proxy, ProxyFactory
+from zope.component.factory import FactoryInfo
+
+from zope.app import zapi
+from zope.app.component.interface import queryInterface
+from zope.app.security.permission import checkPermission 
+from zope.app.services.servicenames import Adapters, Factories, Presentation
+
 
 PublicPermission = 'zope.Public'
 
@@ -35,14 +35,14 @@ PublicPermission = 'zope.Public'
 # directly importing the various services)  not only because it makes
 # unit tests easier, but also because it reinforces that the services
 # should always be obtained through the
-# IPlacefulComponentArchitecture interface methods
+# IPlacefulComponentArchitecture interface methods.
 
 # But these services aren't placeful! And we need to get at things that
 # normal service clients don't need!   Jim
 
 
 def handler(serviceName, methodName, *args, **kwargs):
-    method=getattr(getService(None, serviceName), methodName)
+    method=getattr(zapi.getService(None, serviceName), methodName)
     method(*args, **kwargs)
 
 # We can't use the handler for serviceType, because serviceType needs
@@ -52,11 +52,11 @@ from zope.app.component.interface import provideInterface
 def checkingHandler(permission=None, *args, **kw):
     """Check if permission is defined"""
     if permission is not None:
-        permissionRegistry.ensurePermissionDefined(permission)
+        checkPermission(None, permission)
     handler(*args, **kw)
 
 def managerHandler(methodName, *args, **kwargs):
-    method=getattr(getServiceManager(None), methodName)
+    method=getattr(zapi.getServiceManager(None), methodName)
     method(*args, **kwargs)
 
 def interface(_context, interface, type=None):
@@ -144,7 +144,7 @@ def factory(_context, component, id=None, title=None, description=None,
 def provideFactory(name, factory, title, description, permission):
     # make sure the permission is defined
     if permission is not None:
-        permissionRegistry.ensurePermissionDefined(permission)
+        checkPermission(None, permission)
 
     if permission == PublicPermission:
         permission = CheckerPublic
@@ -157,7 +157,7 @@ def provideFactory(name, factory, title, description, permission):
                          __call__=permission)
             )
     info = FactoryInfo(title, description)
-    getService(None, Factories).provideFactory(name, factory, info)
+    zapi.getService(None, Factories).provideFactory(name, factory, info)
 
 def _checker(_context, permission, allowed_interface, allowed_attributes):
     if (not allowed_attributes) and (not allowed_interface):
@@ -181,7 +181,7 @@ def _checker(_context, permission, allowed_interface, allowed_attributes):
 def resource(_context, factory, type, name, layer='default',
              permission=None,
              allowed_interface=None, allowed_attributes=None,
-             provides=zope.interface.Interface):
+             provides=Interface):
 
     if ((allowed_attributes or allowed_interface)
         and (not permission)):
@@ -219,7 +219,7 @@ def resource(_context, factory, type, name, layer='default',
 
 def view(_context, factory, type, name, for_, layer='default',
          permission=None, allowed_interface=None, allowed_attributes=None,
-         provides=zope.interface.Interface):
+         provides=Interface):
 
     if for_ == '*':
         for_ = None
@@ -315,7 +315,7 @@ def provideService(serviceType, component, permission):
     # We have to wait till execution time so we can find out the interface.
     # Waaaa.
 
-    service_manager = getServiceManager(None)
+    service_manager = zapi.getServiceManager(None)
 
     if permission:
         for stype, interface in service_manager.getServiceDefinitions():

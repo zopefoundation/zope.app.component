@@ -11,7 +11,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Service Directive Tests
 
+$Id: test_servicedirective.py,v 1.12 2004/03/08 12:05:55 srichter Exp $
+"""
 import unittest
 from cStringIO import StringIO
 
@@ -157,7 +160,7 @@ class Test(PlacelessSetup, unittest.TestCase):
               <directive name="permission"
                  attributes="id title description"
                  handler="
-              zope.app.security.registries.metaconfigure.definePermission" />
+              zope.app.security.metaconfigure.definePermission" />
             </directives>
 
             <permission id="zope.TestPermission" title="Test permission" />
