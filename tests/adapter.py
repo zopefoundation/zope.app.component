@@ -17,6 +17,8 @@ $Id$
 """
 
 import zope.interface
+import zope.component
+import zope.component.tests.components
 
 class I1(zope.interface.Interface):
     pass
@@ -42,8 +44,18 @@ class A2(Adapter):
     zope.interface.implements(I2)
 
 class A3(Adapter):
+    zope.component.adapts(zope.component.tests.components.IContent, I1, I2)
     zope.interface.implements(I3)
 
+class A4:
+    pass
+
+a4 = A4()
+
+class A5:
+    zope.interface.implements(I1, I2)
+
+a5 = A5()
 
 def Handler(content, *args):
     # uninteresting handler

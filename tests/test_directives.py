@@ -236,6 +236,48 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         self.assertEqual(IApp(Content()).__class__, Comp)
 
+    def testAdapter_wo_provides_or_for(self):
+        # Full import is critical!
+        from zope.component.tests.components import Content, IApp, Comp
+
+        self.assertEqual(IV(Content(), None), None)
+
+        xmlconfig(StringIO(template % (
+            """
+            <adapter
+              factory="zope.component.tests.components.Comp"
+              />
+            """
+            )))
+
+        self.assertEqual(IApp(Content()).__class__, Comp)        
+
+    def testAdapter_wo_provides_and_no_implented_fails(self):
+        try:
+            xmlconfig(StringIO(template % (
+                """
+                <adapter
+                  factory="zope.app.component.tests.adapter.A4"
+                  for="zope.component.tests.components.IContent"
+                  />
+                """
+                )))
+        except ConfigurationError, v:
+            self.assert_("Missing 'provides' attribute" in str(v))
+
+    def testAdapter_wo_provides_and_too_many_implented_fails(self):
+        try:
+            xmlconfig(StringIO(template % (
+                """
+                <adapter
+                  factory="zope.app.component.tests.adapter.A4"
+                  for="zope.component.tests.components.IContent"
+                  />
+                """
+                )))
+        except ConfigurationError, v:
+            self.assert_("Missing 'provides' attribute" in str(v))
+
     def testTrustedAdapter(self):
         # Full import is critical!
         from zope.component.tests.components import Content
@@ -330,6 +372,26 @@ class Test(PlacelessSetup, unittest.TestCase):
                    zope.app.component.tests.adapter.I1
                    zope.app.component.tests.adapter.I2
                   "
+              />
+            """
+            )))
+
+        content = Content()
+        a1 = A1()
+        a2 = A2()
+        a3 = zapi.queryMultiAdapter((content, a1, a2), I3)
+        self.assertEqual(a3.__class__, A3)
+        self.assertEqual(a3.context, (content, a1, a2))
+
+    def testMultiAdapter_wo_for_or_provides(self):
+        from zope.app.component.tests.adapter import A1, A2, A3, I3
+        from zope.component.tests.components import Content
+
+        xmlconfig(StringIO(template % (
+            """
+            <adapter
+              factory="zope.app.component.tests.adapter.A3
+                      "
               />
             """
             )))
@@ -471,6 +533,71 @@ class Test(PlacelessSetup, unittest.TestCase):
             )))
 
         self.assertEqual(zapi.getUtility(IApp), comp)
+
+    def testUtility_wo_provides(self):
+
+        # Full import is critical!
+        from zope.component.tests.components import IApp, comp
+
+        self.assertEqual(zapi.queryUtility(IV), None)
+
+        xmlconfig(StringIO(template % (
+            """
+            <utility
+              component="zope.component.tests.components.comp"
+              />
+            """
+            )))
+
+        self.assertEqual(zapi.getUtility(IApp), comp)
+
+    def testUtility_wo_provides_fails_if_no_provides(self):
+        try:
+            xmlconfig(StringIO(template % (
+                """
+                <utility
+                  component="zope.app.component.tests.adapter.a4"
+                  />
+                """
+                )))
+        except ConfigurationError, v:
+            self.assert_("Missing 'provides' attribute" in str(v))
+
+    def testUtility_wo_provides_fails_if_too_many_provided(self):
+        try:
+            xmlconfig(StringIO(template % (
+                """
+                <utility
+                  component="zope.app.component.tests.adapter.a5"
+                  />
+                """
+                )))
+        except ConfigurationError, v:
+            self.assert_("Missing 'provides' attribute" in str(v))
+
+    def testUtility_wo_provides_fails_if_no_implemented(self):
+        try:
+            xmlconfig(StringIO(template % (
+                """
+                <utility
+                  factory="zope.app.component.tests.adapter.A4"
+                  />
+                """
+                )))
+        except ConfigurationError, v:
+            self.assert_("Missing 'provides' attribute" in str(v))
+
+    def testUtility_wo_provides_fails_if_too_many_implemented(self):
+        try:
+            xmlconfig(StringIO(template % (
+                """
+                <utility
+                  factory="zope.app.component.tests.adapter.A5"
+                  />
+                """
+                )))
+        except ConfigurationError, v:
+            self.assert_("Missing 'provides' attribute" in str(v))
 
     def testNamedUtility(self):
 

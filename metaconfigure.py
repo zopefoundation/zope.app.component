@@ -20,6 +20,7 @@ __docformat__ = 'restructuredtext'
 from zope.component.interfaces import IDefaultViewName, IFactory
 from zope.component.service import UndefinedService
 from zope.configuration.exceptions import ConfigurationError
+import zope.interface
 from zope.interface import Interface
 from zope.interface.interfaces import IInterface
 
@@ -128,15 +129,36 @@ def subscriber(_context, factory, for_, provides=None, permission=None,
                 args = ('', iface)
                 )
 
-def adapter(_context, factory, provides, for_, permission=None, name='',
-            trusted=False):
+def adapter(_context, factory, provides=None, for_=None, permission=None,
+            name='', trusted=False):
+
     if permission is not None:
         if permission == PublicPermission:
             permission = CheckerPublic
         checker = InterfaceChecker(provides, permission)
         factory.append(lambda c: proxify(c, checker))
 
+    if for_ is None:
+        if len(factory) == 1:
+            try:
+                for_ = factory[0].__component_adapts__
+            except AttributeError:
+                pass
+
+        if for_ is None:
+            raise TypeError("No for attribute was provided and can't "
+                            "determine what the factory adapts.")
+
     for_ = tuple(for_)
+
+    if provides is None:
+        if len(factory) == 1:
+            p = list(zope.interface.implementedBy(factory[0]))
+            if len(p) == 1:
+                provides = p[0]
+
+        if provides is None:
+            raise TypeError("Missing 'provides' attribute")            
 
     # Generate a single factory from multiple factories:
     factories = factory
@@ -177,12 +199,19 @@ def adapter(_context, factory, provides, for_, permission=None, name='',
                     args = ('', iface)
                     )
 
-def utility(_context, provides, component=None, factory=None,
+def utility(_context, provides=None, component=None, factory=None,
             permission=None, name=''):
     if factory:
         if component:
             raise TypeError("Can't specify factory and component.")
         component = factory()
+
+    if provides is None:
+        provides = list(zope.interface.providedBy(component))
+        if len(provides) == 1:
+            provides = provides[0]
+        else:
+            raise TypeError("Missing 'provides' attribute")
 
     if permission is not None:
         if permission == PublicPermission:
