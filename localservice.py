@@ -20,7 +20,6 @@ from zope.interface import implements
 from zope.component.exceptions import ComponentLookupError
 from zope.component.service import serviceManager
 from zope.component.interfaces import IServiceService
-from zope.proxy import removeAllProxies
 from zope.app.site.interfaces import ISite, ISiteManager
 from zope.testing.cleanup import addCleanUp
 from zope.app.component.hooks import setSite
@@ -107,7 +106,7 @@ def getLocalServices(context):
     # This is not allowed to use any services to get its job done!
 
     while not (context is None or
-               ISiteManager.providedBy(removeAllProxies(context))):
+               ISiteManager.providedBy(context)):
         context = getattr(context, '__parent__', None)
     if context is None:
         raise ComponentLookupError('Services')
