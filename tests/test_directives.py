@@ -395,8 +395,8 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         xmlconfig(StringIO(template % (
             """
-            <skin name="zmi" layers="zmi default"
-                  type="zope.component.tests.views.IV" />
+            <layer name="zmi" />
+            <skin name="zmi" layers="zmi default" />
             <view name="test"
                   factory="zope.component.tests.views.VZMI"
                   layer="zmi"
@@ -452,8 +452,8 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         xmlconfig(StringIO(template % (
             """
-            <skin name="zmi" layers="zmi default"
-                  type="zope.component.tests.views.IV" />
+            <layer name="zmi" />
+            <skin name="zmi" layers="zmi default" />
             <resource name="test"
                   factory="zope.component.tests.views.RZMI"
                   layer="zmi"
