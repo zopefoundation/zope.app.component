@@ -13,7 +13,7 @@
 ##############################################################################
 """Generic Components ZCML Handlers
 
-$Id: metaconfigure.py,v 1.33 2004/03/20 17:10:55 srichter Exp $
+$Id: metaconfigure.py,v 1.34 2004/03/22 17:44:46 mmceahern Exp $
 """
 from zope.interface import Interface
 from zope.component.service import UndefinedService
@@ -27,7 +27,7 @@ from zope.app import zapi
 from zope.app.component.interface import queryInterface
 from zope.app.security.permission import checkPermission 
 from zope.app.servicenames import Adapters, Presentation
-
+from zope.app.event.interfaces import ISubscriber
 
 PublicPermission = 'zope.Public'
 
@@ -79,6 +79,57 @@ def proxify(ob, checker):
         ob = Proxy(ob, checker)
 
     return ob
+
+def subscriber(_context, factory, for_, permission=None):
+    factory = [factory]
+
+    if permission is not None:
+        if permission == PublicPermission:
+            permission = CheckerPublic
+        checker = InterfaceChecker(ISubscriber, permission)
+        factory.append(lambda c: proxify(c, checker))
+
+    for_ = tuple(for_)
+
+    # Generate a single factory from multiple factories:
+    factories = factory
+    if len(factories) == 1:
+        factory = factories[0]
+    elif len(factories) < 1:
+        raise ValueError("No factory specified")
+    elif len(factories) > 1 and len(for_) != 1:
+        raise ValueError("Can't use multiple factories and multiple for")
+    else:
+        def factory(ob):
+            for f in factories:
+                ob = f(ob)
+            return ob
+
+    # Check that the principal has the permission necessary.  We
+    # specify discriminator as None because there can be multiple
+    # subscriptions.
+    _context.action(
+        discriminator = None,
+        callable = checkingHandler,
+        args = (permission, Adapters, 'subscribe',
+                for_, ISubscriber, factory),
+        )
+    
+    # Stating that the adapter provides the ISubscriber interface.
+    _context.action(
+        discriminator = None,
+        callable = provideInterface,
+        args = ('', ISubscriber)
+               )
+    
+    # For each interface, state that the adapter provides that interface.
+    for iface in for_:
+        if iface is not None:
+            _context.action(
+                discriminator = None,
+                callable = provideInterface,
+                args = ('', iface)
+                )
 
 def adapter(_context, factory, provides, for_, permission=None, name=''):
     if permission is not None:
