@@ -32,7 +32,7 @@ from zope.component import getNamedAdapter, queryNamedAdapter
 from zope.component import getUtility, queryUtility
 
 from zope.app.tests.placelesssetup import PlacelessSetup
-from zope.component.tests.views import IV, IC, V1, VZMI, R1, RZMI
+from zope.app.component.tests.views import IV, IC, V1, VZMI, R1, RZMI, IR
 from zope.component.tests.request import Request
 from zope.interface import implements
 from zope.security.checker import ProxyFactory
@@ -242,24 +242,58 @@ class Test(PlacelessSetup, unittest.TestCase):
         xmlconfig(StringIO(template %
             """
             <view name="test"
-                  factory="zope.component.tests.views.V1"
-                  for="zope.component.tests.views.IC"
-                  type="zope.component.tests.views.IV"/>
+                  factory="zope.app.component.tests.views.V1"
+                  for="zope.app.component.tests.views.IC"
+                  type="zope.app.component.tests.views.IV"/>
             """
             ))
 
         self.assertEqual(queryView(ob, 'test', Request(IV), None).__class__,
                          V1)
 
+    def testViewThatProvidesAnInterface(self):
+
+        ob = Ob()
+        self.assertEqual(queryView(ob, 'test', Request(IV), None), None)
+
+        xmlconfig(StringIO(template %
+            """
+            <view name="test"
+                  factory="zope.app.component.tests.views.V1"
+                  for="zope.app.component.tests.views.IC"
+                  type="zope.app.component.tests.views.IR"
+                  />
+            """
+            ))
+
+        v = queryView(ob, 'test', Request(IR), None, providing=IV)
+        self.assertEqual(v, None)
+
+        xmlconfig(StringIO(template %
+            """
+            <view name="test"
+                  factory="zope.app.component.tests.views.V1"
+                  for="zope.app.component.tests.views.IC"
+                  type="zope.app.component.tests.views.IR"
+                  provides="zope.app.component.tests.views.IV"
+                  />
+            """
+            ))
+
+        v = queryView(ob, 'test', Request(IR), None, providing=IV)
+
+        self.assertEqual(v.__class__,
+                         V1)
+
     def testInterfaceProtectedView(self):
         xmlconfig(StringIO(template %
             """
             <view name="test"
-                  factory="zope.component.tests.views.V1"
-                  for="zope.component.tests.views.IC"
-                  type="zope.component.tests.views.IV"
+                  factory="zope.app.component.tests.views.V1"
+                  for="zope.app.component.tests.views.IC"
+                  type="zope.app.component.tests.views.IV"
                   permission="zope.Public"
-              allowed_interface="zope.component.tests.views.IV"
+              allowed_interface="zope.app.component.tests.views.IV"
                   />
             """
             ))
@@ -272,9 +306,9 @@ class Test(PlacelessSetup, unittest.TestCase):
         xmlconfig(StringIO(template %
             """
             <view name="test"
-                  factory="zope.component.tests.views.V1"
-                  for="zope.component.tests.views.IC"
-                  type="zope.component.tests.views.IV"
+                  factory="zope.app.component.tests.views.V1"
+                  for="zope.app.component.tests.views.IC"
+                  type="zope.app.component.tests.views.IV"
                   permission="zope.Public"
                   allowed_attributes="action"
                   />
@@ -289,12 +323,12 @@ class Test(PlacelessSetup, unittest.TestCase):
         xmlconfig(StringIO(template %
             """
             <view name="test"
-                  factory="zope.component.tests.views.V1"
-                  for="zope.component.tests.views.IC"
-                  type="zope.component.tests.views.IV"
+                  factory="zope.app.component.tests.views.V1"
+                  for="zope.app.component.tests.views.IC"
+                  type="zope.app.component.tests.views.IV"
                   permission="zope.Public"
                   allowed_attributes="action"
-              allowed_interface="zope.component.tests.views.IV"
+              allowed_interface="zope.app.component.tests.views.IV"
                   />
             """
             ))
@@ -307,12 +341,12 @@ class Test(PlacelessSetup, unittest.TestCase):
         xmlconfig(StringIO(template %
             """
             <view name="test"
-                  factory="zope.component.tests.views.V1"
-                  for="zope.component.tests.views.IC"
-                  type="zope.component.tests.views.IV"
+                  factory="zope.app.component.tests.views.V1"
+                  for="zope.app.component.tests.views.IC"
+                  type="zope.app.component.tests.views.IV"
                   permission="zope.Public"
                   allowed_attributes="action index"
-              allowed_interface="zope.component.tests.views.IV"
+              allowed_interface="zope.app.component.tests.views.IV"
                   />
             """
             ))
@@ -328,9 +362,9 @@ class Test(PlacelessSetup, unittest.TestCase):
             StringIO(template %
             """
             <view name="test"
-                  factory="zope.component.tests.views.V1"
-                  for="zope.component.tests.views.IC"
-                  type="zope.component.tests.views.IV"
+                  factory="zope.app.component.tests.views.V1"
+                  for="zope.app.component.tests.views.IC"
+                  type="zope.app.component.tests.views.IV"
                   allowed_attributes="action index"
                   />
             """
@@ -340,12 +374,12 @@ class Test(PlacelessSetup, unittest.TestCase):
         config = StringIO(template % (
             """
             <view name="test"
-                  factory="zope.component.tests.views.V1"
-                  for="zope.component.tests.views.IC"
-                  type="zope.component.tests.views.IV"
+                  factory="zope.app.component.tests.views.V1"
+                  for="zope.app.component.tests.views.IC"
+                  type="zope.app.component.tests.views.IV"
                   permission="zope.UndefinedPermission"
                   allowed_attributes="action index"
-              allowed_interface="zope.component.tests.views.IV"
+              allowed_interface="zope.app.component.tests.views.IV"
                   />
             """
             ))
@@ -362,9 +396,9 @@ class Test(PlacelessSetup, unittest.TestCase):
         xmlconfig(StringIO(template % (
             """
             <defaultView name="test"
-                  factory="zope.component.tests.views.V1"
-                  for="zope.component.tests.views.IC"
-                  type="zope.component.tests.views.IV"/>
+                  factory="zope.app.component.tests.views.V1"
+                  for="zope.app.component.tests.views.IC"
+                  type="zope.app.component.tests.views.IV"/>
             """
             )))
 
@@ -380,8 +414,8 @@ class Test(PlacelessSetup, unittest.TestCase):
         xmlconfig(StringIO(template % (
             """
             <defaultView name="test"
-                  for="zope.component.tests.views.IC"
-                  type="zope.component.tests.views.IV"/>
+                  for="zope.app.component.tests.views.IC"
+                  type="zope.app.component.tests.views.IV"/>
             """
             )))
 
@@ -398,14 +432,14 @@ class Test(PlacelessSetup, unittest.TestCase):
             <layer name="zmi" />
             <skin name="zmi" layers="zmi default" />
             <view name="test"
-                  factory="zope.component.tests.views.VZMI"
+                  factory="zope.app.component.tests.views.VZMI"
                   layer="zmi"
-                  for="zope.component.tests.views.IC"
-                  type="zope.component.tests.views.IV"/>
+                  for="zope.app.component.tests.views.IC"
+                  type="zope.app.component.tests.views.IV"/>
             <view name="test"
-                  factory="zope.component.tests.views.V1"
-                  for="zope.component.tests.views.IC"
-                  type="zope.component.tests.views.IV"/>
+                  factory="zope.app.component.tests.views.V1"
+                  for="zope.app.component.tests.views.IC"
+                  type="zope.app.component.tests.views.IV"/>
             """
             )))
 
@@ -422,8 +456,8 @@ class Test(PlacelessSetup, unittest.TestCase):
         xmlconfig(StringIO(template % (
             """
             <resource name="test"
-                  factory="zope.component.tests.views.R1"
-                  type="zope.component.tests.views.IV"/>
+                  factory="zope.app.component.tests.views.R1"
+                  type="zope.app.component.tests.views.IV"/>
             """
             )))
 
@@ -431,13 +465,46 @@ class Test(PlacelessSetup, unittest.TestCase):
                                        ).__class__,
                          R1)
 
+    def testResourceThatProvidesAnInterface(self):
+
+        ob = Ob()
+        self.assertEqual(queryResource(ob, 'test', Request(IV), None), None)
+
+        xmlconfig(StringIO(template %
+            """
+            <resource
+                name="test"
+                factory="zope.app.component.tests.views.R1"
+                type="zope.app.component.tests.views.IR"
+                />
+            """
+            ))
+
+        v = queryResource(ob, 'test', Request(IR), None, providing=IV)
+        self.assertEqual(v, None)
+
+        xmlconfig(StringIO(template %
+            """
+            <resource
+                name="test"
+                factory="zope.app.component.tests.views.R1"
+                type="zope.app.component.tests.views.IR"
+                provides="zope.app.component.tests.views.IV"
+                />
+            """
+            ))
+
+        v = queryResource(ob, 'test', Request(IR), None, providing=IV)
+
+        self.assertEqual(v.__class__, R1)
+
     def testResourceUndefinedPermission(self):
 
         config = StringIO(template % (
             """
             <resource name="test"
-                  factory="zope.component.tests.views.R1"
-                  type="zope.component.tests.views.IV"
+                  factory="zope.app.component.tests.views.R1"
+                  type="zope.app.component.tests.views.IV"
                   permission="zope.UndefinedPermission"/>
             """
             ))
@@ -455,12 +522,12 @@ class Test(PlacelessSetup, unittest.TestCase):
             <layer name="zmi" />
             <skin name="zmi" layers="zmi default" />
             <resource name="test"
-                  factory="zope.component.tests.views.RZMI"
+                  factory="zope.app.component.tests.views.RZMI"
                   layer="zmi"
-                  type="zope.component.tests.views.IV"/>
+                  type="zope.app.component.tests.views.IV"/>
             <resource name="test"
-                  factory="zope.component.tests.views.R1"
-                  type="zope.component.tests.views.IV"/>
+                  factory="zope.app.component.tests.views.R1"
+                  type="zope.app.component.tests.views.IV"/>
             """
             )))
 
