@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: test_nextservice.py,v 1.6 2003/05/27 14:18:12 jim Exp $
+$Id: test_nextservice.py,v 1.7 2003/06/05 12:03:15 stevea Exp $
 """
 
 from unittest import TestCase, main, makeSuite
@@ -24,13 +24,14 @@ from zope.component.exceptions import ComponentLookupError
 from zope.component.interfaces import IServiceService
 from zope.component.service import serviceManager
 from zope.context import Wrapper
+from zope.interface import implements
 
 
 class ServiceManager:
-    __implements__ =  IServiceService
+    implements(IServiceService)
 
 class Folder:
-    __implements__ =  IServiceManagerContainer
+    implements(IServiceManagerContainer)
 
     sm = None
 
@@ -44,36 +45,44 @@ class Folder:
         self.sm = sm
 
 class Root(Folder):
-    __implements__ =  IServiceManagerContainer, IContainmentRoot
-
-root = Root()
-
-f1 = Wrapper(Folder(), root)
-sm1 = ServiceManager()
-f1.setServiceManager(sm1)
-
-f2 = Wrapper(Folder(), f1)
-sm2 = ServiceManager()
-f2.setServiceManager(sm2)
-
+    implements(IContainmentRoot)
 
 
 class Test(TestCase):
 
+    def setUp(self):
+        TestCase.setUp(self)
+        root = Root()
+
+        f1 = Wrapper(Folder(), root)
+        sm1 = ServiceManager()
+        f1.setServiceManager(sm1)
+
+        f2 = Wrapper(Folder(), f1)
+        sm2 = ServiceManager()
+        f2.setServiceManager(sm2)
+
+        self.root = root
+        self.f1 = f1
+        self.f2 = f2
+        self.sm1 = sm1
+        self.sm2 = sm2
+
     def test_getServiceManager(self):
 
-        self.assertEqual(getServiceManager_hook(root), serviceManager)
-        self.assertEqual(getServiceManager_hook(f1), sm1)
-        self.assertEqual(getServiceManager_hook(f2), sm2)
+        self.assertEqual(getServiceManager_hook(self.root), serviceManager)
+        self.assertEqual(getServiceManager_hook(self.f1), self.sm1)
+        self.assertEqual(getServiceManager_hook(self.f2), self.sm2)
 
     def test_getNextServiceManager(self):
 
         self.assertRaises(ComponentLookupError,
-                          getNextServiceManager, root)
+                          getNextServiceManager, self.root)
 
-        self.assertEqual(getNextServiceManager(Wrapper(sm1, f1)),
+        self.assertEqual(getNextServiceManager(Wrapper(self.sm1, self.f1)),
                          serviceManager)
-        self.assertEqual(getNextServiceManager(Wrapper(sm2, f2)), sm1)
+        self.assertEqual(getNextServiceManager(Wrapper(self.sm2, self.f2)),
+                         self.sm1)
 
     def test_getNextServiceManager_fails_w_bad_root(self):
         root = Folder()
