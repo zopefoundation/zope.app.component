@@ -68,7 +68,7 @@ def adapter(_context, factory, provides, for_, permission=None, name=''):
     elif not for_:
         raise ValueError(
             "A for interface must be provided. Use * for all objects.")
-        
+
     if for_:
         for_ = resolveInterface(_context, for_)
 
