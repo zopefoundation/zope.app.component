@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: hooks.py,v 1.16 2004/02/25 23:02:22 faassen Exp $
+$Id: hooks.py,v 1.17 2004/03/02 17:51:50 philikon Exp $
 """
 
 from zope.component import getService
@@ -23,7 +23,7 @@ from zope.component.service import serviceManager
 from zope.proxy import removeAllProxies
 from zope.security.proxy import trustedRemoveSecurityProxy
 from zope.app.traversing import IContainmentRoot
-from zope.app.interfaces.location import ILocation
+from zope.app.location.interfaces import ILocation
 from zope.app.location import locate
 from zope.component.servicenames import Presentation
 from zope.interface import Interface
