@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: test_contentdirective.py,v 1.6 2003/08/03 17:50:15 philikon Exp $
+$Id: test_contentdirective.py,v 1.7 2003/08/04 23:12:48 sidnei Exp $
 """
 
 import unittest
@@ -153,7 +153,9 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
 </content>
                        """)
         xmlconfig(f)
-
+        factory = getService(None, Factories).getFactory('Example')
+        self.assertEquals(factory.title, "Example content")
+        self.assertEquals(factory.description, "Example description")
 
     def testFactoryUndefinedPermission(self):
 

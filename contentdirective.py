@@ -13,7 +13,7 @@
 ##############################################################################
 """ Register class directive.
 
-$Id: contentdirective.py,v 1.6 2003/08/03 02:13:08 philikon Exp $
+$Id: contentdirective.py,v 1.7 2003/08/04 23:12:44 sidnei Exp $
 """
 from zope.interface import classProvides
 from types import ModuleType
@@ -196,7 +196,7 @@ def provideClass(id, _class, permission=None,
     """
 
     assertPermission(permission)
-    factory = ClassFactory(_class)
+    factory = ClassFactory(_class, title, description)
 
     if permission == PublicPermission:
         permission = CheckerPublic
@@ -204,7 +204,8 @@ def provideClass(id, _class, permission=None,
     if permission:
         # XXX should getInterfaces be public, as below?
         factory = ProxyFactory(factory,
-                               NamesChecker(('getInterfaces',),
+                               NamesChecker(('getInterfaces','title',
+                                             'description'),
                                             __call__=permission))
 
     getService(None, Factories).provideFactory(id, factory)
