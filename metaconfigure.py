@@ -418,6 +418,8 @@ def view(_context, factory, type, name, for_, layer=None,
                     args = ('', iface)
                     )
 
+############################################################################
+# BBB: Deprecated. Will go away in 3.3.
 def defaultView(_context, type, name, for_):
 
     _context.action(
@@ -438,6 +440,13 @@ def defaultView(_context, type, name, for_):
         callable = provideInterface,
         args = ('', for_)
         )
+
+from zope.deprecation import deprecated
+deprecated('defaultView',
+           'The zope:defaultView directive has been deprecated in favor of '
+           'the browser:defaultView directive. '
+           'Will be gone in X3.3.')
+############################################################################
 
 def defaultLayer(_context, type, layer):
     _context.action(

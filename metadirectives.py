@@ -326,6 +326,8 @@ class IViewDirective(IBasicViewInformation, IBasicResourceInformation):
         value_type=zope.configuration.fields.GlobalObject(),
         )
 
+############################################################################
+# BBB: Deprecated; use browser:defaultView instead. Will go away in 3.3.
 class IDefaultViewDirective(IBasicResourceInformation):
     """The name of the view that should be the default.
 
@@ -343,6 +345,7 @@ class IDefaultViewDirective(IBasicResourceInformation):
         for all objects."""),
         required=False,
         )
+############################################################################
 
 
 class IResourceDirective(IBasicComponentInformation,

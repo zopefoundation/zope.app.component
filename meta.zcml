@@ -41,6 +41,7 @@
         handler="zope.app.component.metaconfigure.view"
         />
 
+    <!-- BBB: Deprecated. Will go away in 3.3 -->
     <meta:directive
         name="defaultView"
         schema=".metadirectives.IDefaultViewDirective"
