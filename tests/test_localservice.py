@@ -26,7 +26,6 @@ from zope.component.interfaces import IServiceService
 from zope.component.service import serviceManager
 from zope.interface import implements, directlyProvides, directlyProvidedBy
 from zope.interface.verify import verifyObject
-from zope.app.event.interfaces import ISubscriber
 from zope.app.tests.setup import placelessSetUp, placelessTearDown
 from zope.app.tests import ztapi
 from zope.app.component.hooks import setSite, getSite
@@ -240,15 +239,13 @@ class Test(unittest.TestCase):
         from zope.app.component.localservice import clearSite
         from zope.app.publication.zopepublication import BeforeTraverseEvent
 
-        verifyObject(ISubscriber, threadSiteSubscriber)
-
         self.assertEqual(getSite(), None)
 
         # A non-site is traversed
         ob = object()
         request = object()
         ev = BeforeTraverseEvent(ob, request)
-        threadSiteSubscriber.notify(ev)
+        threadSiteSubscriber(ev)
 
         self.assertEqual(getSite(), None)
 
@@ -258,7 +255,7 @@ class Test(unittest.TestCase):
         site.setSiteManager(ss)
 
         ev = BeforeTraverseEvent(site, request)
-        threadSiteSubscriber.notify(ev)
+        threadSiteSubscriber(ev)
 
         self.assertEqual(getSite(), site)
 

@@ -22,7 +22,6 @@ from zope.component.service import serviceManager
 from zope.component.interfaces import IServiceService
 from zope.proxy import removeAllProxies
 from zope.app.site.interfaces import ISite, ISiteManager
-from zope.app.event.interfaces import ISubscriber
 from zope.testing.cleanup import addCleanUp
 from zope.app.component.hooks import setSite
 from zope.component.service import IGlobalServiceManager
@@ -135,33 +134,21 @@ def serviceServiceAdapter(ob):
                                        " IServiceService" % (ob, ))
 
 
-class ThreadSiteSubscriber:
+def threadSiteSubscriber(event):
     """A subscriber to BeforeTraverseEvent
 
     Sets the 'site' thread global if the object traversed is a site.
     """
-
-    implements(ISubscriber)
-    def notify(self, event):
-        if ISite.providedBy(event.object):
-            setSite(event.object)
+    if ISite.providedBy(event.object):
+        setSite(event.object)
 
 
-threadSiteSubscriber = ThreadSiteSubscriber()
-
-
-class ClearThreadSiteSubscriber:
+def clearThreadSiteSubscriber(event):
     """A subscriber to EndRequestEvent
 
     Cleans up the site thread global after the request is processed.
     """
-
-    implements(ISubscriber)
-    def notify(self, event):
-        clearSite()
-
-clearThreadSiteSubscriber = ClearThreadSiteSubscriber()
-
+    clearSite()
 
 # Clear the site thread global
 clearSite = setSite

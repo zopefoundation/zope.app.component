@@ -1,7 +1,4 @@
-<configure
-   xmlns="http://namespaces.zope.org/zope"
-   xmlns:event="http://namespaces.zope.org/event"
-  >
+<configure xmlns="http://namespaces.zope.org/zope">
 
   <serviceType
       id="Utilities"
@@ -52,14 +49,14 @@
       provides="zope.component.IServiceService"
       for="zope.interface.Interface" />
 
-  <event:subscribe
-      subscriber=".localservice.threadSiteSubscriber"
-      event_types="zope.app.publication.interfaces.IBeforeTraverseEvent"
+  <subscriber
+      factory=".localservice.threadSiteSubscriber"
+      for="zope.app.publication.interfaces.IBeforeTraverseEvent"
       />
 
-  <event:subscribe
-      subscriber=".localservice.clearThreadSiteSubscriber"
-      event_types="zope.app.publication.interfaces.IEndRequestEvent"
+  <subscriber
+      factory=".localservice.clearThreadSiteSubscriber"
+      for="zope.app.publication.interfaces.IEndRequestEvent"
       />
 
 </configure>

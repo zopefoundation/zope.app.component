@@ -27,6 +27,10 @@ class I2(zope.interface.Interface):
 class I3(zope.interface.Interface):
     pass
 
+class IS(zope.interface.Interface):
+    pass
+
+
 class Adapter:
     def __init__(self, *args):
         self.context = args
@@ -39,6 +43,7 @@ class A2(Adapter):
 
 class A3(Adapter):
     zope.interface.implements(I3)
+
 
 def Handler(content, *args):
     # uninteresting handler

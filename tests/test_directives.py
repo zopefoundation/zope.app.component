@@ -24,7 +24,6 @@ from zope.interface import Interface, implements
 from zope.testing.doctestunit import DocTestSuite
 from zope.app.component.metaconfigure import interface
 from zope.app.content.interfaces import IContentType
-from zope.app.event.interfaces import ISubscriber
 
 from zope.configuration.xmlconfig import xmlconfig, XMLConfig
 from zope.configuration.exceptions import ConfigurationError
@@ -103,12 +102,13 @@ class Test(PlacelessSetup, unittest.TestCase):
 
     def testSubscriber(self):
         from zope.app.component.tests.adapter import A1, A2, A3, I3
+        from zope.app.component.tests.adapter import IS
         from zope.component.tests.components import Content
 
         xmlconfig(StringIO(template % (
             """
             <subscriber
-              provides="zope.app.event.interfaces.ISubscriber"
+              provides="zope.app.component.tests.adapter.IS"
               factory="zope.app.component.tests.adapter.A3"
               for="zope.component.tests.components.IContent
                    zope.app.component.tests.adapter.I1"
@@ -118,7 +118,7 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         content = Content()
         a1 = A1()
-        subscribers = zapi.subscribers((content, a1), ISubscriber)
+        subscribers = zapi.subscribers((content, a1), IS)
 
         a3 = subscribers[0]
 
@@ -147,18 +147,19 @@ class Test(PlacelessSetup, unittest.TestCase):
         
     def testMultiSubscriber(self):
         from zope.app.component.tests.adapter import A1, A2, A3, I3
+        from zope.app.component.tests.adapter import IS
         from zope.component.tests.components import Content
 
         xmlconfig(StringIO(template % (
             """
             <subscriber
-              provides="zope.app.event.interfaces.ISubscriber"
+              provides="zope.app.component.tests.adapter.IS"
               factory="zope.app.component.tests.adapter.A3"
               for="zope.component.tests.components.IContent
                    zope.app.component.tests.adapter.I1"
               />
             <subscriber
-              provides="zope.app.event.interfaces.ISubscriber"
+              provides="zope.app.component.tests.adapter.IS"
               factory="zope.app.component.tests.adapter.A2"
               for="zope.component.tests.components.IContent
                    zope.app.component.tests.adapter.I1"
@@ -168,7 +169,7 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         content = Content()
         a1 = A1()
-        subscribers = zapi.subscribers((content, a1), ISubscriber)
+        subscribers = zapi.subscribers((content, a1), IS)
 
         expectedLength = 2
         self.assertEqual(len(subscribers), expectedLength)
