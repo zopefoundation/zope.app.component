@@ -13,7 +13,7 @@
 ##############################################################################
 """Factory tests.
 
-$Id$
+$Id: factory.py 26551 2004-07-15 07:06:37Z srichter $
 """
 from zope.component.interfaces import IFactory
 from zope.interface import Interface, implements, implementedBy

@@ -25,7 +25,7 @@ from zope.app import zapi
 from zope.component.interfaces import IFactory
 from zope.component.exceptions import ComponentLookupError
 from zope.configuration.xmlconfig import xmlconfig, XMLConfig
-from zope.app.tests.placelesssetup import PlacelessSetup
+from zope.app.testing.placelesssetup import PlacelessSetup
 from zope.app.component.interface import queryInterface
 
 # explicitly import ExampleClass and IExample using full paths

@@ -18,7 +18,6 @@ $Id$
 __docformat__ = 'restructuredtext'
 
 from zope.component.interfaces import IDefaultViewName, IFactory
-from zope.component.service import UndefinedService
 from zope.configuration.exceptions import ConfigurationError
 import zope.interface
 from zope.interface import Interface
@@ -26,43 +25,25 @@ from zope.interface.interfaces import IInterface
 
 from zope.security.checker import InterfaceChecker, CheckerPublic
 from zope.security.checker import Checker, NamesChecker
-from zope.security.proxy import Proxy, ProxyFactory
+from zope.security.proxy import Proxy
 
 from zope.app import zapi
-from zope.app.component.interface import queryInterface
 from zope.app.security.adapter import TrustedAdapterFactory
 
 PublicPermission = 'zope.Public'
 
-# I prefer the indirection (using getService and getServices vs.
-# directly importing the various services)  not only because it makes
-# unit tests easier, but also because it reinforces that the services
-# should always be obtained through the
-# IPlacefulComponentArchitecture interface methods.
-
-# But these services aren't placeful! And we need to get at things that
-# normal service clients don't need!   Jim
-
-
-def handler(serviceName, methodName, *args, **kwargs):
-    method=getattr(zapi.getGlobalService(serviceName), methodName)
+def handler(methodName, *args, **kwargs):
+    method=getattr(zapi.getGlobalSiteManager(), methodName)
     method(*args, **kwargs)
 
-# We can't use the handler for serviceType, because serviceType needs
-# the interface service.
 from zope.app.component.interface import provideInterface
-
-def managerHandler(methodName, *args, **kwargs):
-    method=getattr(zapi.getGlobalServices(), methodName)
-    method(*args, **kwargs)
-
 def interface(_context, interface, type=None):
     _context.action(
         discriminator = None,
         callable = provideInterface,
         args = ('', interface, type)
         )
-
+    
 
 def proxify(ob, checker):
     """Try to get the object proxied with the `checker`, but not too soon
@@ -128,7 +109,7 @@ def subscriber(_context, for_, factory=None, handler=None, provides=None,
     _context.action(
         discriminator = None,
         callable = _handler,
-        args = (zapi.servicenames.Adapters, 'subscribe',
+        args = ('subscribe',
                 for_, provides, factory),
         )
 
@@ -196,7 +177,7 @@ def adapter(_context, factory, provides=None, for_=None, permission=None,
     _context.action(
         discriminator = ('adapter', for_, provides, name),
         callable = handler,
-        args = (zapi.servicenames.Adapters, 'register',
+        args = ('provideAdapter',
                 for_, provides, name, factory, _context.info),
         )
     _context.action(
@@ -263,7 +244,7 @@ def utility(_context, provides=None, component=None, factory=None,
     _context.action(
         discriminator = ('utility', provides, name),
         callable = handler,
-        args = ('Utilities', 'provideUtility',
+        args = ('provideUtility',
                 provides, component, name),
         )
     _context.action(
@@ -332,7 +313,7 @@ def resource(_context, factory, type, name, layer=None,
     _context.action(
         discriminator = ('resource', name, layer, provides),
         callable = handler,
-        args = (zapi.servicenames.Adapters, 'register',
+        args = ('provideAdapter',
                 (layer,), provides, name, factory, _context.info),
         )
     _context.action(
@@ -407,7 +388,7 @@ def view(_context, factory, type, name, for_, layer=None,
     _context.action(
         discriminator = ('view', for_, name, provides),
         callable = handler,
-        args = (zapi.servicenames.Adapters, 'register',
+        args = ('provideAdapter',
                 for_, provides, name, factory, _context.info),
         )
     if type is not None:
@@ -437,7 +418,7 @@ def defaultView(_context, type, name, for_):
     _context.action(
         discriminator = ('defaultViewName', for_, type, name),
         callable = handler,
-        args = (zapi.servicenames.Adapters, 'register',
+        args = ('provideAdapter',
                 (for_, type), IDefaultViewName, '', name, _context.info)
         )
     
@@ -453,66 +434,11 @@ def defaultView(_context, type, name, for_):
         args = ('', for_)
         )
 
-def serviceType(_context, id, interface):
-    _context.action(
-        discriminator = ('serviceType', id),
-        callable = managerHandler,
-        args = ('defineService', id, interface),
-        )
-
-    if interface.__name__ not in ['IUtilityService']:
-        _context.action(
-            discriminator = None,
-             callable = provideInterface,
-             args = (interface.__module__+'.'+interface.getName(),
-                     interface)
-             )
-
-def provideService(serviceType, component, permission):
-    # This is needed so we can add a security proxy.
-    # We have to wait till execution time so we can find out the interface.
-    # Waaaa.
-
-    service_manager = zapi.getGlobalServices()
-
-    if permission:
-        for stype, interface in service_manager.getServiceDefinitions():
-            if stype == serviceType:
-                break
-        else:
-            raise UndefinedService(serviceType)
-
-        if permission == PublicPermission:
-            permission = CheckerPublic
-
-        checker = InterfaceChecker(interface, permission)
-
-        try:
-            component.__Security_checker__ = checker
-        except: # too bad exceptions aren't more predictable
-            component = proxify(component, checker)
-
-    service_manager.provideService(serviceType, component)
-
-def service(_context, serviceType, component=None, permission=None,
-            factory=None):
-    if factory:
-        if component:
-            raise TypeError("Can't specify factory and component.")
-
-        component = factory()
-
-    _context.action(
-        discriminator = ('service', serviceType),
-        callable = provideService,
-        args = (serviceType, component, permission),
-        )
-
 def defaultLayer(_context, type, layer):
     _context.action(
         discriminator=('defaultLayer', type, layer),
         callable=handler,
-        args = (zapi.servicenames.Adapters, 'register',
+        args = ('provideAdapter',
                (type,), IInterface, 'defaultLayer',
                lambda request: layer, _context.info)
         )

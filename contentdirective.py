@@ -18,15 +18,19 @@ $Id$
 __docformat__ = 'restructuredtext'
 
 from types import ModuleType
+from persistent.interfaces import IPersistent
+from zope.component.factory import Factory
 from zope.interface import classImplements
 from zope.schema.interfaces import IField
 from zope.configuration.exceptions import ConfigurationError
 
-from zope.app import zapi
-from zope.component.factory import Factory
-from zope.app.security.protectclass \
-    import protectLikeUnto, protectName, protectSetAttribute
+from zope.app.annotation.interfaces import IAttributeAnnotatable
 from zope.app.component.interface import provideInterface
+from zope.app.component.interfaces import ILocalUtility
+from zope.app.location.interfaces import ILocation
+from zope.app.security.protectclass import protectLikeUnto, protectName
+from zope.app.security.protectclass import protectSetAttribute
+
 from metaconfigure import factory
 
 PublicPermission = 'zope.Public'
@@ -40,10 +44,6 @@ class ProtectionDeclarationException(Exception):
     """Security-protection-specific exceptions."""
     pass
 
-def handler(serviceName, methodName, *args, **kwargs):
-    method=getattr(zapi.getGlobalService(serviceName), methodName)
-    method(*args, **kwargs)
-
 class ContentDirective(object):
 
     def __init__(self, _context, class_):
@@ -51,9 +51,6 @@ class ContentDirective(object):
         self.__class = class_
         if isinstance(self.__class, ModuleType):
             raise ConfigurationError('Content class attribute must be a class')
-        # not used yet
-        #self.__name = class_
-        #self.__normalized_name = _context.getNormalizedName(class_)
         self.__context = _context
 
     def implements(self, _context, interface):
@@ -171,7 +168,63 @@ class ContentDirective(object):
         id = id or self.__id
         factoryObj = Factory(self.__class, title, description)
 
-        # note factories are all in one pile, services and content,
+        # note factories are all in one pile, utilities and content,
         # so addable names must also act as if they were all in the
-        # same namespace, despite the service/content division
+        # same namespace, despite the utilities/content division
         factory(_context, factoryObj, id, title, description)
+
+
+class LocalUtilityDirective(ContentDirective):
+    r"""localUtility directive handler.
+
+    Examples:
+
+      >>> from zope.interface import implements
+      >>> class LU1(object):
+      ...     pass
+
+      >>> class LU2(LU1):
+      ...     implements(ILocation)
+
+      >>> class LU3(LU1):
+      ...     __parent__ = None
+
+      >>> class LU4(LU2):
+      ...     implements(IPersistent)
+
+      >>> dir = LocalUtilityDirective(None, LU4)
+      >>> IAttributeAnnotatable.implementedBy(LU4)
+      True
+      >>> ILocalUtility.implementedBy(LU4)
+      True
+
+      >>> LocalUtilityDirective(None, LU3)
+      Traceback (most recent call last):
+      ...
+      ConfigurationError: Class `LU3` does not implement `IPersistent`.
+
+      >>> LocalUtilityDirective(None, LU2)
+      Traceback (most recent call last):
+      ...
+      ConfigurationError: Class `LU2` does not implement `IPersistent`.
+
+      >>> LocalUtilityDirective(None, LU1)
+      Traceback (most recent call last):
+      ...
+      ConfigurationError: Class `LU1` does not implement `ILocation`.
+    """
+
+    def __init__(self, _context, class_):
+        if not ILocation.implementedBy(class_) and \
+               not hasattr(class_, '__parent__'):
+            raise ConfigurationError, \
+                  'Class `%s` does not implement `ILocation`.' %class_.__name__
+
+        if not IPersistent.implementedBy(class_):
+            raise ConfigurationError, \
+                 'Class `%s` does not implement `IPersistent`.' %class_.__name__
+
+        classImplements(class_, IAttributeAnnotatable)
+        classImplements(class_, ILocalUtility)
+
+        super(LocalUtilityDirective, self).__init__(_context, class_)

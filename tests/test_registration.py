@@ -11,20 +11,29 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test fields.
+"""Registration Tests
 
 $Id$
 """
+__docformat__ = "reStructuredText"
 import unittest
-from zope.testing.doctestunit import DocTestSuite
-from zope.app.testing import placelesssetup
+
+import zope.component.testing as placelesssetup
+from zope.testing import doctest
+from zope.app.testing import setup
+
+def setUp(test):
+    placelesssetup.setUp(test)
+    setup.setUpAnnotations()
+    setup.setUpDependable()
+    setup.setUpTraversal()
 
 def test_suite():
     return unittest.TestSuite((
-        DocTestSuite('zope.app.component.fields',
-                     setUp=placelesssetup.setUp,
-                     tearDown=placelesssetup.tearDown),
+        doctest.DocFileSuite('../statusproperty.txt'),
+        doctest.DocFileSuite('../registration.txt',
+                             setUp=setUp, tearDown=placelesssetup.tearDown),
         ))
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main(defaultTest='test_suite')

@@ -13,12 +13,11 @@
 ##############################################################################
 """Sample adapter class for testing
 
-$Id$
+$Id: adapter.py 29080 2005-02-08 00:07:11Z jim $
 """
-
 import zope.interface
 import zope.component
-import zope.component.tests.components
+import components
 
 class I1(zope.interface.Interface):
     pass
@@ -46,7 +45,7 @@ class A2(Adapter):
     zope.interface.implements(I2)
 
 class A3(Adapter):
-    zope.component.adapts(zope.component.tests.components.IContent, I1, I2)
+    zope.component.adapts(components.IContent, I1, I2)
     zope.interface.implements(I3)
 
 class A4:

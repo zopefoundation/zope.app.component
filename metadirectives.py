@@ -26,6 +26,12 @@ import zope.app.component.fields
 
 from zope.app.i18n import ZopeMessageIDFactory as _
 
+class IDefaultViewName(zope.interface.Interface):
+    """A string that contains the default view name
+
+    A default view name is used to select a view when a user hasn't
+    specified one.
+    """
 
 class IBasicComponentInformation(zope.interface.Interface):
 
@@ -339,7 +345,6 @@ class IDefaultViewDirective(IBasicResourceInformation):
         )
 
 
-
 class IResourceDirective(IBasicComponentInformation,
                          IBasicResourceInformation):
     """Register a resource"""
@@ -362,26 +367,6 @@ class IResourceDirective(IBasicComponentInformation,
         value_type=zope.configuration.fields.PythonIdentifier(),
         )
 
-
-class IServiceTypeDirective(zope.interface.Interface):
-
-    id = zope.schema.TextLine(
-        title=_("ID of the service type"),
-        required=True
-        )
-
-    interface = zope.configuration.fields.GlobalInterface(
-        title=_("Interface of the service type"),
-        required=True
-        )
-
-class IServiceDirective(IBasicComponentInformation):
-    """Register a service"""
-
-    serviceType = zope.schema.TextLine(
-        title=_("ID of service type"),
-        required=True
-        )
 
 class IClassDirective(zope.interface.Interface):
     """Make statements about a class"""

@@ -11,28 +11,31 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Service stub for testing
+"""Components for testing
 
 $Id$
 """
-from zope.interface import Interface, implements
+from zope.interface import Interface, Attribute, implements
+from zope.component import adapts
 
-class IFooService(Interface):
+class IApp(Interface):
+    a = Attribute('test attribute')
+    def f(): "test func"
 
-    def foo(): pass
-    def foobar(): pass
+class IContent(Interface): pass
 
-class FooService(object):
+class Content(object):
+    implements(IContent)
 
-    implements(IFooService)
+class Comp(object):
+    adapts(IContent)
+    implements(IApp)
 
-    def foo(self): return "foo here"
-    def foobar(self): return "foobarred"
+    def __init__(self, *args):
+        # Ignore arguments passed to constructor
+        pass
 
-    def bar(self): return "you shouldn't get this"
+    a = 1
+    def f(): pass
 
-fooService = FooService()
-
-class Foo2(FooService): pass
-
-foo2 = Foo2()
+comp = Comp()

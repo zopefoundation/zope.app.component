@@ -13,7 +13,7 @@
 ##############################################################################
 """Views test.
 
-$Id$
+$Id: views.py 26551 2004-07-15 07:06:37Z srichter $
 """
 from zope.interface import Interface, implements
 

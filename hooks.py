@@ -18,19 +18,8 @@ $Id$
 __docformat__ = 'restructuredtext'
 
 import zope.component
-from zope.component import getService
-from zope.component.interfaces import IServiceService
-from zope.app.site.interfaces import ISite
-from zope.component.service import serviceManager
-from zope.component.exceptions import ComponentLookupError
-from zope.security.proxy import removeSecurityProxy
-from zope.app.traversing.interfaces import IContainmentRoot
-from zope.app.location.interfaces import ILocation
-from zope.app.location import locate
-from zope.interface import Interface
-from zope.component.servicenames import Adapters
-import warnings
 import zope.thread
+import zope.security
 
 class read_property(object):
     def __init__(self, func):
@@ -44,12 +33,10 @@ class read_property(object):
 
 class SiteInfo(zope.thread.local):
     site = None
-    services = serviceManager
+    sm = zope.component.getGlobalSiteManager()
 
     def adapter_hook(self):
-        services = self.services
-        adapters = services.getService(Adapters)
-        adapter_hook = adapters.adapter_hook
+        adapter_hook = self.sm.adapters.adapter_hook
         self.adapter_hook = adapter_hook
         return adapter_hook
     
@@ -59,7 +46,7 @@ siteinfo = SiteInfo()
 
 def setSite(site=None):
     if site is None:
-        services = serviceManager
+        sm = zope.component.getGlobalSiteManager()
     else:
 
         # We remove the security proxy because there's no way for
@@ -69,11 +56,11 @@ def setSite(site=None):
         # once site managers do less.  There's probably no good reason why
         # they can't be proxied.  Well, except maybe for performance.
         
-        site = removeSecurityProxy(site)
-        services = site.getSiteManager()
+        site = zope.security.proxy.removeSecurityProxy(site)
+        sm = site.getSiteManager()
 
     siteinfo.site = site
-    siteinfo.services = services
+    siteinfo.sm = sm
     try:
         del siteinfo.adapter_hook
     except AttributeError:
@@ -81,56 +68,41 @@ def setSite(site=None):
     
 def getSite():
     return siteinfo.site
-    
-def getServices_hook(context=None):
 
+
+def getSiteManager(context=None):
+    """A special hook for getting the site manager.
+
+    Here we take the currently set site into account to find the appropriate
+    site manager.
+    """
     if context is None:
-        return siteinfo.services
+        return siteinfo.sm
 
-    # Deprecated support for a context that isn't adaptable to
-    # IServiceService.  Return the default service manager.
-    try:
+    # We remove the security proxy because there's no way for
+    # untrusted code to get at it without it being proxied again.
 
+    # We should really look look at this again though, especially
+    # once site managers do less.  There's probably no good reason why
+    # they can't be proxied.  Well, except maybe for performance.
+    sm = zope.component.interfaces.ISiteManager(
+        context, zope.component.getGlobalSiteManager())
+    return zope.security.proxy.removeSecurityProxy(sm)
 
-        # We remove the security proxy because there's no way for
-        # untrusted code to get at it without it being proxied again.
-
-        # We should really look look at this again though, especially
-        # once site managers do less.  There's probably no good reason why
-        # they can't be proxied.  Well, except maybe for performance.
-
-
-        return removeSecurityProxy(IServiceService(context,
-                                                   serviceManager))
-    except ComponentLookupError:
-        return serviceManager
 
 def adapter_hook(interface, object, name='', default=None):
     try:
         return siteinfo.adapter_hook(interface, object, name, default)
-    except ComponentLookupError:
+    except zope.component.exceptions.ComponentLookupError:
         return default
-    
-def queryView(object, name, request, default=None,
-              providing=Interface, context=None):
-    adapters = getService(Adapters, context)
-    view = adapters.queryMultiAdapter((object, request), providing,
-                                      name, default)
-    if ILocation.providedBy(view):
-        locate(view, object, name)
-
-    return view
 
 
 def setHooks():
-    # Hook up a new implementation of looking up views.
-    zope.component.getServices.sethook(getServices_hook)
     zope.component.adapter_hook.sethook(adapter_hook)
-    zope.component.queryView.sethook(queryView)
+    zope.component.getSiteManager.sethook(getSiteManager)
 
 def resetHooks():
     # Reset hookable functions to original implementation.
-    zope.component.getServices.reset()
     zope.component.adapter_hook.reset()
-    zope.component.queryView.reset()
+    zope.component.getSiteManager.reset()
     

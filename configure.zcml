@@ -1,44 +1,167 @@
 <configure xmlns="http://namespaces.zope.org/zope">
 
-  <serviceType
-      id="Utilities"
-      interface="zope.component.interfaces.IUtilityService" />
-
-  <service
-      serviceType="Utilities"
-      permission="zope.Public"
-      factory="zope.component.utility.GlobalUtilityService" />
-
-  <serviceType
-      id="Adapters"
-      interface="zope.component.interfaces.IAdapterService" />
-
-  <service
-      serviceType="Adapters"
-      permission="zope.Public"
-      factory="zope.component.adapter.GlobalAdapterService" />
-
-  <vocabulary
-      name="Interfaces"
-      factory="zope.app.utility.vocabulary.UtilityVocabulary"
-      interface="zope.interface.interfaces.IInterface" />
-
   <interface interface="zope.interface.Interface" />
 
+
+  <!-- Registration Framework -->
+
+  <content class=".registration.RegistrationManager">
+    <factory
+        id="zope.app.component.RegistrationManager"
+        title="Registration Manager" />
+    <implements
+        interface="zope.app.annotation.interfaces.IAttributeAnnotatable"
+        />
+    <require
+        permission="zope.ManageSite"
+        interface="zope.app.container.interfaces.IWriteContainer
+                   zope.app.container.interfaces.IReadContainer
+                   zope.app.container.interfaces.INameChooser" 
+        attributes="addRegistration"
+        />
+  </content>
+
+  <!-- ++registrations++ namespace registrations -->
+  <view
+      name="registrations" type="*"
+      for=".interfaces.registration.IRegisterableContainer"
+      provides="zope.app.traversing.interfaces.ITraversable"
+      factory=".registration.RegistrationManagerNamespace"
+      />
   <adapter
-      factory=".localservice.serviceServiceAdapter"
-      provides="zope.component.IServiceService"
-      for="zope.interface.Interface" />
+      name="registrations"
+      for=".interfaces.registration.IRegisterableContainer"
+      provides="zope.app.traversing.interfaces.ITraversable"
+      factory=".registration.RegistrationManagerNamespace"
+      />
+
+  <class class=".registration.Registered">
+    <allow attributes="registrations" />
+  </class>
+
+  <adapter
+      for=".interfaces.registration.IRegisterable"
+      provides=".interfaces.registration.IRegistered"
+      factory=".registration.Registered"
+      trusted="true"
+      />
 
   <subscriber
-      handler=".localservice.threadSiteSubscriber"
+      for=".interfaces.registration.IComponentRegistration
+           zope.app.container.interfaces.IObjectRemovedEvent"
+      handler=".registration.ComponentRegistrationRemoveSubscriber"
+      />
+
+  <subscriber
+      for=".interfaces.registration.IComponentRegistration
+           zope.app.container.interfaces.IObjectAddedEvent"
+      handler=".registration.ComponentRegistrationAddSubscriber"
+      />
+
+  <subscriber
+      for=".interfaces.registration.IComponentRegistration
+           .interfaces.registration.IRegistrationEvent"
+      handler=".registration.componentRegistrationEventNotify"
+      />
+
+  <subscriber
+      for=".interfaces.registration.IRegisterable
+           zope.app.container.interfaces.IObjectMovedEvent"
+      handler=".registration.RegisterableMoveSubscriber"
+      />
+
+
+  <!-- Site and Site Manager Framework -->
+
+  <module module=".interfaces">
+    <allow attributes="ISite" />
+  </module>
+
+  <content class=".site.LocalSiteManager">
+    <implements
+        interface="zope.app.annotation.interfaces.IAttributeAnnotatable" />
+    <require
+        permission="zope.ManageSite"
+        interface="zope.app.container.interfaces.IReadContainer" />
+    <require
+        permission="zope.ManageSite"
+        interface="zope.component.interfaces.ISiteManager
+                   zope.app.container.interfaces.IWriteContainer" />
+  </content>
+
+  <!-- XXX: We allow these attributes to be changed. We need some subscriber
+       that updated the registries once attributes change. -->
+  <content class=".site.AdapterRegistration">
+    <require
+        permission="zope.ManageSite"
+        interface=".interfaces.IAdapterRegistration"
+        set_schema=".interfaces.IAdapterRegistration"
+        />
+  </content>
+
+  <content class=".site.UtilityRegistration">    
+    <require
+        permission="zope.ManageSite"
+        interface=".interfaces.IUtilityRegistration"
+        set_schema=".interfaces.IUtilityRegistration" 
+        />
+  </content>
+
+  <content class=".site.SiteManagementFolder">
+    <factory />
+    <implements
+        interface="zope.app.annotation.interfaces.IAttributeAnnotatable"
+        />
+    <require
+        permission="zope.ManageSite"
+        interface="zope.app.container.interfaces.IReadContainer" />
+    <require
+        permission="zope.ManageSite"
+        interface="zope.app.container.interfaces.IWriteContainer"
+        attributes="registrationManager" 
+        />
+  </content>
+  
+  <adapter 
+      for="zope.component.interfaces.ISiteManager"
+      provides="zope.app.filerepresentation.interfaces.IDirectoryFactory"
+      factory=".site.SMFolderFactory"
+      permission="zope.ManageContent"
+      />
+
+  <adapter
+      for="zope.interface.Interface" 
+      provides="zope.component.interfaces.ISiteManager"
+      factory=".site.SiteManagerAdapter"
+      />
+
+  <subscriber
       for="zope.app.publication.interfaces.IBeforeTraverseEvent"
+      handler=".site.threadSiteSubscriber"
       />
 
   <subscriber
-      handler=".localservice.clearThreadSiteSubscriber"
       for="zope.app.publication.interfaces.IEndRequestEvent"
+      handler=".site.clearThreadSiteSubscriber"
       />
+
+  <subscriber
+      for=".interfaces.ISite
+           zope.app.container.interfaces.IObjectMovedEvent"
+      handler=".site.changeSiteConfigurationAfterMove"
+      />
+
+
+  <!-- Vocabularies -->
+ 
+  <vocabulary
+      name="Interfaces"
+      factory=".vocabulary.UtilityVocabulary"
+      interface="zope.interface.interfaces.IInterface" />
+
+  <vocabulary
+    name="Utility Component Interfaces"
+    factory=".vocabulary.UtilityComponentInterfacesVocabulary" />
 
 </configure>
 

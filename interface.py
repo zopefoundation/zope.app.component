@@ -16,35 +16,36 @@
 $Id$
 """
 __docformat__ = 'restructuredtext'
-
+from types import ClassType
 from zope.component.exceptions import ComponentLookupError
 from zope.interface import directlyProvides
 from zope.interface.interfaces import IInterface
-from types import ClassType
 from zope.app import zapi
 
 def provideInterface(id, interface, iface_type=None, info=''):
-    """register Interface with utility service
+    """register Interface with global site manager as utility
 
-    >>> from zope.app.tests.placelesssetup import setUp, tearDown
-    >>> setUp()
-    >>> utilities = zapi.getGlobalService(zapi.servicenames.Utilities)
+    >>> from zope.app.testing import placelesssetup
+    >>> placelesssetup.setUp()
+    >>> gsm = zapi.getGlobalSiteManager()
+
     >>> from zope.interface import Interface
     >>> from zope.interface.interfaces import IInterface
     >>> from zope.app.content.interfaces import IContentType
+
     >>> class I(Interface):
     ...     pass
     >>> IInterface.providedBy(I)
     True
     >>> IContentType.providedBy(I)
     False
-    >>> interfaces = utilities.getUtilitiesFor(IContentType)
+    >>> interfaces = gsm.getUtilitiesFor(IContentType)
     >>> list(interfaces)
     []
     >>> provideInterface('', I, IContentType)
     >>> IContentType.providedBy(I)
     True
-    >>> interfaces = list(utilities.getUtilitiesFor(IContentType))
+    >>> interfaces = list(gsm.getUtilitiesFor(IContentType))
     >>> [name for (name, iface) in interfaces]
     [u'zope.app.component.interface.I']
     >>> [iface.__name__ for (name, iface) in interfaces]
@@ -56,13 +57,12 @@ def provideInterface(id, interface, iface_type=None, info=''):
     True
     >>> IContentType.providedBy(I1)
     False
-    >>> interfaces = list(utilities.getUtilitiesFor(IContentType))
+    >>> interfaces = list(gsm.getUtilitiesFor(IContentType))
     >>> [name for (name, iface) in interfaces]
     [u'zope.app.component.interface.I']
     >>> [iface.__name__ for (name, iface) in interfaces]
     ['I']
-    >>> tearDown()
-    
+    >>> placelesssetup.tearDown()
     """
     if not id:
         id = "%s.%s" % (interface.__module__, interface.__name__)
@@ -79,19 +79,19 @@ def provideInterface(id, interface, iface_type=None, info=''):
     else:
         iface_type = IInterface
         
-    utilityService = zapi.getGlobalService(zapi.servicenames.Utilities)
-    utilityService.provideUtility(iface_type, interface, id, info)
-
+    gsm = zapi.getGlobalSiteManager()
+    gsm.provideUtility(iface_type, interface, id, info)
 
 
 def getInterface(context, id):
     """return interface or ComponentLookupError
 
-    >>> from zope.app.tests.placelesssetup import setUp, tearDown
-    >>> setUp()
-    >>> utilities = zapi.getGlobalService(zapi.servicenames.Utilities)
+    >>> from zope.app.testing import placelesssetup
+    >>> placelesssetup.setUp()
+
     >>> from zope.interface import Interface
     >>> from zope.app.content.interfaces import IContentType
+
     >>> class I4(Interface):
     ...     pass
     >>> IInterface.providedBy(I4)
@@ -109,24 +109,25 @@ def getInterface(context, id):
                 """ 'zope.app.component.interface.I4')
     >>> iface.__name__
     'I4'
-    >>> tearDown()
-    
+    >>> placelesssetup.tearDown()    
     """
     iface = queryInterface(id, None)
     if iface is None:
         raise ComponentLookupError(id)
     return iface
 
+
 def queryInterface(id, default=None):
     """return interface or ``None``
 
-    >>> from zope.app.tests.placelesssetup import setUp, tearDown
-    >>> tearDown()
-    >>> setUp()
-    >>> utilities = zapi.getGlobalService(zapi.servicenames.Utilities)
+    >>> from zope.app.testing import placelesssetup
+    >>> placelesssetup.tearDown()
+    >>> placelesssetup.setUp()
+
     >>> from zope.interface import Interface
     >>> from zope.interface.interfaces import IInterface
     >>> from zope.app.content.interfaces import IContentType
+
     >>> class I3(Interface):
     ...     pass
     >>> IInterface.providedBy(I3)
@@ -141,21 +142,21 @@ def queryInterface(id, default=None):
     >>> iface = queryInterface('zope.app.component.interface.I3')
     >>> iface.__name__
     'I3'
-    >>> tearDown()
-    
+    >>> placelesssetup.tearDown()
     """
-    
     return zapi.queryUtility(IInterface, id, default)
+
 
 def searchInterface(context, search_string=None, base=None):
     """Interfaces search
 
-    >>> from zope.app.tests.placelesssetup import setUp, tearDown
-    >>> setUp()
-    >>> utilities = zapi.getGlobalService(zapi.servicenames.Utilities)
+    >>> from zope.app.testing import placelesssetup
+    >>> placelesssetup.setUp()
+
     >>> from zope.interface import Interface
     >>> from zope.interface.interfaces import IInterface
     >>> from zope.app.content.interfaces import IContentType
+
     >>> class I5(Interface):
     ...     pass
     >>> IInterface.providedBy(I5)
@@ -167,14 +168,11 @@ def searchInterface(context, search_string=None, base=None):
     >>> provideInterface('', I5, IContentType)
     >>> IContentType.providedBy(I5)
     True
-    >>> iface = searchInterface(None,
-    ...                        'zope.app.component.interface.I5')
+    >>> iface = searchInterface(None, 'zope.app.component.interface.I5')
     >>> iface[0].__name__
     'I5'
-    >>> tearDown()
-
+    >>> placelesssetup.tearDown()
     """
-
     return [iface_util[1]
             for iface_util in
             searchInterfaceUtilities(context, search_string, base)]
@@ -183,12 +181,13 @@ def searchInterface(context, search_string=None, base=None):
 def searchInterfaceIds(context, search_string=None, base=None):
     """Interfaces search
 
-    >>> from zope.app.tests.placelesssetup import setUp, tearDown
-    >>> setUp()
-    >>> utilities = zapi.getGlobalService(zapi.servicenames.Utilities)
+    >>> from zope.app.testing import placelesssetup
+    >>> placelesssetup.setUp()
+
     >>> from zope.interface import Interface
     >>> from zope.interface.interfaces import IInterface
     >>> from zope.app.content.interfaces import IContentType
+
     >>> class I5(Interface):
     ...     pass
     >>> IInterface.providedBy(I5)
@@ -204,18 +203,16 @@ def searchInterfaceIds(context, search_string=None, base=None):
     ...                        'zope.app.component.interface.I5')
     >>> iface
     [u'zope.app.component.interface.I5']
-    >>> tearDown()
-
+    >>> placelesssetup.tearDown()
     """
-
     return [iface_util[0]
             for iface_util in
             searchInterfaceUtilities(context, search_string, base)]
 
 
 def searchInterfaceUtilities(context, search_string=None, base=None):
-    utilityService = zapi.getGlobalService(zapi.servicenames.Utilities)   
-    iface_utilities = utilityService.getUtilitiesFor(IInterface)
+    gsm = zapi.getGlobalSiteManager()   
+    iface_utilities = gsm.getUtilitiesFor(IInterface)
 
     if search_string:
         search_string = search_string.lower()
