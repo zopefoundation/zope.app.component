@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: globalinterfaceservice.py,v 1.14 2003/08/06 21:16:35 sidnei Exp $
+$Id: globalinterfaceservice.py,v 1.15 2003/08/09 18:11:25 sidnei Exp $
 """
 from __future__ import generators
 
@@ -22,7 +22,7 @@ from zope.component.exceptions import ComponentLookupError
 from zope.component import getService
 from zope.app.interfaces.component import IGlobalInterfaceService
 from zope.app.services.servicenames import Utilities
-from zope.interface import implements
+from zope.interface import implements, providedBy
 from zope.interface.interfaces import IInterface
 from zope.component.utility import utilityService
 
@@ -89,6 +89,8 @@ class InterfaceService:
         # tests that do too basic setup to get the utilities
         # service started. I'll fix this later
         matching = utilityService.getUtilitiesFor(interface)
+        matching = [m for m in matching
+                    if IInterface in providedBy(m[1])]
         if search_string is not None:
             return [match for match in matching
                     if match[0].find(search_string) > -1]
