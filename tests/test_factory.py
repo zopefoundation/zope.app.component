@@ -29,10 +29,10 @@ import zope.app.component
 from zope.app.component.tests.exampleclass import ExampleClass
 
 def configfile(s):
-    return StringIO("""<configure
+    return StringIO("""<zopeConfigure
       xmlns='http://namespaces.zope.org/zope'>
       %s
-      </configure>
+      </zopeConfigure>
       """ % s)
 
 class Test(PlacelessSetup, unittest.TestCase):
@@ -41,6 +41,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         newSecurityManager(system_user)
         XMLConfig('meta.zcml', zope.app.component)()
         XMLConfig('meta.zcml', zope.app.security)()
+
 
     def testFactory(self):
         from zope.component import getService
@@ -60,6 +61,26 @@ class Test(PlacelessSetup, unittest.TestCase):
         obj = getService(None, Factories).createObject('Example')
         obj = removeAllProxies(obj)
         self.failUnless(isinstance(obj, ExampleClass))
+
+    def testFactoryDefaultId(self):
+        from zope.component import getService
+        from zope.proxy import removeAllProxies
+        f = configfile("""
+<permission id="zope.Foo" title="Zope Foo Permission" />
+<content class="zope.app.component.tests.exampleclass.ExampleClass">
+    <factory
+      permission="zope.Foo"
+      title="Example content"
+      description="Example description"
+       />
+</content>
+                       """)
+        xmlconfig(f)
+        obj = getService(None, Factories).createObject(
+            'zope.app.component.tests.exampleclass.ExampleClass')
+        obj = removeAllProxies(obj)
+        self.failUnless(isinstance(obj, ExampleClass))
+
 
 def test_suite():
     loader=unittest.TestLoader()

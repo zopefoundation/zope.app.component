@@ -37,11 +37,11 @@ from zope.component.tests.request import Request
 from zope.interface import implements
 
 
-template = """<configure
+template = """<zopeConfigure
    xmlns='http://namespaces.zope.org/zope'
    xmlns:test='http://www.zope.org/NS/Zope3/test'>
    %s
-   </configure>"""
+   </zopeConfigure>"""
 
 class Ob:
     implements(IC)
@@ -479,11 +479,18 @@ class Test(PlacelessSetup, unittest.TestCase):
                id="foo"
                component="zope.component.tests.factory.f"
                />
+            <factory
+               component="zope.component.tests.factory.f"
+               />
             """
             )))
 
         from zope.component.tests.factory import X
         self.assertEqual(createObject(None, 'foo').__class__, X)
+        self.assertEqual(createObject(
+            None,
+            'zope.component.tests.factory.f').__class__, X)
+
 
 def test_suite():
     return unittest.makeSuite(Test)

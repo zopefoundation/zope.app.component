@@ -26,11 +26,13 @@ import zope.app.component
 from zope.component import getService
 from zope.app.tests.placelesssetup import PlacelessSetup
 
-template = """<configure
+
+template = """<zopeConfigure
    xmlns='http://namespaces.zope.org/zope'
    xmlns:test='http://www.zope.org/NS/Zope3/test'>
    %s
-   </configure>"""
+   </zopeConfigure>"""
+
 
 class Test(PlacelessSetup, unittest.TestCase):
 

@@ -13,7 +13,7 @@
 ##############################################################################
 """ Register class directive.
 
-$Id: contentdirective.py,v 1.4 2003/08/02 07:04:01 philikon Exp $
+$Id: contentdirective.py,v 1.5 2003/08/02 09:11:15 anthony Exp $
 """
 from zope.interface import classProvides
 from types import ModuleType
@@ -21,7 +21,9 @@ from zope.interface import implements, classImplements
 from zope.component import getService
 from zope.app.services.servicenames import Interfaces, Factories
 from zope.configuration.exceptions import ConfigurationError
+from zope.configuration.action import Action
 from zope.app.component.classfactory import ClassFactory
+from zope.app.component.metaconfigure import resolveInterface
 from zope.app.security.protectclass \
     import protectLikeUnto, protectName, protectSetAttribute
 from zope.app.security.registries.permissionregistry import permissionRegistry
@@ -48,7 +50,7 @@ class ContentDirective:
 
     def __init__(self, _context, class_):
         self.__id = class_
-        self.__class = class_
+        self.__class = _context.resolve(class_)
         if isinstance(self.__class, ModuleType):
             raise ConfigurationError('Content class attribute must be a class')
         # not used yet
@@ -57,118 +59,136 @@ class ContentDirective:
         self.__context = _context
 
     def implements(self, _context, interface):
-        for interface in interface:
-            _context.action(
-                discriminator = (
-                'ContentDirective', self.__class, object()),
-                callable = classImplements,
-                args = (self.__class, interface),
-                )
-            _context.action(
-                discriminator = None,
-                callable = handler,
-                args = (Interfaces, 'provideInterface',
-                        interface.__module__+
-                        '.'+
-                        interface.__name__,
-                        interface)
-                )
+        r = []
+        for interface in interface.strip().split():
+
+            resolved_interface = resolveInterface(_context, interface)
+            r += [
+                Action(
+                    discriminator = (
+                        'ContentDirective', self.__class, object()),
+                    callable = classImplements,
+                    args = (self.__class, resolved_interface),
+                    ),
+                Action(
+                   discriminator = None,
+                   callable = handler,
+                   args = (Interfaces, 'provideInterface',
+                           resolved_interface.__module__+
+                           '.'+
+                           resolved_interface.__name__,
+                           resolved_interface)
+                   )
+                ]
+        return r
 
     def require(self, _context,
                 permission=None, attributes=None, interface=None,
                 like_class=None, set_attributes=None, set_schema=None):
         """Require a the permission to access a specific aspect"""
+
         if like_class:
-            self.__mimic(_context, like_class)
+            r = self.__mimic(_context, like_class)
+        else:
+            r = []
 
         if not (interface or attributes or set_attributes or set_schema):
-            if like_class:
-                return
+            if r:
+                return r
             raise ConfigurationError("Nothing required")
 
         if not permission:
             raise ConfigurationError("No permission specified")
 
+
         if interface:
-            for i in interface:
-                if i:
-                    self.__protectByInterface(i, permission)
+            for i in interface.strip().split():
+                self.__protectByInterface(i, permission, r)
         if attributes:
-            self.__protectNames(attributes, permission)
+            self.__protectNames(attributes, permission, r)
         if set_attributes:
-            self.__protectSetAttributes(set_attributes, permission)
+            self.__protectSetAttributes(set_attributes, permission, r)
         if set_schema:
-            for s in set_schema:
-                self.__protectSetSchema(s, permission)
+            for s in set_schema.strip().split():
+                self.__protectSetSchema(s, permission, r)
+
+
+        return r
 
     def __mimic(self, _context, class_):
         """Base security requirements on those of the given class"""
-        _context.action(
-            discriminator=('mimic', self.__class, object()),
-            callable=protectLikeUnto,
-            args=(self.__class, class_),
-            )
+        class_to_mimic = _context.resolve(class_)
+        return [
+            Action(discriminator=('mimic', self.__class, object()),
+                   callable=protectLikeUnto,
+                   args=(self.__class, class_to_mimic),
+                   )
+            ]
 
     def allow(self, _context, attributes=None, interface=None):
         """Like require, but with permission_id zope.Public"""
         return self.require(_context, PublicPermission, attributes, interface)
 
-    def __protectByInterface(self, interface, permission_id):
+
+
+    def __protectByInterface(self, interface, permission_id, r):
         "Set a permission on names in an interface."
+        interface = resolveInterface(self.__context, interface)
         for n, d in interface.namesAndDescriptions(1):
-            self.__protectName(n, permission_id)
-        self.__context.action(
-            discriminator = None,
-            callable = handler,
-            args = (Interfaces, 'provideInterface',
-                    interface.__module__+ '.'+ interface.__name__,
-                    interface)
+            self.__protectName(n, permission_id, r)
+        r.append(
+            Action(
+               discriminator = None,
+               callable = handler,
+               args = (Interfaces, 'provideInterface',
+                       interface.__module__+ '.'+ interface.__name__,
+                       interface)
+               )
             )
 
-    def __protectName(self, name, permission_id):
+    def __protectName(self, name, permission_id, r):
         "Set a permission on a particular name."
-        self.__context.action(
-            discriminator = ('protectName', self.__class, name),
-            callable = protectName,
-            args = (self.__class, name, permission_id)
-            )
+        r.append((
+            ('protectName', self.__class, name),
+            protectName, (self.__class, name, permission_id)))
 
-    def __protectNames(self, names, permission_id):
+    def __protectNames(self, names, permission_id, r):
         "Set a permission on a bunch of names."
-        for name in names:
-            self.__protectName(name, permission_id)
+        for name in names.split():
+            self.__protectName(name.strip(), permission_id, r)
 
-    def __protectSetAttributes(self, names, permission_id):
+    def __protectSetAttributes(self, names, permission_id, r):
         "Set a permission on a bunch of names."
-        for name in names:
-            self.__context.action(
-                discriminator = ('protectSetAttribute', self.__class, name),
-                callable = protectSetAttribute,
-                args = (self.__class, name, permission_id)
-                )
+        for name in names.split():
+            r.append((
+                ('protectSetAttribute', self.__class, name),
+                protectSetAttribute, (self.__class, name, permission_id)))
 
-    def __protectSetSchema(self, schema, permission_id):
+    def __protectSetSchema(self, schema, permission_id, r):
         "Set a permission on a bunch of names."
-        _context = self.__context
+        schema = resolveInterface(self.__context, schema)
         for name in schema:
             field = schema[name]
             if IField.isImplementedBy(field) and not field.readonly:
-                _context.action(
-                    discriminator = ('protectSetAttribute', self.__class, name),
-                    callable = protectSetAttribute,
-                    args = (self.__class, name, permission_id)
-                    )
-        _context.action(
-            discriminator = None,
-            callable = handler,
-            args = (Interfaces, 'provideInterface',
-                    schema.__module__+ '.'+ schema.__name__,
-                    schema)
+                r.append((
+                    ('protectSetAttribute', self.__class, name),
+                    protectSetAttribute, (self.__class, name, permission_id)))
+
+        r.append(
+            Action(
+               discriminator = None,
+               callable = handler,
+               args = (Interfaces, 'provideInterface',
+                       schema.__module__+ '.'+ schema.__name__,
+                       schema)
+               )
             )
+
 
     def __call__(self):
         "Handle empty/simple declaration."
         return ()
+
 
     def factory(self, _context,
                 permission=None, title="", id=None, description=''):
@@ -179,12 +199,14 @@ class ContentDirective:
         # note factories are all in one pile, services and content,
         # so addable names must also act as if they were all in the
         # same namespace, despite the service/content division
-        _context.action(
-            discriminator = ('FactoryFromClass', id),
-            callable = provideClass,
-            args = (id, self.__class,
-                    permission, title, description)
-            )
+        return [
+            Action(
+                discriminator = ('FactoryFromClass', id),
+                callable = provideClass,
+                args = (id, self.__class,
+                        permission, title, description)
+                )
+            ]
 
 def provideClass(id, _class, permission=None,
                  title='', description=''):

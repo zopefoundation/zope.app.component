@@ -1,125 +1,261 @@
-<configure
-    xmlns="http://namespaces.zope.org/zope"
-    xmlns:meta="http://namespaces.zope.org/meta">
+<zopeConfigure xmlns='http://namespaces.zope.org/zope'>
 
-  <meta:directives namespace="http://namespaces.zope.org/zope">
+  <directives namespace="http://namespaces.zope.org/zope">
 
-    <meta:directive
-        name="interface"
-        schema=".metadirectives.IInterfaceDirective"
-        handler="zope.app.component.metaconfigure.interface"
-        />
+    <directive name="interface" attributes="interface"
+       handler="zope.app.component.metaconfigure.interface" />
 
-    <meta:directive
-        name="adapter"
-        schema=".metadirectives.IAdapterDirective"
-        handler="zope.app.component.metaconfigure.adapter"
-        />
+    <directive name="adapter" 
+               attributes="factory provides for permission name"
+       handler="zope.app.component.metaconfigure.adapter" />
 
-    <meta:directive
-        name="utility"
-        schema=".metadirectives.IUtilityDirective"
-        handler="zope.app.component.metaconfigure.utility"
-        />
+    <directive name="utility" 
+               attributes="component provides permission name factory"
+       handler="zope.app.component.metaconfigure.utility" />
 
-    <meta:directive
-        name="factory"
-        schema=".metadirectives.IFactoryDirective"
-        handler="zope.app.component.metaconfigure.factory"
-        />
+    <directive name="factory" attributes="component id permission"
+       handler="zope.app.component.metaconfigure.factory" />
 
-    <meta:directive
-        name="view"
-        schema=".metadirectives.IViewDirective"
-        handler="zope.app.component.metaconfigure.view"
-        />
+    <directive
+       name="view"
+       attributes="component type name for layer factory
+                   permission allowed_interface allowed_attributes"
+       handler="zope.app.component.metaconfigure.view" />
 
-    <meta:directive
-        name="defaultView"
-        schema=".metadirectives.IViewDirective"
-        handler="zope.app.component.metaconfigure.defaultView"
-        />
+    <directive name="defaultView"
+               attributes="component type name for layer factory
+                           permission allowed_attributes"
+       handler="zope.app.component.metaconfigure.defaultView" />
 
-    <meta:directive
-        name="resource"
-        schema=".metadirectives.IResourceDirective"
-        handler="zope.app.component.metaconfigure.resource"
-        />
+    <directive
+       name="resource"
+       attributes="component type name layer factory
+                   permission allowed_interface allowed_attributes"
+       handler="zope.app.component.metaconfigure.resource" />
 
-    <meta:directive
-        name="skin"
-        schema=".metadirectives.ISkinDirective"
-        handler="zope.app.component.metaconfigure.skin"
-        />
+    <directive name="skin" attributes="name type layers"
+        handler="zope.app.component.metaconfigure.skin" />
 
-    <meta:directive
-        name="serviceType"
-        schema=".metadirectives.IServiceTypeDirective"
-        handler="zope.app.component.metaconfigure.serviceType"
-        />
+    <directive name="serviceType" attributes="id interface"
+       handler="zope.app.component.metaconfigure.serviceType" />
 
-    <meta:directive
-        name="service" 
-        schema=".metadirectives.IServiceDirective"
-        handler="zope.app.component.metaconfigure.service"
-        />
+    <directive name="service" 
+               attributes="serviceType component permission factory"
+       handler="zope.app.component.metaconfigure.service" />
 
-    <meta:complexDirective
-        name="class"
-        schema=".metadirectives.IClassDirective"
-        handler="zope.app.component.contentdirective.ContentDirective"
-        >
-
-      <meta:subdirective
-          name="implements"
-          schema=".metadirectives.IImplementsSubdirective"
-          />
-
-      <meta:subdirective
-          name="require"
-          schema=".metadirectives.IRequireSubdirective"
-          />
-
-      <meta:subdirective
-          name="allow"
-          schema=".metadirectives.IAllowSubdirective"
-          />
-
-      <meta:subdirective
-          name="factory"
-          schema=".metadirectives.IFactorySubdirective"
-          />
-
-    </meta:complexDirective>
-
-    <meta:complexDirective
+    <directive
         name="content"
-        schema=".metadirectives.IClassDirective"
         handler="zope.app.component.contentdirective.ContentDirective"
+        description="Make a component available as a content object type"
         >
-
-      <meta:subdirective
-          name="implements"
-          schema=".metadirectives.IImplementsSubdirective"
+      <attribute
+          name="class"
+          required="yes"
+          description="resolvable name of a class"
           />
 
-      <meta:subdirective
-          name="require"
-          schema=".metadirectives.IRequireSubdirective"
+      <subdirective name="implements">
+
+        <description>
+              Declare that the class given by the content
+              directive's class attribute implements a given interface
+          </description>
+
+        <attribute
+            name="interface"
+            required="yes"
+            description="resolvable name of an Interface"
+            />
+      </subdirective>
+
+      <subdirective name="require">
+        <description>
+            Indicate that the a specified list of names or the
+            names in a given Interface require a given permission for
+            access.
+          </description>
+
+        <attribute
+            name="permission"
+            required="no"
+            description="a permission id"
+            />
+
+        <attribute
+            name="attributes"
+            description="space-separated list of attribute names"
+            />
+
+        <attribute
+            name="set_attributes"
+            description="space-separated list of attribute names
+                         for attributes that can be set"
+            />
+
+        <attribute
+            name="set_schema"
+            >
+            Dotted name of a schema
+
+            The non-read-only fields in the schema can be set with the
+            specified permission.
+            
+          </attribute>
+
+        <attribute
+            name="interface"
+            description="the resolvable name of an interface"
+            />
+
+        <attribute name="like_class">
+          <description>
+                a class on which the security requirements
+                for this class will be based
+              </description>
+          </attribute>
+
+      </subdirective>
+
+      <subdirective name="allow">
+        <description>
+              Declare a part of the class to be publicly
+              viewable (that is, requires the zope.Public
+              permission).  Only one of the following two
+              attributes may be used.
+           </description>
+
+        <attribute
+            name="attributes"
+            description="space-separated list of attribute names"
+            />
+
+        <attribute
+            name="interface"
+            description="the resolvable name of an interface"
+            />
+
+      </subdirective>
+
+      <subdirective name="factory">
+
+        <description>
+              Specify the factory used to create this
+              content object
+          </description>
+
+        <attribute name="permission">
+          <description>
+                permission id required to use this factory.
+                Although optional, this attribute should normally
+                be specified.
+                </description>
+          </attribute>
+
+        <attribute name="id">
+          <description>
+                the identifier for this factory in the
+                ZMI factory identification scheme.  If not given, defaults
+                to the literal string given as the content directive's
+                'class' attribute.
+              </description>
+          </attribute>
+
+        <attribute name="title">
+          <description>
+                text suitable for use in the 'add content' menu of
+                a management interface
+              </description>
+          </attribute>
+
+        <attribute name="description">
+          <description>
+                longer narrative description of what this
+                factory does
+            </description>
+          </attribute>
+
+      </subdirective>
+    </directive>
+
+    <directive
+        name="class"
+        handler="zope.app.component.contentdirective.ContentDirective"
+        description="Make statements about a class"
+        >
+      <attribute
+          name="class"
+          required="yes"
+          description="resolvable name of a class"
           />
 
-      <meta:subdirective
-          name="allow"
-          schema=".metadirectives.IAllowSubdirective"
-          />
+      <subdirective name="implements">
 
-      <meta:subdirective
-          name="factory"
-          schema=".metadirectives.IFactorySubdirective"
-          />
+        <description>
+              Declare that the class given by the content
+              directive's class attribute implements a given interface
+          </description>
 
-    </meta:complexDirective>
+        <attribute
+            name="interface"
+            required="yes"
+            description="resolvable name of an Interface"
+            />
+      </subdirective>
 
-  </meta:directives>
+      <subdirective name="require">
+        <description>
+            Indicate that the a specified list of names or the
+            names in a given Interface require a given permission for
+            access.
+          </description>
 
-</configure>
+        <attribute
+            name="permission"
+            required="yes"
+            description="a permission id"
+            />
+
+        <attribute
+            name="attributes"
+            description="space-separated list of attribute names"
+            />
+
+        <attribute
+            name="interface"
+            description="the resolvable name of an interface"
+            />
+
+        <attribute name="like_class">
+          <description>
+                a class on which the security requirements
+                for this class will be based
+              </description>
+          </attribute>
+
+      </subdirective>
+
+      <subdirective name="allow">
+        <description>
+              Declare a part of the class to be publicly
+              viewable (that is, requires the zope.Public
+              permission).  Only one of the following two
+              attributes may be used.
+           </description>
+
+        <attribute
+            name="attributes"
+            description="space-separated list of attribute names"
+            />
+
+        <attribute
+            name="interface"
+            description="the resolvable name of an interface"
+            />
+
+      </subdirective>
+
+    </directive>
+
+  </directives>
+
+</zopeConfigure>
