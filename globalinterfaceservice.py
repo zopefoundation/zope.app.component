@@ -12,46 +12,12 @@
 #
 ##############################################################################
 """
-$Id: globalinterfaceservice.py,v 1.6 2003/03/21 21:03:01 jim Exp $
+$Id: globalinterfaceservice.py,v 1.7 2003/04/09 16:35:06 philikon Exp $
 """
 
-from zope.interface import Interface
 from zope.component.exceptions import ComponentLookupError
 
-class IInterfaceService(Interface):
-    """Service that keeps track of used interfaces
-    """
-
-    def getInterface(id):
-        """Return the interface registered for the given id
-
-        A ComponentLookupError is raised if the interface can't be found.
-        """
-
-    def queryInterface(id, default=None):
-        """Return the interface registered for the given id
-
-        The default is returned if the interface can't be found.
-        """
-
-    def searchInterface(search_string='', base=None):
-        """Return the interfaces that match the search criteria
-
-        If a search string is given, only interfaces that contain the
-        string in their documentation will be returned.
-
-        If base is given, only interfaces that equal or extend base
-        will be returned.
-
-        """
-
-    def searchInterfaceIds(search_string='', base=None):
-        """Return the ids of the interfaces that match the search criteria.
-
-        See searchInterface
-
-        """
-
+from zope.app.interfaces.component.interfaceservice import IInterfaceService
 from zope.app.interfaces.component.globalinterfaceservice \
         import IGlobalInterfaceService
 
