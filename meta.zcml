@@ -60,6 +60,12 @@
         />
 
     <meta:directive
+        name="defaultLayer"
+        schema=".metadirectives.IDefaultLayerDirective"
+        handler="zope.app.component.metaconfigure.defaultLayer"
+        />
+
+    <meta:directive
         name="service" 
         schema=".metadirectives.IServiceDirective"
         handler="zope.app.component.metaconfigure.service"
