@@ -26,6 +26,7 @@ from zope.security.proxy import removeSecurityProxy
 import zope.app.component.localservice
 import zope.app.container.contained
 import zope.app.site.interfaces
+from zope.app import zapi
 from zope.app.component import registration
 from zope.app.component import interfaces
 from zope.app.i18n import ZopeMessageIDFactory as _
@@ -120,7 +121,7 @@ class LocalAdapterRegistry(zope.interface.adapter.AdapterRegistry,
         return self._registrations
 
     def __getstate__(self):
-        state = super(LocalAdapterRegistry, self).__getstate__().copy()
+        state = persistent.Persistent.__getstate__(self).copy()
         
         for name in ('_default', '_null', 'adapter_hook',
                      'lookup', 'lookup1', 'queryAdapter', 'get',
@@ -130,8 +131,8 @@ class LocalAdapterRegistry(zope.interface.adapter.AdapterRegistry,
         return state
 
     def __setstate__(self, state):
-        super(LocalAdapterRegistry, self).__setstate__(state)
-        super(LocalAdapterRegistry, self).__init__()
+        persistent.Persistent.__setstate__(self, state)
+        zope.interface.adapter.AdapterRegistry.__init__(self)
     
     def baseFor(self, spec):
         """Used by LocalSurrogate"""

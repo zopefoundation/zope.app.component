@@ -69,6 +69,27 @@ def setSite(site=None):
 def getSite():
     return siteinfo.site
 
+
+def getSiteManager(context=None):
+    """A special hook for getting the site manager.
+
+    Here we take the currently set site into account to find the appropriate
+    site manager.
+    """
+    if context is None:
+        return siteinfo.sm
+
+    # We remove the security proxy because there's no way for
+    # untrusted code to get at it without it being proxied again.
+
+    # We should really look look at this again though, especially
+    # once site managers do less.  There's probably no good reason why
+    # they can't be proxied.  Well, except maybe for performance.
+    sm = zope.component.interfaces.ISiteManager(
+        context, zope.component.getGlobalSiteManager())
+    return zope.security.proxy.removeSecurityProxy(sm)
+
+
 def adapter_hook(interface, object, name='', default=None):
     try:
         return siteinfo.adapter_hook(interface, object, name, default)
@@ -77,10 +98,11 @@ def adapter_hook(interface, object, name='', default=None):
 
 
 def setHooks():
-    # Hook up a new implementation of looking up views.
     zope.component.adapter_hook.sethook(adapter_hook)
+    zope.component.getSiteManager.sethook(getSiteManager)
 
 def resetHooks():
     # Reset hookable functions to original implementation.
     zope.component.adapter_hook.reset()
+    zope.component.getSiteManager.reset()
     

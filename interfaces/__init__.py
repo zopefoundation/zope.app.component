@@ -17,7 +17,7 @@ $Id$
 """
 import zope.interface
 import zope.schema
-from zope.component.interfaces import ISiteManager
+import zope.component
 from zope.app.container.interfaces import IContainer
 from zope.app.container.constraints import ContainerTypesConstraint
 from zope.app.container.constraints import ItemTypePrecondition
@@ -34,30 +34,6 @@ class ILocalAdapterRegistry(registration.IRegistry,
         """Someone changed the base registry
 
         This should only happen during testing
-        """
-
-class IComponentManager(zope.interface.Interface):
-
-    def queryComponent(type=None, filter=None, all=True):
-        """Return all components that match the given type and filter
-
-        The arguments are:
-
-        type -- An argument is the interface a returned component must
-                provide.
-
-        filter -- A Python expression that must evaluate to `True` for any
-                  returned component; `None` means that no filter has been
-                  specified.
-
-        all -- A flag indicating whether all component managers in
-               this place should be queried, or just the local one.
-
-        The objects are returned a sequence of mapping objects with keys:
-
-        path -- The component path
-
-        component -- The component
         """
 
 class IBindingAware(zope.interface.Interface):
@@ -91,42 +67,18 @@ class IPossibleSite(zope.interface.Interface):
         """
 
 class ISite(IPossibleSite):
-    """Marker interface to indicate that we have a site
-    """
+    """Marker interface to indicate that we have a site"""
 
-class ILocalSiteManager(ISiteManager, IComponentManager,
+class ILocalSiteManager(zope.component.interfaces.ISiteManager,
                         registration.ILocatedRegistry,
                         registration.IRegistry):
     """Site Managers act as containers for registerable components.
 
-    If a Site Manager is asked for an adapter or utility, it checks for those it
-    contains before using a context-based lookup to find another site
-    manager to delegate to.  If no other service manager is found they defer
-    to the ComponentArchitecture ServiceManager which contains file based
-    services.
+    If a Site Manager is asked for an adapter or utility, it checks for those
+    it contains before using a context-based lookup to find another site
+    manager to delegate to.  If no other site manager is found they defer to
+    the global site manager which contains file based utilities and adapters.
     """
-    def findModule(name):
-        """Find the module of the given name.
-
-        If the module can be find in the folder or a parent folder
-        (within the site manager), then return it, otherwise, delegate
-        to the module service.
-
-        This must return None when the module is not found.
-
-        """
-
-    def resolve(name):
-        """Resolve a dotted object name.
-
-        A dotted object name is a dotted module name and an object
-        name within the module.
-
-        TODO: We really should switch to using some other character than
-        a dot for the delimiter between the module and the object
-        name.
-
-        """
 
 class ISiteManagementFolder(registration.IRegisterableContainer,
                             IContainer):
@@ -134,7 +86,7 @@ class ISiteManagementFolder(registration.IRegisterableContainer,
 
     __parent__ = zope.schema.Field(
         constraint = ContainerTypesConstraint(
-            ISiteManager,
+            ILocalSiteManager,
             registration.IRegisterableContainer,
             ),
         )
