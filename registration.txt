@@ -248,21 +248,180 @@ discussed.
 The Component Registration
 --------------------------
 
-provided interface
-permission
-Registered
+Until now we have only discussed the most primitive usage of the
+`ComponentRegistration`. Usually, a registry is not just interested in a
+component, but a set of methods which are specified by a particular
+interface. Thus the component registration supports the `interface`
+attribute. By default it is `None`:
+
+  >>> regFoo.interface is None
+  True
+
+We can now write another `IComponentRegistration` implementation that knows
+about the interface; in fact, it will pick the most specific one of the
+component:
+
+  >>> from zope.interface import providedBy
+  >>> class SomethingRegistration(Registration):
+  ...
+  ...     def interface(self):
+  ...         return list(providedBy(self._component))[0]
+  ...     interface = property(interface)
+  
+Next we create an interface and its implementation:
+
+  >>> class ISomething(zope.interface.Interface):
+  ...     pass
+
+  >>> class Something(Component):
+  ...     zope.interface.implements(ISomething)
+
+Creating a "something registration", we can see that the interface attribute
+is now available:
+
+  >>> something = Something('Something')
+  >>> reg = SomethingRegistration(something)
+  >>> reg.interface
+  <InterfaceClass __builtin__.ISomething>
+
+But hold on, we are not done yet! The component registration also supports a
+`permission` attribute. When set and an interface is available, the component
+will always be proxied using an interface checker for the specified
+permission. By default the permission is `None`:
+
+  >>> reg.permission is None
+  True
+
+Now we set a permission for the registration and the component should be
+proxies when returned:
+
+  >>> from zope.security.checker import CheckerPublic  
+  >>> reg.permission = CheckerPublic
+  >>> reg.component is something
+  False
+  >>> type(reg.component) 
+  <type 'zope.security._proxy._Proxy'>
+
+You can also, specify a permission in the constructor:
+
+  >>> regNone = SomethingRegistration(None, 'zope.Public')
+  >>> regNone.permission is CheckerPublic
+  True
+
+If the interface is not available, the permission is ignored and the bare
+component is returned:
+
+  >>> regSomething2 = Registration(something, 'zope.Public')
+  >>> regSomething2.permission is CheckerPublic
+  True
+  >>> regSomething2.component is something
+  True
 
 
-Registration Events
--------------------
+The `Registered` Adapter
+------------------------
 
-RegistrationActivatedEvent
-RegistrationDeactivatedEvent
+Registerable components are able to get a list of all their
+registrations. However, the adapter only works for components and
+registrations that are stored in the registerable container and registration
+manager, respectively. 
+
+  >>> from zope.app.component.registration import Registered
+  >>> registered = Registered(foo)
+  >>> registered.registrations() #doctest: +NORMALIZE_WHITESPACE
+  [<Registration for '<Component: 'Foo'>'>, 
+   <Registration for '<Component: 'Foo'>'>]
+
+If the registerable component is not stored in a registrable container, a
+type error is raised, since no parent can be found:
+
+  >>> registered = Registered(something)
+  >>> registered.registrations() #doctest: +NORMALIZE_WHITESPACE
+  Traceback (most recent call last):
+  ...
+  TypeError: ('Not enough context information to get parent', 
+              <Component: 'Something'>)
 
 
 Registrations and Dependencies
 ------------------------------
 
-ComponentRegistrationRemoveSubscriber
-ComponentRegistrationAddSubscriber
-RegisterableMoveSubscriber
+Registerable objects and registrations have a very close dependence. For
+example, it makes no sense to delete a registerable component and leave its
+registrations around. Instead, registrations always are required to be removed
+before the component. Thus, it is also not allowed to simply copy a
+registerable component to another registerable container:
+
+  >>> orig = RegisterableManager()
+  >>> new = RegisterableManager()
+  >>> comp = Component('comp')
+  
+  >>> from zope.app.container.contained import ObjectMovedEvent
+  >>> event = ObjectMovedEvent(comp, orig, 'comp', new, 'comp')
+  
+  >>> from zope.app.component.registration import RegisterableMoveSubscriber
+  >>> RegisterableMoveSubscriber(comp, event)
+  Traceback (most recent call last):
+  ...
+  DependencyError: Can't move a registered component from its container.
+  
+Hoever, renaming the component is no problem:
+  
+  >>> event = ObjectMovedEvent(comp, orig, 'comp', orig, 'comp-new')
+  >>> RegisterableMoveSubscriber(comp, event)
+
+Whenever a registration is created it is added as a dependence to the
+registerable component, which is removed once the registration is removed. Two
+subscribers handle the management of the dependemcies. 
+
+Since the default `IDependable` adapter uses annotations to store the
+dependents, our component has to provide `IAttrbuteAnnotatable`:
+ 
+  >>> from zope.app.annotation.interfaces import IAttributeAnnotatable
+  >>> from zope.interface import directlyProvides
+  >>> directlyProvides(comp, IAttributeAnnotatable)
+
+Make sure that we do not initially have any dependencies:
+
+  >>> from zope.app.dependable.interfaces import IDependable
+  >>> dependents = IDependable(comp)
+  >>> dependents.getPaths()
+  ()
+
+Since the path of the registration is used to store the dependency, we need to
+make sure that we have a containment root; so make the registration itself the
+root:
+
+  >>> reg = Registration(comp)
+  >>> from zope.app.traversing.interfaces import IContainmentRoot
+  >>> directlyProvides(reg, IContainmentRoot)
+
+The component registration add subscriber adds a dependent.
+
+  >>> from zope.app.container.contained import ObjectAddedEvent
+  >>> from zope.app.component.registration import RegistrationManager
+  >>> event = ObjectAddedEvent(reg, RegistrationManager(), 'reg1')
+
+  >>> from zope.app.component.registration import \
+  ...     ComponentRegistrationAddSubscriber
+  >>> ComponentRegistrationAddSubscriber(reg, event)
+
+  >>> dependents = IDependable(comp)
+  >>> dependents.getPaths()
+  (u'/',)
+
+We simply got a slash here, since the registration is a root object. Now we
+remove the dependency again by calling the component registration remove
+subscriber:
+
+  >>> from zope.app.container.contained import ObjectRemovedEvent
+  >>> event = ObjectRemovedEvent(reg, RegistrationManager(), 'reg1')
+
+  >>> from zope.app.component.registration import \
+  ...     ComponentRegistrationRemoveSubscriber
+  >>> ComponentRegistrationRemoveSubscriber(reg, event)
+
+  >>> dependents = IDependable(comp)
+  >>> dependents.getPaths()
+  ()
+

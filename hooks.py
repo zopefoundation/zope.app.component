@@ -41,7 +41,7 @@ class read_property(object):
 
 class SiteInfo(zope.thread.local):
     site = None
-    #services = serviceManager
+    sm = zope.component.getGlobalSiteManager()
 
     def adapter_hook(self):
         services = self.services
@@ -56,7 +56,7 @@ siteinfo = SiteInfo()
 
 def setSite(site=None):
     if site is None:
-        services = serviceManager
+        sm = zope.component.getGlobalSiteManager()
     else:
 
         # We remove the security proxy because there's no way for
@@ -67,10 +67,10 @@ def setSite(site=None):
         # they can't be proxied.  Well, except maybe for performance.
         
         site = removeSecurityProxy(site)
-        services = site.getSiteManager()
+        sm = site.getSiteManager()
 
     siteinfo.site = site
-    siteinfo.services = services
+    siteinfo.services = sm
     try:
         del siteinfo.adapter_hook
     except AttributeError:

@@ -18,13 +18,21 @@ $Id$
 __docformat__ = "reStructuredText"
 import unittest
 
+import zope.component.testing as placelesssetup
 from zope.testing import doctest
+from zope.app.testing import setup
 
+def setUp(test):
+    placelesssetup.setUp(test)
+    setup.setUpAnnotations()
+    setup.setUpDependable()
+    setup.setUpTraversal()
 
 def test_suite():
     return unittest.TestSuite((
         doctest.DocFileSuite('../statusproperty.txt'),
-        doctest.DocFileSuite('../registration.txt'),
+        doctest.DocFileSuite('../registration.txt',
+                             setUp=setUp, tearDown=placelesssetup.tearDown),
         ))
 
 if __name__ == "__main__":

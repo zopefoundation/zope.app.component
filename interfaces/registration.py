@@ -79,28 +79,31 @@ class Component(Field):
 
 
 class IComponentRegistration(IRegistration):
-    """Registration object that uses a component path and a permission."""
+    """Registration object that uses a component.
 
-    permission = Choice(
-        title=_("The permission needed to use the component"),
-        vocabulary="Permissions",
-        required=False,
-        )
-
+    An interface can optionally be specified that describes the interface the
+    component provides for the registry.
+    
+    The interface will be used to produce a proxy for the component, if
+    the permission is also specified.
+    """
     component = Component(
         title=_("Registration Component"),
         description=_("The component the registration is for."),
         required=True)
 
-    def getInterface(self):
-        """Return the interface the component provides through this
-        registration.
+    interface = Field(
+        title=_("Component Interface"),
+        description=_("The interface the component provides through this "
+                      "registration."),
+        required=False,
+        default=None)
 
-        If no interface was specified, return `None`.
-
-        The interface will be used to produce a proxy for the component, if
-        the `permission` is specified.
-        """
+    permission = Choice(
+        title=_("The permission needed to use the component"),
+        vocabulary="Permissions",
+        required=False
+        )
 
 
 class IRegistry(zope.component.interfaces.IRegistry):

@@ -19,8 +19,8 @@ from persistent import Persistent
 
 import zope.event
 from zope.interface import implements
-from zope.security.checker import CheckerPublic
-from zope.security.proxy import removeSecurityProxy
+from zope.security.checker import InterfaceChecker, CheckerPublic
+from zope.security.proxy import Proxy, removeSecurityProxy
 
 from zope.app import zapi
 from zope.app.container.btree import BTreeContainer
@@ -66,9 +66,12 @@ class RegistrationStatusProperty(object):
         if value == interfaces.ActiveStatus:
             if not registry.registered(registration):
                 registry.register(registration)
+                zope.event.notify(RegistrationActivatedEvent(registration))
+
         elif value == interfaces.InactiveStatus:
             if registry.registered(registration):
                 registry.unregister(registration)
+                zope.event.notify(RegistrationDeactivatedEvent(registration))
         else:
             raise ValueError, value
 
@@ -101,8 +104,8 @@ class ComponentRegistration(SimpleRegistration):
         self.permission = permission
 
     def _getComponent(self):
-        if self.permission and self.getInterface():
-            checker = InterfaceChecker(self.getInterface(), self.permission)
+        if self.permission and self.interface:
+            checker = InterfaceChecker(self.interface, self.permission)
             return Proxy(self._component, checker)
         return self._component
 
@@ -111,10 +114,11 @@ class ComponentRegistration(SimpleRegistration):
         # get back a proxied component anyways.
         self._component = removeSecurityProxy(component)
 
+    # See zope.app.component.interfaces.registration.IComponentRegistration
     component = property(_getComponent, _setComponent)
 
-    def getInterface(self):
-        return None
+    # See zope.app.component.interfaces.registration.IComponentRegistration
+    interface = None
 
 
 def SimpleRegistrationRemoveSubscriber(registration, event):
@@ -137,19 +141,19 @@ def SimpleRegistrationRemoveSubscriber(registration, event):
                               % objectpath)
 
 
-def ComponentRegistrationRemoveSubscriber(component_registration, event):
+def ComponentRegistrationRemoveSubscriber(componentRegistration, event):
     """Receive notification of remove event."""
-    component = component_registration.component
+    component = componentRegistration.component
     dependents = IDependable(component)
-    objectpath = zapi.getPath(component_registration)
+    objectpath = zapi.getPath(componentRegistration)
     dependents.removeDependent(objectpath)
 
 
-def ComponentRegistrationAddSubscriber(component_registration, event):
+def ComponentRegistrationAddSubscriber(componentRegistration, event):
     """Receive notification of add event."""
-    component = component_registration.component
+    component = componentRegistration.component
     dependents = IDependable(component)
-    objectpath = zapi.getPath(component_registration)
+    objectpath = zapi.getPath(componentRegistration)
     dependents.addDependent(objectpath)
 
 
@@ -176,8 +180,8 @@ class Registered(object):
 
     def registrations(self):
         rm = zapi.getParent(self.registerable).registrationManager
-        return [reg for reg in rm
-                if (IComponentRegistration.providedBy(reg) and
+        return [reg for reg in rm.values()
+                if (interfaces.IComponentRegistration.providedBy(reg) and
                     reg.component is self.registerable)]
 
 

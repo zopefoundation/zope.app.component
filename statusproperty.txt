@@ -81,3 +81,44 @@ anymore:
   True
   >>> reg in registry.registrations
   False
+
+
+Registration Events
+-------------------
+
+When a registration is activated or deactivated, an
+`RegistrationActivatedEvent` or `RegistrationDeactivatedEvent` is created,
+respectively. Listening to these events can be useful for cases where you want
+to change the component based on registration status.
+
+To catch the events, we have to register a subscriber with the event
+framework:
+
+  >>> events = []
+  >>> def subscriber(event):
+  ...     global events
+  ...     events.append(event)
+
+  >>> import zope.event
+  >>> zope.event.subscribers.append(subscriber)
+
+Now we switch our registration to active:
+
+  >>> reg.status = ActiveStatus
+  >>> event = events.pop()
+  >>> event.__class__
+  <class 'zope.app.component.registration.RegistrationActivatedEvent'>
+  >>> event.object is reg
+  True
+
+and deactivate it again:
+
+  >>> reg.status = InactiveStatus
+  >>> events.pop().__class__
+  <class 'zope.app.component.registration.RegistrationDeactivatedEvent'>
+  >>> event.object is reg
+  True
+
+Now make sure that we remove the subscriber again:
+
+  >>> del zope.event.subscribers[zope.event.subscribers.index(subscriber)]
