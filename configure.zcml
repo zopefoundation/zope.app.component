@@ -39,8 +39,6 @@
          permission='zope.Public'
          component='zope.component.resource.resourceService' />
          
-<hookable name=".getServiceManager" />
-
 <hook module="zope.component"
       name="getServiceManager"
       implementation="zope.app.component.hooks.getServiceManager_hook" />
