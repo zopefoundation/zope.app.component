@@ -27,7 +27,7 @@ from zope.component.exceptions import ComponentLookupError
 from zope.component import getView, queryView, queryResource
 from zope.component import createObject
 from zope.component import getDefaultViewName
-from zope.component import getAdapter, queryAdapter
+from zope.component import queryAdapter
 from zope.component import getNamedAdapter, queryNamedAdapter
 from zope.component import getUtility, queryUtility
 
@@ -122,7 +122,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        self.assertEqual(getAdapter(Content(), IApp).__class__, Comp)
+        self.assertEqual(IApp(Content()).__class__, Comp)
 
     def testNamedAdapter(self):
 
@@ -131,7 +131,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         from zope.component.tests.components import Content, IApp, Comp
 
         self.testAdapter()
-        self.assertEqual(getAdapter(Content(), IApp).__class__, Comp)
+        self.assertEqual(IApp(Content()).__class__, Comp)
         self.assertEqual(queryNamedAdapter(Content(), IV, 'test'),
                          None)
 
@@ -167,7 +167,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        adapter = ProxyFactory(getAdapter(Content(), IApp))
+        adapter = ProxyFactory(IApp(Content()))
         items = [item[0] for item in getTestProxyItems(adapter)]
         self.assertEqual(items, ['a', 'f'])
         self.assertEqual(getProxiedObject(adapter).__class__, Comp)
