@@ -37,6 +37,8 @@ class ParticipationStub:
         self.interaction = None
 
 
+# TODO: tests for other directives needed
+
 template = """<configure
    xmlns='http://namespaces.zope.org/zope'
    xmlns:test='http://www.zope.org/NS/Zope3/test'
@@ -46,7 +48,6 @@ template = """<configure
 
 class Test(PlacelessSetup, unittest.TestCase):
 
-    # XXX: tests for other directives needed
 
     def setUp(self):
         super(Test, self).setUp()
