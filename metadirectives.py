@@ -99,7 +99,7 @@ class IBasicViewInformation(zope.interface.Interface):
         Multiple interfaces can be provided, separated by
         whitespace."""),
         required=False,
-        value_type=zope.configuration.fields.GlobalObject(),
+        value_type=zope.configuration.fields.GlobalInterface(),
         )
 
     allowed_attributes = zope.configuration.fields.Tokens(
@@ -126,7 +126,7 @@ class IBasicResourceInformation(zope.interface.Interface):
         default=u'',
         )
 
-    provides = zope.configuration.fields.GlobalObject(
+    provides = zope.configuration.fields.GlobalInterface(
         title=_("The interface this component provides."),
         description=_("""
         A view can provide an interface.  This would be used for
@@ -135,7 +135,7 @@ class IBasicResourceInformation(zope.interface.Interface):
         default=zope.interface.Interface,
         )
 
-    type = zope.configuration.fields.GlobalObject(
+    type = zope.configuration.fields.GlobalInterface(
         title=_("Request type"),
         required=True
         )
@@ -145,12 +145,12 @@ class IInterfaceDirective(zope.interface.Interface):
     Define an interface
     """
     
-    interface = zope.configuration.fields.GlobalObject(
+    interface = zope.configuration.fields.GlobalInterface(
         title=_("Interface"),
         required=True,
         )
 
-    type = zope.configuration.fields.GlobalObject(
+    type = zope.configuration.fields.GlobalInterface(
         title=_("Interface type"),
         required=False,
         )
@@ -168,7 +168,7 @@ class IAdapterDirective(zope.interface.Interface):
         value_type=zope.configuration.fields.GlobalObject()
         )
 
-    provides = zope.configuration.fields.GlobalObject(
+    provides = zope.configuration.fields.GlobalInterface(
         title=_("Interface the component provides"),
         description=_("This attribute specifes the interface the adapter"
                       " instance must provide."),
@@ -224,7 +224,7 @@ class ISubscriberDirective(zope.interface.Interface):
         required=True
         )
 
-    provides = zope.configuration.fields.GlobalObject(
+    provides = zope.configuration.fields.GlobalInterface(
         title=_("Interface the component provides"),
         description=_("This attribute specifes the interface the adapter"
                       " instance must provide."),
@@ -264,7 +264,7 @@ class ISubscriberDirective(zope.interface.Interface):
 class IUtilityDirective(IBasicComponentInformation):
     """Register a utility."""
 
-    provides = zope.configuration.fields.GlobalObject(
+    provides = zope.configuration.fields.GlobalInterface(
         title=_("Provided interface"),
         description=_("Interface provided by the utility."),
         required=True
@@ -322,7 +322,7 @@ class IDefaultViewDirective(IBasicResourceInformation):
     explicitly).
     """
 
-    for_ = zope.configuration.fields.GlobalObject(
+    for_ = zope.configuration.fields.GlobalInterface(
         title=_("The interface this view is the default for."),
         description=_("""
         Specifies the interface for which the default view is declared. All
@@ -346,7 +346,7 @@ class IResourceDirective(IBasicComponentInformation,
     allowed_interface = zope.configuration.fields.Tokens(
         title=_("Interface that is also allowed if user has permission."),
         required=False,
-        value_type=zope.configuration.fields.GlobalObject(),
+        value_type=zope.configuration.fields.GlobalInterface(),
         )
 
     allowed_attributes = zope.configuration.fields.Tokens(
@@ -364,7 +364,7 @@ class IServiceTypeDirective(zope.interface.Interface):
         required=True
         )
 
-    interface = zope.configuration.fields.GlobalObject(
+    interface = zope.configuration.fields.GlobalInterface(
         title=_("Interface of the service type"),
         required=True
         )
@@ -393,7 +393,7 @@ class IImplementsSubdirective(zope.interface.Interface):
     interface = zope.configuration.fields.Tokens(
         title=_("One or more interfaces"),
         required=True,
-        value_type=zope.configuration.fields.GlobalObject()
+        value_type=zope.configuration.fields.GlobalInterface()
         )
 
 class IRequireSubdirective(zope.interface.Interface):
@@ -430,7 +430,7 @@ class IRequireSubdirective(zope.interface.Interface):
         description=_("The listed interfaces' methods and attributes"
                       " can be accessed."),
         required=False,
-        value_type=zope.configuration.fields.GlobalObject(),
+        value_type=zope.configuration.fields.GlobalInterface(),
         )
 
     set_schema = zope.configuration.fields.Tokens(
@@ -438,7 +438,7 @@ class IRequireSubdirective(zope.interface.Interface):
         description=_("The listed schemas' properties can be"
                       " modified/mutated."),
         required=False,
-        value_type=zope.configuration.fields.GlobalObject(),
+        value_type=zope.configuration.fields.GlobalInterface(),
         )
 
     like_class = zope.configuration.fields.GlobalObject(
@@ -466,7 +466,7 @@ class IAllowSubdirective(zope.interface.Interface):
     interface = zope.configuration.fields.Tokens(
         title=_("Interface"),
         required=False,
-        value_type=zope.configuration.fields.GlobalObject(),
+        value_type=zope.configuration.fields.GlobalInterface(),
         )
 
 class IFactorySubdirective(zope.interface.Interface):
@@ -498,7 +498,7 @@ class IFactorySubdirective(zope.interface.Interface):
 class IDefaultLayerDirective(zope.interface.Interface):
     """Associate a default layer with a request type."""
 
-    type = zope.configuration.fields.GlobalObject(
+    type = zope.configuration.fields.GlobalInterface(
         title=_("Request type"),
         required=True
         )
