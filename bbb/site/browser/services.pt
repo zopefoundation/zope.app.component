@@ -1,0 +1,84 @@
+<html metal:use-macro="context/@@standard_macros/view">
+<body>
+<div metal:fill-slot="body">
+
+  <h2 i18n:translate="">
+    Services registered in this site manager
+  </h2>
+
+  <div tal:define="message view/update;
+                   registries view/listConfiguredServices">
+
+    <div class="message" tal:condition="message">
+       <span tal:replace="message">view/update message here</span>
+       <br /><br />
+       <i><a href="" i18n:translate="">(click to clear message)</a></i>
+    </div>
+
+    <p tal:condition="not:registries" i18n:translate="">
+      No services are registered.
+    </p>
+
+    <div tal:condition="registries">
+      <p i18n:translate="">
+         Unless a service is disabled the service name links to the
+         active service.
+         The (change registration)
+         link allows activating a different implementation or
+         disabling the service altogether.
+      </p>
+
+      <form method="POST" action="services.html">
+
+        <table>
+          <tr tal:repeat="reg registries">
+            <td><input tal:condition="reg/manageable" type="checkbox"
+                       name="selected:list" tal:attributes="value reg/name" />
+            </td>
+            <td>
+             <a href="(link to the active service)"
+                tal:condition="reg/url"
+                tal:attributes= "href reg/url"
+                tal:content="reg/name">
+               Foobar (the service type)
+             </a>
+
+             <span tal:condition="reg/disabled"
+                   tal:replace="string:${reg/name} (disabled)" />
+
+             <span tal:condition="python:not reg['url'] and not reg['disabled']"
+                   tal:replace="reg/name" />
+            </td>
+            <td>
+             <tal:block condition="reg/manageable">
+              <a href="xxx"
+                 tal:condition="reg/manageable"
+                 tal:attributes="href string:@@serviceActivation.html?type=${reg/name}"
+                 i18n:translate="">
+                (change registration)
+              </a>
+             </tal:block>
+              <span tal:condition="not:reg/manageable" tal:replace="reg/parent" />
+            </td>
+          </tr>
+        </table>
+
+        <input type="submit" name="Activate" value="Activate" 
+               i18n:attributes="value activate-button"/>
+        <input type="submit" name="Deactivate" value="Deactivate"
+               i18n:attributes="value deactivate-button"/>
+        &nbsp;
+        <input type="submit" name="Delete" value="Delete"
+               i18n:attributes="value delete-button"/>
+        &nbsp;
+        <input type="submit" name="Refresh" value="Refresh"
+               i18n:attributes="value refresh-button"/>
+
+      </form>
+
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<html metal:use-macro="context/@@standard_macros/page">
+<body>
+<div metal:fill-slot="body">
+
+  <h2 tal:content="view/title" i18n:translate="">
+    IInterface Tools
+  </h2>
+
+  <p tal:content="view/description" i18n:translate="">
+    Some description here.
+  </p>
+
+  <div tal:define="message view/update;
+                   registries view/getComponents;
+                   rename_list view/renameList">
+
+
+    <div class="message" tal:condition="message">
+       <span tal:replace="message">view/update message here</span>
+       <br /><br />
+       <i><a href="" i18n:translate="">(click to clear message)</a></i>
+    </div>
+
+    <p tal:condition="not:registries" i18n:translate="">
+      No tools are registered.
+    </p>
+
+    <div>
+      <p i18n:translate="">
+         Unless a tool is disabled the tool name links to the
+         active tool. ...
+      </p>
+
+      <form method="POST">
+
+        <table width="100%" tal:condition="registries">
+          <tr>
+            <th width="5%"> </th>
+            <th i18n:translate="" width="35%">Name</th>
+            <th i18n:translate="" width="20%">Registration</th>
+            <th i18n:translate="" width="40%">Parent</th>
+          </tr>
+          <tr tal:repeat="reg registries">
+            <td>
+              <input type="checkbox"
+                  name="selected:list" tal:attributes="value reg/name" />
+            </td>
+            <td>
+             <a href=""
+                tal:attributes="
+                    href string:${reg/url}/@@SelectedManagementView.html"
+                tal:content="reg/name"
+                tal:condition="python: not reg['name'] in rename_list">
+               Foobar (the tool)
+             </a>
+             <input type="hidden" name="old_names:list" value=""
+                tal:attributes="value reg/name"
+                tal:condition="python:reg['name'] in rename_list" />
+             <input type="text" name ="new_names:list" value=""
+                tal:attributes="value reg/name"
+                tal:condition="python:reg['name'] in rename_list" />
+
+            </td>
+            <td>
+             <tal:block>
+              <a href="" 
+                 tal:attributes="href string:${reg/url}/@@registration.html"
+                 tal:condition="reg/active" i18n:translate="">
+                active
+              </a>
+              <a href="" 
+                 tal:attributes="href string:${reg/url}/@@registration.html"
+                 tal:condition="not: reg/active" i18n:translate="">
+                disabled
+              </a>
+             </tal:block>
+            </td>
+            <td>
+             <a href=""
+                tal:condition="reg/parent_url"
+                tal:attributes= "href reg/parent_url"
+                tal:content="reg/parent_name">
+               Foobar (the tool)
+             </a>
+            </td>
+          </tr>
+        </table>
+
+        <div tal:condition="not: rename_list">
+          <input type="submit" name="ACTIVATE" value="Activate" 
+                 i18n:attributes="value activate-button"/>
+          <input type="submit" name="DEACTIVATE" value="Deactivate"
+                 i18n:attributes="value deactivate-button"/>
+          &nbsp;
+          <input type="submit" name="ADD" value="Add"
+                 i18n:attributes="value add-button"/>
+          &nbsp;
+          <input type="submit" name="DELETE" value="Delete"
+                 i18n:attributes="value delete-button"/>
+          &nbsp;
+          <input type="submit" name="RENAME" value="Rename"
+                 i18n:attributes="value rename-button"
+                 tal:condition="view/can_rename" />
+          &nbsp;
+          <input type="submit" name="REFRESH" value="Refresh"
+                 i18n:attributes="value refresh-button"/>
+        </div>
+        <div tal:condition="rename_list">
+          <input type="submit" name="APPLY_RENAME" value="Apply"
+                 i18n:attributes="value apply-button"/>
+          &nbsp;
+          <input type="submit" name="CANCEL_RENAME" value="Cancel"
+                 i18n:attributes="value cancel-button"/>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

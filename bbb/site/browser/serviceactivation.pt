@@ -1,0 +1,61 @@
+<html metal:use-macro="context/@@standard_macros/page">
+<body>
+<tal:block
+    metal:fill-slot="headers"
+    tal:define="global pagetip string:
+    To activate a particular service implementation,
+    check its radio button and click Update.
+    "/>
+
+<div metal:fill-slot="body">
+
+  <h2 i18n:translate="">Registrations for service
+    <i tal:content="request/type|default" i18n:name="service_type"
+       i18n:translate="">No service type specified</i>
+  </h2>
+
+  <p tal:content="view/update">Message from update() goes here</p>
+
+  <form action="." method="post"
+        tal:attributes="action request/URL">
+    <table tal:define="registry view/listRegistry">
+
+      <thead>
+        <tr> 
+          <td></td> 
+          <th align="left" i18n:translate="">Service</th> 
+          <th align="left" i18n:translate="">Registration</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr tal:repeat="config registry">
+          <td><input type="radio" name="active" value="default/configure/1"
+                     tal:attributes="value config/id;
+                                     checked config/active" /></td>
+          <td i18n:translate="" tal:condition="not:config/name">Disabled</td>
+          <td tal:condition="config/name"><a href="foo"
+                 tal:content="config/name"
+                 tal:attributes="href config/url">Implementation</a>
+          </td>
+          <td tal:condition="config/name"><a href="foo"
+                 tal:content="config/id"
+                 tal:attributes="href config/config">Registration</a>
+          </td>
+        </tr>
+      
+      </tbody>
+  
+    </table>
+
+    <input type="hidden" name="type" value="Events"
+           tal:attributes="value request/type|nothing" />
+    <input type="submit" value="Submit" 
+           i18n:attributes="value submit-button" />
+
+  </form>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<html metal:use-macro="context/@@standard_macros/page">
+<body>
+<div metal:fill-slot="body" tal:define="ignored view/setup">
+
+  <h2 i18n:translate="">
+    <span tal:replace="string:${view/iface/__name__}.${view/name}${view/method/getSignatureString}">Method Signature</span>
+  </h2>
+
+  <div tal:content="view/doc">This is a doc string.</div>
+
+</div>
+</body>
+</html>

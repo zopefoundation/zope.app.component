@@ -1,0 +1,17 @@
+<configure 
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:meta="http://namespaces.zope.org/meta">
+
+  <meta:directive
+      namespace="http://namespaces.zope.org/browser"
+      name="tool"
+      schema=".metadirectives.IUtilityToolDirective"
+      handler=".metaconfigure.tool"/>
+
+  <meta:directive
+      namespace="http://namespaces.zope.org/browser"
+      name="servicetool"
+      schema=".metadirectives.IServiceToolDirective"
+      handler=".metaconfigure.servicetool"/>
+
+</configure>

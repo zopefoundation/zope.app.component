@@ -1,0 +1,90 @@
+<html metal:use-macro="context/@@standard_macros/view">
+<body>
+<div metal:fill-slot="body">
+
+  <h2 i18n:translate="heading-common-site-management-tasks">
+    Common Site Management Tasks
+  </h2>
+
+  <p i18n:translate="">
+    The site management interface allows you to setup and configure
+    software for this site.
+  </p>
+
+  <dl>
+    <dt><tal:text i18n:translate="label-tools">Tools</tal:text>:</dt>
+    <dd>
+
+      <tal:text i18n:translate="">
+        Tools consist of Services and Utilities. Services register
+        themselves with the Service Service while utilities register
+        themselves with the Utility Service. They perform tasks like
+        error logging, translation, authentication and so on. You may
+        configure the services and utilities already present in this
+        site or provide new serivces and utilities (which may override
+        existing tools).
+      </tal:text>
+
+      <ul>
+        <li>
+          <a href="@@tools.html" i18n:translate="label-configure-services">
+            Tools Management
+          </a>
+        </li>
+        <li>
+          <a href="@@services.html" i18n:translate="label-configure-services">
+            Services Overview
+          </a>
+        </li>
+
+        <li>
+          <a href="default/Utilities/@@utilities.html"
+             i18n:translate="label-configure-utilities">
+            Utilities Overview (<b>default</b> Site Manager)
+          </a>
+        </li>
+      </ul>
+    </dd>
+
+    <dt><tal:text i18n:translate="label-software">Software</tal:text>:</dt>
+
+    <dd>
+      <tal:text i18n:translate="">
+        The site may customize the behavior of existing software or
+        define its own. The first step in creating a new software
+        package is to create a new Site Management Folder to contain
+        the software.
+      </tal:text>
+
+      <ul>
+        <li>
+          <a href="@@contents.html"
+             i18n:translate="label-customize-existing-software">
+            Customize the behavior of existing software
+          </a>
+        </li>
+
+        <li>
+          <a href="@@+" i18n:translate="label-create-new-site-management-folder">
+            Create a new Site Management Folder
+          </a>
+        </li>
+      </ul>
+    </dd>
+
+    <!-- When software bundles are more than a wiki page, revisit this.
+     <dt>
+       <tal:text i18n:translate="label-software-bundles">
+         Software Bundles
+       </tal:text>:
+     </dt>
+     <dd i18n:translate="">
+      Installing,
+      Removing,
+      etc.
+     </dd>
+    -->
+
+</div>
+</body>
+</html>

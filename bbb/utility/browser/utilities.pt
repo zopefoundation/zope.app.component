@@ -1,0 +1,57 @@
+<html metal:use-macro="context/@@standard_macros/view">
+<body>
+<div metal:fill-slot="body"
+     tal:define="message view/update; configs view/getConfigs">
+
+  <h2 i18n:translate="">Utilities registered in this utility service</h2>
+
+  <div class="message" tal:condition="message">
+    <span tal:replace="message">view/update message here</span>
+    <br /><br />
+    <i><a href="" i18n:translate="">(click to clear message)</a></i>
+  </div>
+
+  <p tal:condition="not:configs">None</p>
+
+  <form method="POST" action="utilities.html" tal:condition="configs">
+
+    <table>
+      <tr tal:repeat="config configs">
+        <td><input type="checkbox" name="selected:list"
+                   tal:attributes=
+                   "value string:${config/name}:${config/interface}" />
+        </td>
+        <td>
+          <a href="."
+             tal:condition="config/url"
+             tal:attributes=
+                 "href string:${config/url}/@@SelectedManagementView.html"
+             tal:content="config/summary" />
+          <span tal:condition="not:config/url"
+                tal:replace="config/summary" />
+        </td>
+        <td>
+          (<a href="."
+             tal:attributes="href config/configurl"
+             i18n:translate=""
+             >change registration</a>)
+        </td>
+      </tr>
+    </table>
+
+    <input type="submit" name="Activate" value="Activate" 
+           i18n:attributes="value activate-button"/>
+    <input type="submit" name="Deactivate" value="Deactivate"
+           i18n:attributes="value deactivate-button"/>
+    &nbsp;
+    <input type="submit" name="Delete" value="Delete"
+           i18n:attributes="value delete-button"/>
+    &nbsp;
+    <input type="submit" name="Refresh" value="Refresh"
+           i18n:attributes="value refresh-button"/>
+
+  </form>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,44 @@
+Managing Utility Registrations
+------------------------------
+
+The user interface for utility registration management allows us to
+deactive a registration by selecting the adjacent checkbox and
+clicking "Deactivate"::
+
+  >>> print http(r"""
+  ... POST /++etc++site/default/Utilities/utilities.html HTTP/1.1
+  ... Authorization: Basic bWdyOm1ncnB3
+  ... Content-Length: 85
+  ... Content-Type: application/x-www-form-urlencoded
+  ... 
+  ... selected%3Alist=%3Azope.app.session.interfaces.IClientIdManager&Deactivate=Deactivate""") \
+  ... #doctest: +NORMALIZE_WHITESPACE
+  HTTP/1.1 200 Ok
+  Content-Length: ...
+  Content-Type: text/html...
+  ...
+  <div class="message">
+  Deactivated: IClientIdManager, implemented by CookieClientIdManager
+  'CookieClientIdManager'
+  ...
+
+Once we've deactivated a utility registration, we can remove it by
+again checking the checkbox next to it in the list and clicking
+"Delete"::
+
+  >>> print http(r"""
+  ... POST /++etc++site/default/Utilities/utilities.html HTTP/1.1
+  ... Authorization: Basic bWdyOm1ncnB3
+  ... Content-Length: 77
+  ... Content-Type: application/x-www-form-urlencoded
+  ... 
+  ... selected%3Alist=%3Azope.app.session.interfaces.IClientIdManager&Delete=Delete""") \
+  ... #doctest: +NORMALIZE_WHITESPACE
+  HTTP/1.1 200 Ok
+  Content-Length: ...
+  Content-Type: text/html...
+  ...
+  <div class="message">
+  Deleted: IClientIdManager, implemented by CookieClientIdManager
+  'CookieClientIdManager'
+  ...

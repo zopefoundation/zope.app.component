@@ -1,0 +1,97 @@
+<html metal:use-macro="context/@@standard_macros/page">
+<body>
+<div metal:fill-slot="body" tal:define="ignored view/setup">
+
+  <h2 i18n:translate="">
+    Interface
+    <span tal:content="view/name" i18n:name="iface_name">name</span>
+  </h2>
+
+  <div tal:condition="view/doc">
+    <h3 i18n:translate="">Documentation</h3>
+    <div tal:content="view/doc">This is a doc string.</div>
+  </div>
+
+  <div tal:condition="view/methods">
+    <h3 i18n:translate="class-methods">Methods</h3> 
+      <table class="listingdescription" summary="Method Listing"
+          cellspacing="0">
+        <thead>
+          <th i18n:translate="">Method Signature</th>
+          <th i18n:translate="">Description</th>
+        </thead>    
+        <tal:repeat repeat="methoddict view/methods">
+        <tr tal:define="oddrow repeat/methoddict/odd;"
+            tal:attributes="class python:oddrow and 'even' or 'odd'">
+          <td>
+            <a href="/" 
+               tal:attributes="href string:interfacemethoddetail.html?interface_id=${request/id}&method_id=${methoddict/method/__name__}">
+               <strong><span tal:replace="string:${methoddict/method/__name__}"
+                   >Method Name</span></strong><span 
+                   tal:replace="string:${methoddict/method/getSignatureString}"
+                   >Method Signature</span>
+            </a>
+          </td>
+          <td tal:content="methoddict/title"></td>
+        </tr>
+        </tal:repeat>
+      </table>  
+  </div>
+
+  <div tal:condition="view/schema">
+    <h3 i18n:translate="schema-component">Schema</h3>
+      <table class="listingdescription" summary="Schema Listing"
+          cellspacing="0">
+        <thead>
+          <th i18n:translate="">Field Name</th>
+          <th i18n:translate="">Type</th>
+          <th i18n:translate="">Description</th>
+        </thead>    
+        <tal:repeat repeat="field view/schema">
+        <tal:define define="oddrow repeat/field/odd;
+                            class python:oddrow and 'even' or 'odd'">
+        <tr tal:attributes="class class">
+          <td nowrap="nowrap">
+            <strong>
+              <span tal:replace="field/__name__" />
+              <span tal:condition="field/required"
+                  tal:replace="string:*">Required?</span>
+            </strong>
+          </td>  
+          <td tal:content="field/__class__/__name__"></td>  
+          <td tal:content="field/description"></td>
+        </tr>
+        </tal:define>
+        </tal:repeat>
+      </table>  
+      <p i18n:translate="">* indicates required fields.</p>
+  </div>
+
+  <div tal:repeat="service view/getServices">
+    <h3 i18n:translate="">Registrations for 
+      <span tal:content="service/name" i18n:name="service_name">Name</span> 
+       service
+    </h3>
+
+  <table class="listingdescription" summary="Registration Listing"
+      cellspacing="0">
+    <thead>
+      <th i18n:translate="">Status</th>
+      <th i18n:translate="">Usage Summary</th>
+      <th i18n:translate="">Implementation Summary</th>
+    </thead>
+    <tal:repeat repeat="reg service/registrations">
+      <tr tal:define="oddrow repeat/reg/odd"
+          tal:attributes="class python:oddrow and 'even' or 'odd'">
+        <td tal:content="reg/status">Status</td>
+        <td tal:content="reg/usageSummary">Usage Summary</td>
+        <td tal:content="reg/implementationSummary">Implementation</td>
+      </tr>
+    </tal:repeat>
+  </table>
+
+  </div>
+
+</div>
+</body>
+</html>

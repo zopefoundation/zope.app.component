@@ -1,0 +1,44 @@
+<html metal:use-macro="context/@@standard_macros/dialog">
+<body>
+<div metal:fill-slot="body">
+
+  <form action="add_svc_config.html" method="post">
+
+    <p i18n:translate="">
+      Register this object to provide the following service(s):
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th i18n:translate="register-button">Register</th>
+          <th i18n:translate="">Service name</th>
+          <th i18n:translate="activate-button">Activate</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="item view/listServiceTypes">
+          <td>
+            <input type="checkbox" name="name:list" value="value"
+                   checked="checked" tal:attributes="value item/name" />
+          </td>
+          <td tal:content="item/name">Events</td>
+          <td>
+            <input type="checkbox" name="active:list" value="value"
+                   tal:attributes="value item/name;
+                                   checked item/checked" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <input type="reset" value="Reset form"
+           i18n:attributes="value reset-button" />
+    <input type="submit" value="Submit"
+           i18n:attributes="value submit-button" />
+
+  </form>
+
+</div>
+</body>
+</html>

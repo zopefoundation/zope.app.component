@@ -1,0 +1,36 @@
+<html metal:use-macro="context/@@standard_macros/page">
+<body>
+<div metal:fill-slot="body">
+
+  <h2 i18n:translate="" tal:condition="request/name">
+    Utility registrations for interface
+    <span tal:replace="request/interface" i18n:name="interface"/>
+    with name
+    <span tal:replace="request/name" i18n:name="utility_name" />
+  </h2>
+
+  <h2 i18n:translate="" tal:condition="not:request/name">
+    Utility registrations for interface
+    <span tal:replace="request/interface" i18n:name="interface"/>
+  </h2>
+
+  <form action="." method="post"
+        tal:attributes="action request/URL"
+        tal:define="form view/update">
+
+    <input type="hidden" name="interface"
+           tal:attributes="value request/interface" />
+
+    <input type="hidden" name="name"
+           tal:attributes="value request/name" />
+
+    <div tal:replace="structure form" />
+
+    <input type="submit" name="submit_update" value="Update"
+           i18n:attributes="value update-button" />
+
+  </form>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<configure
+    xmlns='http://namespaces.zope.org/zope'
+    xmlns:event='http://namespaces.zope.org/event'
+    i18n_domain='zope'
+    >
+
+<!-- Adapter Service -->
+
+<localService class=".adapter.LocalAdapterService">
+  <factory />
+  <require
+      permission="zope.ManageServices"
+      interface="zope.app.registration.interfaces.IRegistry"
+      />
+</localService>
+
+<content class=".adapter.AdapterRegistration">
+  <require
+      permission="zope.ManageServices"
+      interface=".adapter.IAdapterRegistration"
+      set_schema=".adapter.IAdapterRegistration"
+      />
+</content>
+
+<include package=".browser" />
+
+</configure>

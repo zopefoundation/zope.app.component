@@ -1,0 +1,105 @@
+<zope:configure 
+   xmlns:zope="http://namespaces.zope.org/zope"
+   xmlns="http://namespaces.zope.org/browser">
+
+<!-- "Add Utility" menu -->
+
+  <view
+    name="AddUtility"
+     for="zope.app.site.interfaces.ISiteManagementFolder"
+     permission="zope.ManageServices"
+     class="zope.app.site.browser.UtilityAdding">
+
+    <page name="index.html"  attribute="index"  />
+    <page name="action.html" attribute="action" />
+
+  </view>    
+
+<!-- Browser directives for the utility service -->
+
+  <!-- "Add service" menu entry to add a utility service.
+       The action attribute matches a factory name defined in
+       zope/app/services/utility.zcml. -->
+  <addMenuItem
+      description=
+        "A Local Utility Service allows you to register Utilities in this site"
+      title="Utility Service"
+      class="zope.app.utility.LocalUtilityService"
+      permission="zope.ManageServices" />
+
+  <!-- ZMI tab named "Utilites" for the utility service -->
+  <page
+      for="zope.app.utility.interfaces.ILocalUtilityService"
+      menu="zmi_views" title="Utilities"
+      name="utilities.html"
+      template="utilities.pt"
+      class=".Utilities"
+      permission="zope.ManageServices" />
+
+<!-- Browser directives for individual utility objects -->
+
+  <!-- Registration page for utility objects.  You get here by
+       clicking on the (configure) link for a particular utility
+       in the "Utilities" tab of the utility service.  It shows
+       a menu of different registrations, at most one of which
+       is active.  You can activate a different registration, or
+       click on an individual registration to edit it.
+       (Note that this page doesn't really apply to a single utility,
+       it applies to a single "utility registration".  That is a
+       combination of a name and a provided interface, where the name
+       may be empty.) -->
+  <page
+      for="zope.app.utility.interfaces.ILocalUtilityService"
+      name="configureutility.html"
+      template="configureutility.pt"
+      class=".ConfigureUtility"
+      permission="zope.ManageServices" />
+
+  <!-- When creating a new utility object, you are taken to this
+       form to configure it.  The form lets you choose a name,
+       an interface, a permission, and a registration status
+       (Unregistered, Registered or Active). -->
+  <addform
+      label="New Utility Registration"
+      for="zope.app.utility.interfaces.ILocalUtility"
+      name="addRegistration.html"
+      schema="zope.app.utility.interfaces.IUtilityRegistration"
+      class=".AddRegistration"
+      permission="zope.ManageServices"
+      content_factory="zope.app.utility.UtilityRegistration"
+      arguments="name interface component"
+      fields="name interface component permission">
+      
+      <widget 
+          field="name" 
+          class="zope.app.form.browser.TextWidget"
+          required="False"
+          convert_missing_value="False" />
+      
+  </addform>
+
+  <!-- When editing the registration of an existing utility object,
+       you are taken to this form.  It is similar to the above add
+       form, but doesn't let you change the name, interface or path.
+       (Thus leaving only permission and registration status.) -->
+  <editform
+      menu="zmi_views" title="Edit"
+      label="Edit Utility Registration"
+      name="index.html"
+      schema="zope.app.utility.interfaces.IUtilityRegistration"
+      permission="zope.ManageServices"
+      fields="name interface component permission status" />
+
+ <menuItems
+    menu="zmi_actions"
+    for="zope.app.utility.interfaces.ILocalUtilityService">
+
+    <menuItem
+        title="Add utility"
+        action="../AddUtility"
+        permission="zope.ManageServices" />
+
+ </menuItems>
+
+
+</zope:configure>

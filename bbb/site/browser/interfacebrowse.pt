@@ -1,0 +1,28 @@
+<html metal:use-macro="context/@@standard_macros/view">
+<body>
+<div metal:fill-slot="body">
+
+  <h2 i18n:translate="">Interfaces registered with the Utility service</h2>
+  
+  <table class="listingdescription" summary="Interfaces Listing"
+      cellspacing="0">
+    <thead>
+      <th i18n:translate="">Interface Name</th>
+      <th i18n:translate="">Title</th>
+    </thead>
+    <tal:repeat tal:repeat="dict view/getInterfaces">
+    <tr tal:define="oddrow repeat/dict/odd;"
+        tal:attributes="class python:oddrow and 'even' or 'odd'">
+      <td>
+        <a href="/" 
+         tal:attributes="href string:interfacedetail.html?id=${dict/id}"
+         tal:content="dict/name">An interface name
+        </a></td>  
+      <td tal:content="dict/doc">Interface DocString</td>
+    </tr>
+    </tal:repeat>
+  </table>  
+
+</div>
+</body>
+</html>
