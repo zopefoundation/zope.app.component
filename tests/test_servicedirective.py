@@ -28,7 +28,8 @@ from zope.app.tests.placelesssetup import PlacelessSetup
 
 template = """<configure
    xmlns='http://namespaces.zope.org/zope'
-   xmlns:test='http://www.zope.org/NS/Zope3/test'>
+   xmlns:test='http://www.zope.org/NS/Zope3/test'
+   i18n_domain='zope'>
    %s
    </configure>"""
 

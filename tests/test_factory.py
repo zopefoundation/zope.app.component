@@ -30,7 +30,8 @@ from zope.app.component.tests.exampleclass import ExampleClass
 
 def configfile(s):
     return StringIO("""<configure
-      xmlns='http://namespaces.zope.org/zope'>
+      xmlns='http://namespaces.zope.org/zope'
+      i18n_domain='zope'>
       %s
       </configure>
       """ % s)

@@ -12,12 +12,12 @@
 #
 ##############################################################################
 """
-$Id: metadirectives.py,v 1.3 2003/08/03 02:13:08 philikon Exp $
+$Id: metadirectives.py,v 1.4 2003/08/03 17:50:11 philikon Exp $
 """
 
 from zope.interface import Interface
 from zope.configuration.fields import GlobalObject, Tokens, Path, \
-     PythonIdentifier
+     PythonIdentifier, MessageID
 from zope.schema import Text, TextLine, Id
 
 class IBasicComponentInformation(Interface):
@@ -358,7 +358,7 @@ class IFactorySubdirective(Interface):
         required=False
         )
 
-    title = TextLine(
+    title = MessageID(
         title=u"Title",
         description=u"""
         text suitable for use in the 'add content' menu of a
@@ -366,7 +366,7 @@ class IFactorySubdirective(Interface):
         required=False
         )
 
-    description = Text(
+    description = MessageID(
         title=u"Description",
         description=u"Longer narrative description of what this factory does",
         required=False
