@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: globalinterfaceservice.py,v 1.5 2003/03/03 23:16:08 gvanrossum Exp $
+$Id: globalinterfaceservice.py,v 1.6 2003/03/21 21:03:01 jim Exp $
 """
 
 from zope.interface import Interface
@@ -67,7 +67,7 @@ class InterfaceService:
         if id in self.__data:
             return self.__data[id][0]
         else:
-            raise ComponentLookupError
+            raise ComponentLookupError(id)
 
     def queryInterface(self, id, default=None):
         if self.__data.has_key(id):
