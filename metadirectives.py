@@ -12,13 +12,13 @@
 #
 ##############################################################################
 """
-$Id: metadirectives.py,v 1.15 2004/03/20 17:10:56 srichter Exp $
+$Id: metadirectives.py,v 1.16 2004/03/20 19:52:45 srichter Exp $
 """
-
 from zope.interface import Interface
 from zope.configuration.fields import GlobalObject, Tokens, \
      PythonIdentifier, MessageID
 from zope.schema import TextLine, Id
+from zope.app.security.fields import Permission
 
 class IBasicComponentInformation(Interface):
 
@@ -27,7 +27,7 @@ class IBasicComponentInformation(Interface):
         required=False
         )
 
-    permission = Id(
+    permission = Permission(
         title=u"Permission",
         required=False
         )
@@ -50,7 +50,7 @@ class IBasicViewInformation(Interface):
         value_type=GlobalObject(missing_value=object())
         )
 
-    permission = Id(
+    permission = Permission(
         title=u"Permission",
         description=u"The permission needed to use the view.",
         required=False
@@ -165,7 +165,7 @@ class IAdapterDirective(Interface):
         value_type=GlobalObject(missing_value=object())
         )
 
-    permission = Id(
+    permission = Permission(
         title=u"Permission",
         description=u"""This adapter is only available, if the principal has
         this permission.""",
@@ -366,7 +366,7 @@ class IRequireSubdirective(Interface):
     given Interface require a given permission for access.
     """
 
-    permission = Id(
+    permission = Permission(
         title=u"Permission",
         description=u"""
         Specifies the permission by id that will be required to
