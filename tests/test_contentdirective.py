@@ -34,7 +34,7 @@ from zope.app.component.tests.exampleclass import ExampleClass
 from zope.app.component.tests.exampleclass import IExample, IExample2
 
 
-class ParticipationStub:
+class ParticipationStub(object):
 
     def __init__(self, principal):
         self.principal = principal

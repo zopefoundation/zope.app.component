@@ -11,11 +11,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
+"""Interface utility functions
+
 $Id$
 """
-__metaclass__ = type
-
 from zope.component.exceptions import ComponentLookupError
 from zope.interface import directlyProvides
 from zope.interface.interfaces import IInterface

@@ -30,7 +30,7 @@ from zope.component import getService
 from zope.app.tests.placelesssetup import PlacelessSetup
 
 
-class ParticipationStub:
+class ParticipationStub(object):
 
     def __init__(self, principal):
         self.principal = principal
