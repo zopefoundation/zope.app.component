@@ -15,8 +15,8 @@
 from zope.configuration.exceptions import ConfigurationError
 from zope.security.proxy import Proxy
 from zope.component import getService, getServiceManager
-from zope.component.servicenames import Adapters, Interfaces, Skins
-from zope.component.servicenames import Views, ResourceService, Factories
+from zope.app.services.servicenames import Adapters, Interfaces, Skins
+from zope.app.services.servicenames import Views, Resources, Factories
 from zope.configuration import namespace
 from zope.interface import Interface
 from zope.configuration.action import Action
@@ -206,7 +206,7 @@ def resource(_context, factory, type, name, layer='default',
         Action(
             discriminator = ('resource', name, type, layer),
             callable = checkingHandler,
-            args = (permission, ResourceService,'provideResource',
+            args = (permission, Resources,'provideResource',
                     name, type, factory, layer),
             ),
         Action(
