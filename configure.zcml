@@ -42,6 +42,10 @@
 <hook module="zope.component"
       name="getServiceManager"
       implementation="zope.app.component.hooks.getServiceManager_hook" />
+         
+<hook module="zope.component"
+      name="queryNamedAdapter"
+      implementation="zope.app.component.hooks.queryNamedAdapter" />
 
 <serviceType
     id='Interfaces'
