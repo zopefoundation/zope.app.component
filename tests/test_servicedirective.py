@@ -18,7 +18,7 @@ $Id$
 import unittest
 from cStringIO import StringIO
 
-from zope.exceptions import Forbidden, Unauthorized
+from zope.security.interfaces import Forbidden, Unauthorized
 
 from zope.configuration.xmlconfig import testxmlconfig as xmlconfig, XMLConfig
 from zope.configuration.config import ConfigurationConflictError
