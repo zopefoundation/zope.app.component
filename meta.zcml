@@ -53,6 +53,18 @@
         />
 
     <meta:directive
+        name="defaultSkin"
+        schema=".metadirectives.IDefaultSkinDirective"
+        handler="zope.app.component.metaconfigure.defaultSkin"
+        />
+
+    <meta:directive
+        name="layer"
+        schema=".metadirectives.ILayerDirective"
+        handler="zope.app.component.metaconfigure.layer"
+        />
+
+    <meta:directive
         name="serviceType"
         schema=".metadirectives.IServiceTypeDirective"
         handler="zope.app.component.metaconfigure.serviceType"

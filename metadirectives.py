@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: metadirectives.py,v 1.5 2003/08/17 06:06:15 philikon Exp $
+$Id: metadirectives.py,v 1.6 2003/11/21 17:11:29 jim Exp $
 """
 
 from zope.interface import Interface
@@ -222,15 +222,43 @@ class IResourceDirective(IBasicComponentInformation, IBasicResourceInformation):
         value_type=PythonIdentifier()
         )
 
-class ISkinDirective(IBasicResourceInformation):
+class ILayerDirective(Interface):
+    """
+    Register a layer
+    """
+
+    name = TextLine(
+        title=u"Layer name",
+        description=u"Layer name",
+        required=True
+        )
+
+class ISkinDirective(Interface):
     """
     Register a skin
     """
+
+    name = TextLine(
+        title=u"Skin name",
+        description=u"Skin name",
+        required=True
+        )
 
     layers = Tokens(
         title=u"The layers it consists of.",
         required=True,
         value_type=TextLine()
+        )
+
+class IDefaultSkinDirective(Interface):
+    """
+    Register a skin
+    """
+
+    name = TextLine(
+        title=u"Default skin name",
+        description=u"Default skin name",
+        required=True
         )
 
 class IServiceTypeDirective(Interface):

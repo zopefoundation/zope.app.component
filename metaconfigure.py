@@ -12,14 +12,14 @@
 #
 ##############################################################################
 """
-$Id: metaconfigure.py,v 1.19 2003/09/21 17:31:24 jim Exp $
+$Id: metaconfigure.py,v 1.20 2003/11/21 17:11:29 jim Exp $
 """
 
 from zope.configuration.exceptions import ConfigurationError
 from zope.security.proxy import Proxy, ProxyFactory
 from zope.component import getService, getServiceManager
-from zope.app.services.servicenames import Adapters, Interfaces, Skins
-from zope.app.services.servicenames import Views, Resources, Factories
+from zope.app.services.servicenames import Adapters, Interfaces
+from zope.app.services.servicenames import Factories, Presentation
 from zope.app.component.globalinterfaceservice import interfaceService
 from zope.security.checker import InterfaceChecker, CheckerPublic, \
      Checker, NamesChecker
@@ -197,7 +197,7 @@ def resource(_context, factory, type, name, layer='default',
     _context.action(
         discriminator = ('resource', name, type, layer),
         callable = checkingHandler,
-        args = (permission, Resources,'provideResource',
+        args = (permission, Presentation, 'provideResource',
                 name, type, factory, layer),
         )
     _context.action(
@@ -236,7 +236,7 @@ def view(_context, factory, type, name, for_, layer='default',
     _context.action(
         discriminator = ('view', for_, name, type, layer),
         callable = checkingHandler,
-        args = (permission, Views,'provideView', for_, name,
+        args = (permission, Presentation, 'provideView', for_, name,
                 type, factory, layer),
         )
     _context.action(
@@ -266,7 +266,7 @@ def defaultView(_context, type, name, for_, **__kw):
     _context.action(
         discriminator = ('defaultViewName', for_, type, name),
         callable = handler,
-        args = (Views,'setDefaultViewName', for_, type, name),
+        args = (Presentation, 'setDefaultViewName', for_, type, name),
         )
     _context.action(
         discriminator = None,
@@ -336,21 +336,29 @@ def service(_context, serviceType, component=None, permission=None,
         args = (serviceType, component, permission),
         )
 
-def skin(_context, name, layers, type):
+def layer(_context, name):
+
+    _context.action(
+        discriminator = ('layer', name),
+        callable = handler,
+        args = (Presentation, 'defineLayer', name)
+        )
+
+def skin(_context, name, layers):
     if ',' in layers:
         raise TypeError("Commas are not allowed in layer names.")
 
     _context.action(
-        discriminator = ('skin', name, type),
+        discriminator = ('skin', name),
         callable = handler,
-        args = (Skins,'defineSkin',name, type, layers)
+        args = (Presentation, 'defineSkin', name, layers)
         )
 
+def defaultSkin(_context, name):
     _context.action(
-        discriminator = None,
+        discriminator = 'defaultSkin',
         callable = handler,
-        args = (Interfaces, 'provideInterface',
-                type.__module__+'.'+type.getName(), type)
+        args = (Presentation, 'setDefaultSkin', name)
         )
 
 #XXX you will be terminated soon
