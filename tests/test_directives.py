@@ -125,6 +125,26 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertEqual(a3.__class__, A3)
         self.assertEqual(a3.context, (content, a1))
 
+    def testSubscriber_w_no_provides(self):
+        from zope.app.component.tests.adapter import A1, A2, Handler, I3
+        from zope.component.tests.components import Content
+
+        xmlconfig(StringIO(template % (
+            """
+            <subscriber
+              for="zope.component.tests.components.IContent
+                   zope.app.component.tests.adapter.I1"
+              factory="zope.app.component.tests.adapter.Handler"
+              />
+            """
+            )))
+
+        content = Content()
+        a1 = A1()
+        list(zapi.subscribers((content, a1), None))
+
+        self.assertEqual(content.args, ((a1,),))
+        
     def testMultiSubscriber(self):
         from zope.app.component.tests.adapter import A1, A2, A3, I3
         from zope.component.tests.components import Content

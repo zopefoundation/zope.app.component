@@ -40,3 +40,6 @@ class A2(Adapter):
 class A3(Adapter):
     zope.interface.implements(I3)
 
+def Handler(content, *args):
+    # uninteresting handler
+    content.args = getattr(content, 'args', ()) + (args, )

@@ -194,7 +194,7 @@ class ISubscriberDirective(Interface):
         title=u"Interface the component provides",
         description=u"""This attribute specifes the interface the adapter
         instance must provide.""",
-        required=True
+        required=False,
         )
 
     for_ = Tokens(

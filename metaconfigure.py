@@ -79,7 +79,7 @@ def proxify(ob, checker):
 
     return ob
 
-def subscriber(_context, factory, provides, for_, permission=None):
+def subscriber(_context, factory, for_, provides=None, permission=None):
     factory = [factory]
 
     if permission is not None:
@@ -104,22 +104,19 @@ def subscriber(_context, factory, provides, for_, permission=None):
                 ob = f(ob)
             return ob
 
-    # Check that the principal has the permission necessary.  We
-    # specify discriminator as None because there can be multiple
-    # subscriptions.
     _context.action(
         discriminator = None,
         callable = checkingHandler,
         args = (permission, Adapters, 'subscribe',
                 for_, provides, factory),
         )
-    
-    # Stating that the adapter provides the specified interface.
-    _context.action(
-        discriminator = None,
-        callable = provideInterface,
-        args = ('', provides)
-               )
+
+    if provides is not None:
+        _context.action(
+            discriminator = None,
+            callable = provideInterface,
+            args = ('', provides)
+            )
     
     # For each interface, state that the adapter provides that interface.
     for iface in for_:
