@@ -84,6 +84,13 @@
       menu="zmi_views" title="Registration"
       />
 
+  <menuItem
+      menu="zmi_actions"
+      for="zope.app.component.interfaces.registration.IRegisterableContainer"
+      title="Registrations"
+      action="++registrations++/@@SelectedManagementView.html"
+      permission="zope.ManageSite"
+      />
 
 <!-- Site Management Folder -->
 
@@ -196,16 +203,6 @@
       >
     <page name="index.html" template="site_management.pt" />
   </view>
-
-<!-- Site Management Folder -->
-
-  <menuItem
-      menu="zmi_actions"
-      for="zope.app.component.interfaces.ISiteManagementFolder"
-      title="Registrations"
-      action="++registrations++/@@SelectedManagementView.html"
-      permission="zope.ManageSite"
-      />
 
 
 <!-- Utility Registration -->
