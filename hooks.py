@@ -24,7 +24,7 @@ from zope.component.service import serviceManager
 from zope.component.exceptions import ComponentLookupError
 from zope.proxy import removeAllProxies
 from zope.security.proxy import trustedRemoveSecurityProxy
-from zope.app.traversing import IContainmentRoot
+from zope.app.traversing.interfaces import IContainmentRoot
 from zope.app.location.interfaces import ILocation
 from zope.app.location import locate
 from zope.component.servicenames import Presentation

@@ -20,7 +20,7 @@ from zope.component import getGlobalServices
 from zope.app.component.hooks import getServices_hook
 from zope.app.component.localservice import serviceServiceAdapter
 from zope.app.site.interfaces import IPossibleSite, ISite, ISiteManager
-from zope.app.traversing import IContainmentRoot
+from zope.app.traversing.interfaces import IContainmentRoot
 from zope.component.exceptions import ComponentLookupError
 from zope.component.interfaces import IServiceService
 from zope.component.service import serviceManager
