@@ -1,0 +1,62 @@
+<zopeConfigure
+   xmlns='http://namespaces.zope.org/zope'
+   package="zope.component"
+>
+
+  <serviceType id='Utilities'
+               interface='zope.component.interfaces.IUtilityService' />
+  <service serviceType='Utilities'
+           permission='zope.Public'
+           component='zope.component.utility.utilityService' />
+             
+  <serviceType id='Adapters'
+               interface='zope.component.interfaces.IAdapterService' />
+  <service serviceType='Adapters'
+           permission='zope.Public'
+           component='zope.component.adapter.adapterService' />
+
+  <serviceType id='Factories'
+               interface='zope.component.interfaces.IFactoryService' />
+  <service serviceType='Factories'
+           permission='zope.Public'
+           component='zope.component.factory.factoryService' />
+
+  <serviceType id='Skins'
+               interface='zope.component.interfaces.ISkinService' />
+  <service serviceType='Skins'
+           permission='zope.Public'
+           component='zope.component.skin.skinService' />
+
+  <serviceType id='Views' 
+               interface='zope.component.interfaces.IViewService' />
+  <service serviceType='Views'
+           permission='zope.Public'
+           component='zope.component.view.viewService' />
+           
+  <serviceType id='Resources'
+               interface='zope.component.interfaces.IResourceService' />
+  <service serviceType='Resources'
+           permission='zope.Public'
+           component='zope.component.resource.resourceService' />
+           
+  <hookable name=".getServiceManager" />
+
+  <hook module="zope.component"
+        name="getServiceManager"
+        implementation="
+           zope.app.component.hooks.getServiceManager_hook" />
+  
+  <serviceType id='Interfaces'
+               interface='zope.app.component.globalinterfaceservice.IInterfaceService' />
+	   
+  <service 
+     serviceType='Interfaces'
+     permission='zope.Public'
+     component=
+        'zope.app.component.globalinterfaceservice.interfaceService' />
+
+  <interface interface="zope.interface.Interface" />
+
+</zopeConfigure>
+
+
