@@ -12,14 +12,11 @@
 #
 ##############################################################################
 """
-$Id: globalinterfaceservice.py,v 1.8 2003/05/01 19:35:07 faassen Exp $
+$Id: globalinterfaceservice.py,v 1.9 2003/05/13 17:08:33 alga Exp $
 """
 
 from zope.component.exceptions import ComponentLookupError
-# XXX some modules still import IInterfaceService here
-from zope.app.interfaces.component.interfaceservice import IInterfaceService
-from zope.app.interfaces.component.globalinterfaceservice \
-        import IGlobalInterfaceService
+from zope.app.interfaces.component import IGlobalInterfaceService
 
 class InterfaceService:
     __implements__ = IGlobalInterfaceService

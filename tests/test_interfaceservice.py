@@ -14,8 +14,7 @@
 from zope.interface import Interface
 from unittest import TestCase, TestSuite, main, makeSuite
 from zope.testing.cleanup import CleanUp
-from zope.app.interfaces.component.globalinterfaceservice \
-     import IGlobalInterfaceService
+from zope.app.interfaces.component import IGlobalInterfaceService
 from zope.app.component.globalinterfaceservice import InterfaceService
 from zope.interface.verify import verifyObject
 from zope.component.exceptions import ComponentLookupError

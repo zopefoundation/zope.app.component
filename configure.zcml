@@ -47,7 +47,7 @@
 
 <serviceType
     id='Interfaces'
-    interface='zope.app.component.globalinterfaceservice.IInterfaceService' />
+    interface='zope.app.interfaces.component.IInterfaceService' />
    
 <service 
    serviceType='Interfaces'
