@@ -15,6 +15,7 @@
 
 $Id$
 """
+__docformat__ = 'restructuredtext'
 
 from zope.interface import implements
 from zope.component.exceptions import ComponentLookupError
@@ -73,7 +74,7 @@ def getNextService(context, name):
     return getNextServices(context).getService(name)
 
 def getNextServices(context):
-    """Returns the next service manager to the one that contains 'context'.
+    """Returns the next service manager to the one that contains `context`.
     """
     services = getLocalServices(context).next
     if IGlobalServiceManager.providedBy(services):
@@ -93,12 +94,12 @@ def queryLocalServices(context, default=None):
         return default
 
 def getLocalServices(context):
-    """Returns the service manager that contains 'context'.
+    """Returns the service manager that contains `context`.
 
-    If context is a local service, returns the service manager that
-    contains that service. If context is a service manager, returns context.
+    If `context` is a local service, returns the service manager that
+    contains that service. If `context` is a service manager, returns `context`.
 
-    Otherwise, raises ComponentLookupError('Services')
+    Otherwise, raises ``ComponentLookupError('Services')``
     """
 
     # IMPORTANT
@@ -117,7 +118,7 @@ def serviceServiceAdapter(ob):
     """An adapter ILocation -> IServiceService.
 
     The ILocation is interpreted flexibly, we just check for
-    __parent__.
+    ``__parent__``.
     """
     current = ob
     while True:

@@ -15,6 +15,8 @@
 
 $Id$
 """
+__docformat__ = 'restructuredtext'
+
 from types import ModuleType
 from zope.interface import classImplements
 from zope.schema.interfaces import IField
