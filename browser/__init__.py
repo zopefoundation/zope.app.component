@@ -112,12 +112,10 @@ class UtilityAdding(ComponentAdding):
         return super(UtilityAdding, self).add(content)
 
     def nextURL(self):
-        v = zapi.queryView(
-            self.added_object, "addRegistration.html", self.request)
+        v = zapi.queryMultiAdapter(
+            (self.added_object, self.request), name="addRegistration.html")
         if v is not None:
-            url = str(
-                zapi.getAdapter((self.added_object, self.request),
-                                name='absolute_url'))
+            url = zapi.absoluteURL(self.added_object, self.request)
             return url + "/addRegistration.html"
 
         return super(UtilityAdding, self).nextURL()

@@ -233,9 +233,8 @@ class SiteManagementView(adding.Adding):
         """See zope.app.container.interfaces.IAdding"""
         sm = self.context
         self.context = self.getSiteManagementFolder(self.activeTool)
+        self._addFilterInterface = self.activeTool.interface
         results = super(SiteManagementView, self).addingInfo()
         self.context = sm
-        for result in results:
-            factory = zapi.getUtility(IFactory, result['extra']['factory'])
-            if self.activeTool.interface in factory.getInterfaces():
-                yield result
+        self._addFilterInterface = None
+        return results

@@ -62,7 +62,7 @@ class SMFolderFactory(object):
 
 
 class SiteManagerContainer(Contained):
-    """Implement access to the service manager (++etc++site).
+    """Implement access to the site manager (++etc++site).
 
     This is a mix-in that implements the IPossibleSite
     interface; for example, it is used by the Folder implementation.

@@ -16,6 +16,7 @@
 $Id$
 """
 import zope.interface
+from zope.component import site
 from zope.component.interfaces import ISiteManager
 from zope.app import zapi
 from zope.app.testing import setup
@@ -64,7 +65,7 @@ class PlacefulSetup(PlacelessSetup):
 
     def tearDown(self):
         setup.placefulTearDown()
-        # clean up folders and placeful service managers and services too?
+        # clean up folders and placeful site managers and services too?
 
     def buildFolders(self, site=False):
         self.rootFolder = setup.buildSampleFolderTree()
@@ -101,9 +102,9 @@ def testingNextUtility(utility, nextutility, interface, name='',
                        sitemanager=None, nextsitemanager=None):
     """Provide a next utility for testing.
 
-    Since utilities must be registered in services, we really provide a next
-    utility service in which we place the next utility. If you do not pass in
-    any services, they will be created for you.
+    Since utilities must be registered in sites, we really provide a next
+    site manager in which we place the next utility. If you do not pass in
+    any site managers, they will be created for you.
 
     For a simple usage of this function, see the doc test of
     `queryNextUtility()`. Here is a demonstration that passes in the services
@@ -123,33 +124,33 @@ def testingNextUtility(utility, nextutility, interface, name='',
       >>> any1 = AnyUtility(1)
       >>> any1next = AnyUtility(2)
 
-    Now we create a special utility service that can have a location:
+    Now we create a special site manager that can have a location:
 
-      >>> UtilityService = type('UtilityService', (GlobalUtilityService,),
+      >>> SiteManager = type('SiteManager', (GlobalSiteManager,),
       ...                       {'__parent__': None})
 
-    Let's now create one utility service
+    Let's now create one site manager
 
-      >>> utils = UtilityService()
+      >>> sm = SiteManager()
 
-    and pass it in as the original utility service to the function:
+    and pass it in as the original site manager to the function:
 
-      >>> testingNextUtility(any1, any1next, IAnyUtility, service=utils)
+      >>> testingNextUtility(any1, any1next, IAnyUtility, sitemanager=sm)
       >>> any1.__parent__ is utils
       True
-      >>> utilsnext = any1next.__parent__
-      >>> utils.__parent__.next.data['Utilities'] is utilsnext
+      >>> smnext = any1next.__parent__
+      >>> sm.__parent__.next.data['Utilities'] is smnext
       True
 
-    or if we pass the current and the next utility service:
+    or if we pass the current and the next site manager:
 
-      >>> utils = UtilityService()
-      >>> utilsnext = UtilityService()
+      >>> sm = SiteManager()
+      >>> smnext = SiteManager()
       >>> testingNextUtility(any1, any1next, IAnyUtility,
-      ...                    service=utils, nextservice=utilsnext)
-      >>> any1.__parent__ is utils
+      ...                    sitemanager=sm, nextsitemanager=smnext)
+      >>> any1.__parent__ is sm
       True
-      >>> any1next.__parent__ is utilsnext
+      >>> any1next.__parent__ is smnext
       True
     
     """

@@ -54,8 +54,7 @@ class ComponentAdding(Adding):
         v = zapi.queryView(
             self.added_object, "registration.html", self.request)
         if v is not None:
-            url = str(
-                zapi.getView(self.added_object, 'absolute_url', self.request))
+            url = zapi.absoluteURL(self.added_object, self.request)
             return url + "/@@registration.html"
 
         return super(ComponentAdding, self).nextURL()
@@ -154,8 +153,7 @@ class UtilityAdding(ComponentAdding):
         v = zapi.queryView(
             self.added_object, "addRegistration.html", self.request)
         if v is not None:
-            url = str(
-                zapi.getView(self.added_object, 'absolute_url', self.request))
+            url = zapi.absoluteURL(self.added_object, self.request)
             return url + "/addRegistration.html"
 
         return super(UtilityAdding, self).nextURL()

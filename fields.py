@@ -31,7 +31,7 @@ class LayerField(GlobalObject):
     r"""This field represents a layer.
 
     Besides being able to look up the layer by importing it, we also try
-    to look up the name in the utility service.
+    to look up the name in the site manager.
 
     >>> from zope.interface import directlyProvides
     >>> from zope.interface.interface import InterfaceClass
@@ -78,8 +78,8 @@ class LayerField(GlobalObject):
     >>> if old is not None:
     ...     sys.modules['zope.app.layers'] = old
 
-    Test 3: Get the layer from the utility service
-    ----------------------------------------------
+    Test 3: Get the layer from the site manager
+    -------------------------------------------
 
     >>> from zope.app.testing import ztapi
     >>> ztapi.provideUtility(ILayer, layer1, 'layer1')

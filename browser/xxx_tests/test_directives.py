@@ -62,37 +62,6 @@ def test_toolDirective():
     'manageIDummyUtilityTool.html'
     """
 
-
-def _test_servicetoolDirective():
-    r"""
-    >>> from zope.app.site.browser import metaconfigure
-    >>> context = FauxContext()
-    >>> metaconfigure.servicetool(context, folder="dummy",
-    ...                    title="dummy", description="the description")
-
-    >>> iface = context.actions[0]
-    >>> iface['discriminator']
-    >>> iface['callable'].__module__
-    'zope.app.component.interface'
-    >>> iface['args'][1].getName()
-    'ILocalService'
-    >>> iface['args'][2].getName()
-    'IToolType'
-
-    >>> view = context.actions[1]
-    >>> from pprint import pprint 
-    >>> pprint([n for n in view['discriminator']])
-    ['view',
-     (<InterfaceClass zope.app.site.interfaces.ISiteManager>,
-      <InterfaceClass zope.publisher.interfaces.browser.IBrowserRequest>),
-     'manageILocalServiceTool.html',
-     <InterfaceClass zope.interface.Interface>]
-    >>> view['callable'].__module__
-    'zope.app.component.metaconfigure'
-    >>> view['args'][4]
-    'manageILocalServiceTool.html'
-    """
-
 def test_suite():
     return unittest.TestSuite((
         DocTestSuite(setUp=setUp, tearDown=tearDown),

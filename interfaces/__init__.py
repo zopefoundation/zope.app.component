@@ -36,34 +36,18 @@ class ILocalAdapterRegistry(registration.IRegistry,
         This should only happen during testing
         """
 
-class IBindingAware(zope.interface.Interface):
-
-    def bound(name):
-        """Inform a service component that it is providing a service
-
-        Called when an immediately-containing service manager binds
-        this object to perform the named service.
-        """
-
-    def unbound(name):
-        """Inform a service component that it is no longer providing a service
-
-        Called when an immediately-containing service manager unbinds
-        this object from performing the named service.
-        """
-
 class IPossibleSite(zope.interface.Interface):
     """An object that could be a site
     """
 
     def setSiteManager(sitemanager):
-        """Sets the service manager for this object.
+        """Sets the site manager for this object.
         """
 
     def getSiteManager():
-        """Returns the service manager contained in this object.
+        """Returns the site manager contained in this object.
 
-        If there isn't a service manager, raise a component lookup.
+        If there isn't a site manager, raise a component lookup.
         """
 
 class ISite(IPossibleSite):
