@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: interfacefield.py,v 1.9 2003/06/07 06:37:21 stevea Exp $
+$Id: interfacefield.py,v 1.10 2003/07/12 02:47:12 richard Exp $
 """
 
 from zope.schema import Enumerated, Field, Tuple
@@ -70,7 +70,7 @@ class InterfacesField(Tuple):
         super(InterfacesField, self).__init__(default=default, *args, **kw)
         self.validate((basetype,))
         self.basetype = basetype
-        # Not using schema.Sequence.value_types
+        # Not using schema.Sequence.value_type
 
     def _validate(self, value):
         super(InterfacesField, self)._validate(value)
