@@ -55,7 +55,7 @@
       />
 
   <subscriber
-      factory==".localservice.clearThreadSiteSubscriber"
+      factory=".localservice.clearThreadSiteSubscriber"
       for="zope.app.publication.interfaces.IEndRequestEvent"
       />
 
