@@ -414,28 +414,3 @@ def service(_context, serviceType, component=None, permission=None,
         callable = provideService,
         args = (serviceType, component, permission),
         )
-
-def layer(_context, name):
-
-    _context.action(
-        discriminator = ('layer', name),
-        callable = handler,
-        args = (Presentation, 'defineLayer', name, _context.info)
-        )
-
-def skin(_context, name, layers):
-    if ',' in layers:
-        raise TypeError("Commas are not allowed in layer names.")
-
-    _context.action(
-        discriminator = ('skin', name),
-        callable = handler,
-        args = (Presentation, 'defineSkin', name, layers, _context.info)
-        )
-
-def defaultSkin(_context, name):
-    _context.action(
-        discriminator = 'defaultSkin',
-        callable = handler,
-        args = (Presentation, 'setDefaultSkin', name, _context.info)
-        )

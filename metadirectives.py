@@ -309,44 +309,6 @@ class IResourceDirective(IBasicComponentInformation,
         value_type=PythonIdentifier()
         )
 
-class ILayerDirective(Interface):
-    """
-    Register a layer
-    """
-
-    name = TextLine(
-        title=u"Layer name",
-        description=u"Layer name",
-        required=True
-        )
-
-class ISkinDirective(Interface):
-    """
-    Register a skin
-    """
-
-    name = TextLine(
-        title=u"Skin name",
-        description=u"Skin name",
-        required=True
-        )
-
-    layers = Tokens(
-        title=u"The layers it consists of.",
-        required=True,
-        value_type=TextLine()
-        )
-
-class IDefaultSkinDirective(Interface):
-    """
-    Register a skin
-    """
-
-    name = TextLine(
-        title=u"Default skin name",
-        description=u"Default skin name",
-        required=True
-        )
 
 class IServiceTypeDirective(Interface):
 

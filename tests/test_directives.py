@@ -758,34 +758,6 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertEqual(zapi.queryView(ob, 'test', Request(IV), None), None)
         self.assertEqual(zapi.getDefaultViewName(ob, Request(IV)), 'test')
 
-    def testSkinView(self):
-
-        ob = Ob()
-        self.assertEqual(zapi.queryView(ob, 'test', Request(IV), None), None)
-
-        xmlconfig(StringIO(template % (
-            """
-            <layer name="zmi" />
-            <skin name="zmi" layers="zmi default" />
-            <view name="test"
-                  factory="zope.app.component.tests.views.VZMI"
-                  layer="zmi"
-                  for="zope.app.component.tests.views.IC"
-                  type="zope.app.component.tests.views.IV"/>
-            <view name="test"
-                  factory="zope.app.component.tests.views.V1"
-                  for="zope.app.component.tests.views.IC"
-                  type="zope.app.component.tests.views.IV"/>
-            """
-            )))
-
-        self.assertEqual(
-            zapi.queryView(ob, 'test', Request(IV), None).__class__,
-            V1)
-        self.assertEqual(
-            zapi.queryView(ob, 'test', Request(IV, 'zmi'), None).__class__,
-            VZMI)
-
     def testResource(self):
 
         ob = Ob()
@@ -878,34 +850,6 @@ class Test(PlacelessSetup, unittest.TestCase):
             '''
             ))
         self.assertRaises(ValueError, xmlconfig, config, testing=1)
-
-
-    def testSkinResource(self):
-
-        ob = Ob()
-        self.assertEqual(
-            zapi.queryResource('test', Request(IV), None), None)
-
-        xmlconfig(StringIO(template % (
-            '''
-            <layer name="zmi" />
-            <skin name="zmi" layers="zmi default" />
-            <resource name="test"
-                  factory="zope.app.component.tests.views.RZMI"
-                  layer="zmi"
-                  type="zope.app.component.tests.views.IV"/>
-            <resource name="test"
-                  factory="zope.app.component.tests.views.R1"
-                  type="zope.app.component.tests.views.IV"/>
-            '''
-            )))
-
-        self.assertEqual(
-            zapi.queryResource('test', Request(IV), None).__class__,
-            R1)
-        self.assertEqual(
-            zapi.queryResource('test', Request(IV, 'zmi'), None).__class__,
-            RZMI)
 
     def testFactory(self):
 
