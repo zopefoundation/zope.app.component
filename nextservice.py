@@ -13,14 +13,14 @@
 ##############################################################################
 """Support for delegation among service managers
 
-$Id: nextservice.py,v 1.6 2003/05/28 15:46:04 jim Exp $
+$Id: nextservice.py,v 1.7 2003/09/02 20:46:45 jim Exp $
 """
 
 from zope.component.exceptions import ComponentLookupError
 from zope.component.service import serviceManager
 from zope.context import getWrapperContainer
 from zope.proxy import removeAllProxies
-from zope.app.interfaces.services.service import IServiceManagerContainer
+from zope.app.interfaces.services.service import ISite
 from zope.app.component.hooks import getServiceManager_hook
 
 # placeful service manager convenience tools
@@ -63,8 +63,7 @@ def getNextServiceManager(context):
 
     # But we're *really* paranoid, so we'll double check.
     while ((container is not None) and not
-           IServiceManagerContainer.isImplementedBy(
-                      removeAllProxies(container))
+           ISite.isImplementedBy(removeAllProxies(container))
            ):
         container = getWrapperContainer(container) # we should be
 

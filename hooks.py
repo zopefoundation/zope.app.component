@@ -13,14 +13,14 @@
 ##############################################################################
 """
 
-$Id: hooks.py,v 1.10 2003/08/16 00:43:18 srichter Exp $
+$Id: hooks.py,v 1.11 2003/09/02 20:46:45 jim Exp $
 """
 
 from zope.component import getService
 from zope.component.interfaces import IServiceService
 from zope.component.exceptions import ComponentLookupError
 from zope.component.servicenames import Adapters
-from zope.app.interfaces.services.service import IServiceManagerContainer
+from zope.app.interfaces.services.service import ISite
 from zope.app.context import ContextWrapper
 from zope.context import getWrapperContainer, isWrapper, getWrapperData
 from zope.component.service import serviceManager
@@ -97,11 +97,9 @@ def getServiceManager_hook(context, local=False, recurse=False):
     if IServiceService.isImplementedBy(clean_context):
         sm = trustedRemoveSecurityProxy(context)
 
-    elif (IServiceManagerContainer.isImplementedBy(clean_context) and
-        clean_context.hasServiceManager()
-        ):
+    elif (ISite.isImplementedBy(clean_context)):
         sm = ContextWrapper(
-            trustedRemoveSecurityProxy(context.getServiceManager()),
+            trustedRemoveSecurityProxy(context.getSiteManager()),
             context,
             name="++etc++site",
             )

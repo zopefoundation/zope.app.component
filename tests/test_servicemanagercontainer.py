@@ -14,12 +14,12 @@
 """
 
 Revision information:
-$Id: test_servicemanagercontainer.py,v 1.7 2003/06/07 06:37:21 stevea Exp $
+$Id: test_servicemanagercontainer.py,v 1.8 2003/09/02 20:46:45 jim Exp $
 """
 
 from unittest import TestCase, main, makeSuite
 from zope.component.interfaces import IServiceService
-from zope.app.interfaces.services.service import IServiceManagerContainer
+from zope.app.interfaces.services.service import IPossibleSite, ISite
 from zope.component.exceptions import ComponentLookupError
 from zope.interface.verify import verifyObject
 from zope.context import getbaseobject
@@ -55,28 +55,21 @@ class BaseTestServiceManagerContainer:
     arguments and that returns a new service manager
     container that has no service manager."""
 
-    def testIServiceManagerContainerVerify(self):
-        verifyObject(IServiceManagerContainer, self.makeTestObject())
+    def test_IPossibleSite_verify(self):
+        verifyObject(IPossibleSite, self.makeTestObject())
 
-    def testHas(self):
-        smc=self.makeTestObject()
-        self.failIf(smc.hasServiceManager())
-        smc.setServiceManager(ServiceManager())
-        self.failUnless(smc.hasServiceManager())
+    def test_get_and_set(self):
+        smc = self.makeTestObject()
+        self.failIf(ISite.isImplementedBy(smc))
+        sm = ServiceManager()
+        smc.setSiteManager(sm)
+        self.failUnless(ISite.isImplementedBy(smc))
+        self.failUnless(getbaseobject(smc.getSiteManager()) is sm)
+        verifyObject(ISite, smc)
 
-    def testGet(self):
+    def test_set_w_bogus_value(self):
         smc=self.makeTestObject()
-        # since the managers are now wrapped, need to look at base object
-        self.failUnless(getbaseobject(smc.queryServiceManager()) is None)
-        self.assertRaises(ComponentLookupError, smc.getServiceManager)
-        sm=ServiceManager()
-        smc.setServiceManager(sm)
-        self.failUnless(getbaseobject(smc.getServiceManager()) is sm)
-        self.failUnless(getbaseobject(smc.queryServiceManager(self)) is sm)
-
-    def testSet(self):
-        smc=self.makeTestObject()
-        self.assertRaises(Exception, smc.setServiceManager, self)
+        self.assertRaises(Exception, smc.setSiteManager, self)
 
 
 

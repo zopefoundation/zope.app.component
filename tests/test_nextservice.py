@@ -12,37 +12,35 @@
 #
 ##############################################################################
 """
-$Id: test_nextservice.py,v 1.7 2003/06/05 12:03:15 stevea Exp $
+$Id: test_nextservice.py,v 1.8 2003/09/02 20:46:45 jim Exp $
 """
 
 from unittest import TestCase, main, makeSuite
 from zope.app.component.hooks import getServiceManager_hook
 from zope.app.component.nextservice import getNextServiceManager
-from zope.app.interfaces.services.service import IServiceManagerContainer
+from zope.app.interfaces.services.service import IPossibleSite, ISite
 from zope.app.traversing import IContainmentRoot
 from zope.component.exceptions import ComponentLookupError
 from zope.component.interfaces import IServiceService
 from zope.component.service import serviceManager
 from zope.context import Wrapper
-from zope.interface import implements
+from zope.interface import implements, directlyProvides
 
 
 class ServiceManager:
     implements(IServiceService)
 
 class Folder:
-    implements(IServiceManagerContainer)
+    implements(IPossibleSite)
 
     sm = None
 
-    def getServiceManager(self, default=None):
+    def getSiteManager(self, default=None):
         return self.sm
 
-    def hasServiceManager(self):
-        return self.sm
-
-    def setServiceManager(self, sm):
+    def setSiteManager(self, sm):
         self.sm = sm
+        directlyProvides(self, ISite)
 
 class Root(Folder):
     implements(IContainmentRoot)
@@ -56,11 +54,11 @@ class Test(TestCase):
 
         f1 = Wrapper(Folder(), root)
         sm1 = ServiceManager()
-        f1.setServiceManager(sm1)
+        f1.setSiteManager(sm1)
 
         f2 = Wrapper(Folder(), f1)
         sm2 = ServiceManager()
-        f2.setServiceManager(sm2)
+        f2.setSiteManager(sm2)
 
         self.root = root
         self.f1 = f1
@@ -88,7 +86,7 @@ class Test(TestCase):
         root = Folder()
         f1 = Wrapper(Folder(), root)
         sm1 = ServiceManager()
-        f1.setServiceManager(sm1)
+        f1.setSiteManager(sm1)
         self.assertRaises(TypeError,
                           getNextServiceManager, Wrapper(sm1, f1)
                           )
