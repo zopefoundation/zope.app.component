@@ -14,7 +14,7 @@
              interface='zope.component.interfaces.IAdapterService' />
 <service serviceType='Adapters'
          permission='zope.Public'
-         component='zope.component.adapter.adapterService' />
+         factory='zope.component.adapter.GlobalAdapterService' />
 
 <serviceType id='Factories'
              interface='zope.component.interfaces.IFactoryService' />
@@ -22,23 +22,11 @@
          permission='zope.Public'
          component='zope.component.factory.factoryService' />
 
-<serviceType id='Skins'
-             interface='zope.component.interfaces.ISkinService' />
-<service serviceType='Skins'
+<serviceType id='Presentation'
+             interface='zope.component.interfaces.IPresentationService' />
+<service serviceType='Presentation'
          permission='zope.Public'
-         component='zope.component.skin.skinService' />
-
-<serviceType id='Views'
-             interface='zope.component.interfaces.IViewService' />
-<service serviceType='Views'
-         permission='zope.Public'
-         component='zope.component.view.viewService' />
-
-<serviceType id='Resources'
-             interface='zope.component.interfaces.IResourceService' />
-<service serviceType='Resources'
-         permission='zope.Public'
-         component='zope.component.resource.resourceService' />
+         factory='zope.component.presentation.GlobalPresentationService' />
 
 <hook module="zope.component"
       name="getServiceManager"
