@@ -378,13 +378,11 @@ def defaultView(_context, type, name, for_):
         args = ('', type)
         )
 
-    for iface in for_:
-        if iface is not None:
-            _context.action(
-                discriminator = None,
-                callable = provideInterface,
-                args = ('', iface)
-                )
+    _context.action(
+        discriminator = None,
+        callable = provideInterface,
+        args = ('', for_)
+        )
 
 def serviceType(_context, id, interface):
     _context.action(
