@@ -60,7 +60,7 @@ class IRegistration(Interface):
     status = Choice(
         title=_("Registration status"),
         values=(InactiveStatus, ActiveStatus),
-        default=InactiveStatus
+        default=ActiveStatus
         )
 
 class IComponent(IField):
