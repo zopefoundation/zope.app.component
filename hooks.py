@@ -11,11 +11,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
+"""Hooks for getting and setting a site in the thread global namespace.
 
 $Id$
 """
-
 from zope.component import getService
 from zope.component.interfaces import IServiceService
 from zope.app.site.interfaces import ISite
