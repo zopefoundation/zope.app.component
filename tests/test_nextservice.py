@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: test_nextservice.py,v 1.8 2003/09/02 20:46:45 jim Exp $
+$Id: test_nextservice.py,v 1.9 2003/09/21 17:31:27 jim Exp $
 """
 
 from unittest import TestCase, main, makeSuite
@@ -23,8 +23,7 @@ from zope.app.traversing import IContainmentRoot
 from zope.component.exceptions import ComponentLookupError
 from zope.component.interfaces import IServiceService
 from zope.component.service import serviceManager
-from zope.context import Wrapper
-from zope.interface import implements, directlyProvides
+from zope.interface import implements, directlyProvides, directlyProvidedBy
 
 
 class ServiceManager:
@@ -40,11 +39,16 @@ class Folder:
 
     def setSiteManager(self, sm):
         self.sm = sm
-        directlyProvides(self, ISite)
+        sm.__parent__ = self
+        directlyProvides(self, ISite, directlyProvidedBy(self))
 
 class Root(Folder):
     implements(IContainmentRoot)
 
+
+def Wrapper(ob, container):
+    ob.__parent__ = container
+    return ob
 
 class Test(TestCase):
 

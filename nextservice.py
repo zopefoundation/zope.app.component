@@ -13,12 +13,11 @@
 ##############################################################################
 """Support for delegation among service managers
 
-$Id: nextservice.py,v 1.7 2003/09/02 20:46:45 jim Exp $
+$Id: nextservice.py,v 1.8 2003/09/21 17:31:26 jim Exp $
 """
 
 from zope.component.exceptions import ComponentLookupError
 from zope.component.service import serviceManager
-from zope.context import getWrapperContainer
 from zope.proxy import removeAllProxies
 from zope.app.interfaces.services.service import ISite
 from zope.app.component.hooks import getServiceManager_hook
@@ -59,20 +58,20 @@ def getNextServiceManager(context):
 
     # get the service manager container, which ought to be the context
     # contaioner.
-    container = getWrapperContainer(sm)
+    container = sm.__parent__
 
     # But we're *really* paranoid, so we'll double check.
     while ((container is not None) and not
            ISite.isImplementedBy(removeAllProxies(container))
            ):
-        container = getWrapperContainer(container) # we should be
+        container = container.__parent__ # we should be
 
     # Now we need to step up so we can look for a service manager above.
-    context = getWrapperContainer(container)
+    context = getattr(container, '__parent__', None)
 
     # But we have to make sure we haven't got the same object..
     while (context is not None) and (context == container):
-        context = getWrapperContainer(context)
+        context = context.__parent__
 
     if context is None:
         return serviceManager
