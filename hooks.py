@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: hooks.py,v 1.3 2003/03/11 21:08:40 jim Exp $
+$Id: hooks.py,v 1.4 2003/03/23 22:35:38 jim Exp $
 """
 from zope.component.interfaces import IServiceService
 from zope.app.interfaces.services.service \
@@ -45,7 +45,7 @@ def getServiceManager_hook(context, local=False):
             return ContextWrapper(
                 trustedRemoveSecurityProxy(context.getServiceManager()),
                 context,
-                name="++etc++Services",
+                name="++etc++site",
                 )
 
         container = getWrapperContainer(context)
