@@ -12,15 +12,19 @@
 #
 ##############################################################################
 """
-$Id: globalinterfaceservice.py,v 1.13 2003/07/03 22:46:06 sidnei Exp $
+$Id: globalinterfaceservice.py,v 1.14 2003/08/06 21:16:35 sidnei Exp $
 """
 from __future__ import generators
 
 __metaclass__ = type
 
 from zope.component.exceptions import ComponentLookupError
+from zope.component import getService
 from zope.app.interfaces.component import IGlobalInterfaceService
+from zope.app.services.servicenames import Utilities
 from zope.interface import implements
+from zope.interface.interfaces import IInterface
+from zope.component.utility import utilityService
 
 class InterfaceService:
     implements(IGlobalInterfaceService)
@@ -31,16 +35,22 @@ class InterfaceService:
         self.__data = data
 
     def getInterface(self, id):
-        if id in self.__data:
-            return self.__data[id][0]
-        else:
+        iface = self.queryInterface(id, None)
+        if iface is None:
             raise ComponentLookupError(id)
+        return iface
 
     def queryInterface(self, id, default=None):
         if self.__data.has_key(id):
             return self.__data[id][0]
         else:
-            return default
+            # XXX Should use getService(), but that breaks a few
+            # tests that do too basic setup to get the utilities
+            # service started. I'll fix this later
+            utility = utilityService.queryUtility(IInterface, name=id)
+            if utility is not None:
+                return utility
+        return default
 
     def searchInterface(self, search_string=None, base=None):
         return [t[1] for t in self.items(search_string, base)]
@@ -60,6 +70,9 @@ class InterfaceService:
                 continue
             yield id, interface
 
+        for id, interface in self._queryUtilityInterfaces(base, search_string):
+            yield id, interface
+
     def _getAllDocs(self,interface):
         docs = [str(interface.__name__).lower(),
                 str(interface.__doc__).lower()]
@@ -68,6 +81,18 @@ class InterfaceService:
             docs.append(str(interface.getDescriptionFor(name).__doc__).lower())
 
         return '\n'.join(docs)
+
+    def _queryUtilityInterfaces(self, interface=None, search_string=None):
+        if interface is None:
+            interface = IInterface
+        # XXX Should use getService(), but that breaks a few
+        # tests that do too basic setup to get the utilities
+        # service started. I'll fix this later
+        matching = utilityService.getUtilitiesFor(interface)
+        if search_string is not None:
+            return [match for match in matching
+                    if match[0].find(search_string) > -1]
+        return matching
 
     def provideInterface(self, id, interface):
         if not id:
