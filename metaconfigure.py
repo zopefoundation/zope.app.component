@@ -17,17 +17,17 @@ $Id$
 """
 __docformat__ = 'restructuredtext'
 
-from zope.interface import Interface
+from zope.component.interfaces import IDefaultViewName, IFactory
 from zope.component.service import UndefinedService
 from zope.configuration.exceptions import ConfigurationError
-from zope.security.checker import InterfaceChecker, CheckerPublic, \
-     Checker, NamesChecker
+from zope.interface import Interface
+
+from zope.security.checker import InterfaceChecker, CheckerPublic
+from zope.security.checker import Checker, NamesChecker
 from zope.security.proxy import Proxy, ProxyFactory
-from zope.component.interfaces import IFactory
 
 from zope.app import zapi
 from zope.app.component.interface import queryInterface
-from zope.app.servicenames import Adapters, Presentation
 from zope.app.security.adapter import TrustedAdapterFactory
 
 PublicPermission = 'zope.Public'
@@ -107,7 +107,7 @@ def subscriber(_context, factory, for_, provides=None, permission=None,
     _context.action(
         discriminator = None,
         callable = handler,
-        args = (Adapters, 'subscribe',
+        args = (zapi.servicenames.Adapters, 'subscribe',
                 for_, provides, factory),
         )
 
@@ -159,7 +159,7 @@ def adapter(_context, factory, provides, for_, permission=None, name='',
     _context.action(
         discriminator = ('adapter', for_, provides, name),
         callable = handler,
-        args = (Adapters, 'register',
+        args = (zapi.servicenames.Adapters, 'register',
                 for_, provides, name, factory, _context.info),
         )
     _context.action(
@@ -232,7 +232,7 @@ def _checker(_context, permission, allowed_interface, allowed_attributes):
     checker = Checker(require)
     return checker
 
-def resource(_context, factory, type, name, layer='default',
+def resource(_context, factory, type, name, layer=None,
              permission=None,
              allowed_interface=None, allowed_attributes=None,
              provides=Interface):
@@ -254,11 +254,14 @@ def resource(_context, factory, type, name, layer='default',
 
         factory = proxyResource
 
+    if layer is None:
+        layer = type
+
     _context.action(
-        discriminator = ('resource', name, type, layer, provides),
+        discriminator = ('resource', name, layer, provides),
         callable = handler,
-        args = (Presentation, 'provideResource',
-                name, type, factory, layer, provides),
+        args = (zapi.servicenames.Adapters, 'register',
+                (layer,), provides, name, factory, _context.info),
         )
     _context.action(
         discriminator = None,
@@ -271,7 +274,7 @@ def resource(_context, factory, type, name, layer='default',
         args = (provides.__module__ + '.' + provides.__name__, type)
                )
 
-def view(_context, factory, type, name, for_, layer='default',
+def view(_context, factory, type, name, for_, layer=None,
          permission=None, allowed_interface=None, allowed_attributes=None,
          provides=Interface):
 
@@ -321,11 +324,17 @@ def view(_context, factory, type, name, for_, layer='default',
                 ob = f(ob)
             return factories[-1](ob, request)
 
+    # Make type/layer one of the required interfaces.
+    if layer is None:
+        for_ = for_ + (type,)
+    else:
+        for_ = for_ + (layer,)
+
     _context.action(
-        discriminator = ('view', for_, name, type, layer, provides),
+        discriminator = ('view', for_, name, provides),
         callable = handler,
-        args = (Presentation, 'provideAdapter',
-                type, factory, name, for_, provides, layer, _context.info),
+        args = (zapi.servicenames.Adapters, 'register',
+                for_, provides, name, factory, _context.info),
         )
     if type is not None:
         _context.action(
@@ -354,7 +363,8 @@ def defaultView(_context, type, name, for_):
     _context.action(
         discriminator = ('defaultViewName', for_, type, name),
         callable = handler,
-        args = (Presentation, 'setDefaultViewName', for_, type, name),
+        args = (zapi.servicenames.Adapters, 'register',
+                (for_, type), IDefaultViewName, '', name, _context.info)
         )
     
     _context.action(

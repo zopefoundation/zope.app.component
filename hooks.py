@@ -27,7 +27,6 @@ from zope.security.proxy import removeSecurityProxy
 from zope.app.traversing.interfaces import IContainmentRoot
 from zope.app.location.interfaces import ILocation
 from zope.app.location import locate
-from zope.component.servicenames import Presentation
 from zope.interface import Interface
 from zope.component.servicenames import Adapters
 import warnings
@@ -114,9 +113,9 @@ def adapter_hook(interface, object, name='', default=None):
     
 def queryView(object, name, request, default=None,
               providing=Interface, context=None):
-    views = getService(Presentation, context)
-    view = views.queryView(object, name, request, default=default,
-                           providing=providing)
+    adapters = getService(Adapters, context)
+    view = adapters.queryMultiAdapter((object, request), providing,
+                                      name, default)
     if ILocation.providedBy(view):
         locate(view, object, name)
 
