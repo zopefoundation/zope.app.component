@@ -12,12 +12,13 @@
 #
 ##############################################################################
 """
-$Id: metaconfigure.py,v 1.23 2003/12/18 16:28:57 eddala Exp $
+$Id: metaconfigure.py,v 1.24 2004/01/08 20:48:21 garrett Exp $
 """
 
 from zope.configuration.exceptions import ConfigurationError
 from zope.security.proxy import Proxy, ProxyFactory
 from zope.component import getService, getServiceManager
+from zope.component.factory import FactoryInfo
 from zope.app.services.servicenames import Adapters, Interfaces
 from zope.app.services.servicenames import Factories, Presentation
 from zope.app.component.globalinterfaceservice import interfaceService
@@ -134,14 +135,15 @@ def utility(_context, provides, component=None, factory=None,
                 provides.__module__+'.'+provides.getName(), provides)
         )
 
-def factory(_context, component, id=None, permission=None):
+def factory(_context, component, id=None, title=None, description=None, 
+            permission=None):
     _context.action(
         discriminator = ('factory', id),
         callable = provideFactory,
-        args = (id, component, permission),
+        args = (id, component, title, description, permission),
         )
 
-def provideFactory(name, factory, permission):
+def provideFactory(name, factory, title, description, permission):
     # make sure the permission is defined
     if permission is not None:
         permissionRegistry.ensurePermissionDefined(permission)
@@ -156,7 +158,8 @@ def provideFactory(name, factory, permission):
             NamesChecker(('getInterfaces',),
                          __call__=permission)
             )
-    getService(None, Factories).provideFactory(name, factory)
+    info = FactoryInfo(title, description)
+    getService(None, Factories).provideFactory(name, factory, info)
 
 def _checker(_context, permission, allowed_interface, allowed_attributes):
     if (not allowed_attributes) and (not allowed_interface):

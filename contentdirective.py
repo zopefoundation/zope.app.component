@@ -13,11 +13,12 @@
 ##############################################################################
 """ Register class directive.
 
-$Id: contentdirective.py,v 1.11 2003/09/21 17:31:21 jim Exp $
+$Id: contentdirective.py,v 1.12 2004/01/08 20:48:21 garrett Exp $
 """
 from types import ModuleType
 from zope.interface import implements, classImplements
 from zope.component import getService
+from zope.component.factory import FactoryInfo
 from zope.app.services.servicenames import Interfaces, Factories
 from zope.configuration.exceptions import ConfigurationError
 from zope.app.component.classfactory import ClassFactory
@@ -205,5 +206,6 @@ def provideClass(id, _class, permission=None,
         permission = CheckerPublic
 
     factory = ClassFactory(_class, title, description, permission)
+    info = FactoryInfo(title, description)
 
-    getService(None, Factories).provideFactory(id, factory)
+    getService(None, Factories).provideFactory(id, factory, info)
