@@ -8,7 +8,7 @@
              interface="zope.component.interfaces.IUtilityService" />
 <service serviceType="Utilities"
          permission="zope.Public"
-         component="zope.component.utility.utilityService" />
+         factory="zope.component.utility.GlobalUtilityService" />
 
 <serviceType id="Adapters"
              interface="zope.component.interfaces.IAdapterService" />
