@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: globalinterfaceservice.py,v 1.4 2003/01/03 16:03:33 stevea Exp $
+$Id: globalinterfaceservice.py,v 1.5 2003/03/03 23:16:08 gvanrossum Exp $
 """
 
 from zope.interface import Interface
