@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: metaconfigure.py,v 1.18 2003/08/16 00:43:18 srichter Exp $
+$Id: metaconfigure.py,v 1.19 2003/09/21 17:31:24 jim Exp $
 """
 
 from zope.configuration.exceptions import ConfigurationError
@@ -63,12 +63,28 @@ def interface(_context, interface):
         args = (Interfaces, 'provideInterface', '', interface)
         )
 
+def proxify(ob, checker):
+    """Try to get the object proxied with the checker, but not too soon
+
+    We really don't want to proxy the object unless we need to.
+    """
+
+    try:
+        ob.__Security_checker__ = checker
+    except AttributeError:
+        ob = Proxy(ob, checker)
+
+    return ob
+
+
 def adapter(_context, factory, provides, for_, permission=None, name=''):
     if permission is not None:
         if permission == PublicPermission:
             permission = CheckerPublic
         checker = InterfaceChecker(provides, permission)
-        factory.append(lambda c: Proxy(c, checker))
+        factory.append(lambda c: proxify(c, checker))
+
+        
     _context.action(
         discriminator = ('adapter', for_, provides, name),
         callable = checkingHandler,
@@ -99,7 +115,7 @@ def utility(_context, provides, component=None, factory=None,
             permission = CheckerPublic
         checker = InterfaceChecker(provides, permission)
 
-        component = Proxy(component, checker)
+        component = proxify(component, checker)
 
     _context.action(
         discriminator = ('utility', provides, name),
@@ -174,7 +190,7 @@ def resource(_context, factory, type, name, layer='default',
                            allowed_interface, allowed_attributes)
 
         def proxyResource(request, factory=factory, checker=checker):
-            return Proxy(factory(request), checker)
+            return proxify(factory(request), checker)
 
         factory = proxyResource
 
@@ -213,7 +229,7 @@ def view(_context, factory, type, name, for_, layer='default',
                            allowed_interface, allowed_attributes)
 
         def proxyView(context, request, factory=factory[-1], checker=checker):
-            return Proxy(factory(context, request), checker)
+            return proxify(factory(context, request), checker)
 
         factory[-1] = proxyView
 
@@ -302,7 +318,7 @@ def provideService(serviceType, component, permission):
         try:
             component.__Security_checker__ = checker
         except: # too bad exceptions aren't more predictable
-            component = Proxy(component, checker)
+            component = proxify(component, checker)
 
     service_manager.provideService(serviceType, component)
 

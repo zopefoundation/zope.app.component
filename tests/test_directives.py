@@ -35,6 +35,7 @@ from zope.app.tests.placelesssetup import PlacelessSetup
 from zope.component.tests.views import IV, IC, V1, VZMI, R1, RZMI
 from zope.component.tests.request import Request
 from zope.interface import implements
+from zope.security.checker import ProxyFactory
 
 
 template = """<configure
@@ -121,7 +122,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        adapter = getAdapter(Content(), IApp)
+        adapter = ProxyFactory(getAdapter(Content(), IApp))
         items = [item[0] for item in getTestProxyItems(adapter)]
         self.assertEqual(items, ['a', 'f'])
         self.assertEqual(getProxiedObject(adapter).__class__, Comp)
@@ -214,7 +215,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        utility = getUtility(None, IApp)
+        utility = ProxyFactory(getUtility(None, IApp))
         items = [item[0] for item in getTestProxyItems(utility)]
         self.assertEqual(items, ['a', 'f'])
         self.assertEqual(getProxiedObject(utility), comp)
@@ -263,7 +264,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             ))
 
-        v = getView(Ob(), 'test', Request(IV))
+        v = ProxyFactory(getView(Ob(), 'test', Request(IV)))
         self.assertEqual(v.index(), 'V1 here')
         self.assertRaises(Exception, getattr, v, 'action')
 
@@ -280,7 +281,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             ))
 
-        v = getView(Ob(), 'test', Request(IV))
+        v = ProxyFactory(getView(Ob(), 'test', Request(IV)))
         self.assertEqual(v.action(), 'done')
         self.assertRaises(Exception, getattr, v, 'index')
 
