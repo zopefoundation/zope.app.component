@@ -11,11 +11,9 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Browser configuration code
+"""Component-related fields
 
-This module defines the schemas for browser directives.
-
-$Id: metadirectives.py 26994 2004-08-11 10:07:39Z gintautasm $
+$Id$
 """
 __docformat__ = 'restructuredtext'
 
@@ -100,9 +98,8 @@ class LayerField(GlobalObject):
                 return value
 
         try:
-            value = self.context.resolve(name)
+            value = self.context.resolve('zope.app.layers.'+name)
         except ConfigurationError, v:
-            name = 'zope.app.layers.'+name
             try:
                 value = self.context.resolve(name)
             except ConfigurationError, v:
