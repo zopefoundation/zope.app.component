@@ -2,6 +2,9 @@
    xmlns:zope="http://namespaces.zope.org/zope"
    xmlns="http://namespaces.zope.org/browser">
 
+  <zope:interface
+    interface="zope.app.component.browser.tools.IToolType" />
+
 <!-- Registration Managemenet -->
 
   <!-- BBB: Gone with 3.3 -->
