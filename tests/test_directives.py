@@ -893,14 +893,14 @@ class Test(PlacelessSetup, unittest.TestCase):
         xmlconfig(StringIO(template % (
             '''
             <factory
-               id="foo"
+               id="foo.bar"
                component="zope.app.component.tests.factory.f"
                />
             '''
             )))
 
         from factory import X
-        self.assertEqual(zapi.createObject(None, 'foo').__class__, X)
+        self.assertEqual(zapi.createObject(None, 'foo.bar').__class__, X)
 
 def test_suite():
     return unittest.TestSuite((
