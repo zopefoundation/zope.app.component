@@ -246,3 +246,20 @@ def nameToInterface(context, id):
     iface = getInterface(context, id)
     return iface
 
+def interfaceToName(context, interface):
+    if interface is None:
+        return 'None'
+    items = searchInterface(context, base=interface)
+    ids = [('%s.%s' %(iface.__module__, iface.__name__))
+           for iface in items
+           if iface == interface]
+    
+    if not ids:
+        # Do not fail badly, instead resort to the standard
+        # way of getting the interface name, cause not all interfaces
+        # may be registered as utilities.
+        return interface.__module__ + '.' + interface.__name__
+
+    assert len(ids) == 1, "Ambiguous interface names: %s" % ids
+    return ids[0]
+
