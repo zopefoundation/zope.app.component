@@ -189,7 +189,8 @@ class Test(PlacelessSetup, unittest.TestCase):
 
 
         # Need to "log someone in" to turn on checks
-        from zope.security.management import newInteraction
+        from zope.security.management import newInteraction, endInteraction
+        endInteraction()
         newInteraction(ParticipationStub('someuser'))
 
         service = getService("Foo")
