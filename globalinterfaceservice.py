@@ -12,8 +12,9 @@
 #
 ##############################################################################
 """
-$Id: globalinterfaceservice.py,v 1.11 2003/06/07 06:37:21 stevea Exp $
+$Id: globalinterfaceservice.py,v 1.12 2003/06/22 20:17:59 jeremy Exp $
 """
+from __future__ import generators
 
 __metaclass__ = type
 
@@ -41,30 +42,23 @@ class InterfaceService:
         else:
             return default
 
-    def searchInterfaceIds(self, search_string='', base=None):
-        result = []
+    def searchInterface(self, search_string=None, base=None):
+        return [t[1] for t in self.items(search_string, base)]
+    
+    def searchInterfaceIds(self, search_string=None, base=None):
+        return [t[0] for t in self.items(search_string, base)]
 
-        data = self.__data
-        search_string = search_string.lower()
-
-        for id in data:
-            interface, doc = data[id]
-
+    def items(self, search_string=None, base=None):
+        if search_string:
+            search_string = search_string.lower()
+            
+        for id, (interface, doc) in self.__data.items():
             if search_string:
                 if doc.find(search_string) < 0:
                     continue
-
             if base is not None and not interface.extends(base, 0):
                 continue
-
-            result.append(id)
-
-        return result
-
-    def searchInterface(self, search_string='', base=None):
-        data = self.__data
-        return [data[id][0]
-                for id in self.searchInterfaceIds(search_string, base)]
+            yield id, interface
 
     def _getAllDocs(self,interface):
         docs = [str(interface.__name__).lower(),
