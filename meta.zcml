@@ -17,6 +17,13 @@
         />
 
     <meta:directive
+        name="subscriber"
+        schema=".metadirectives.ISubscriberDirective"
+        handler="zope.app.component.metaconfigure.subscriber"
+        />
+
+
+    <meta:directive
         name="utility"
         schema=".metadirectives.IUtilityDirective"
         handler="zope.app.component.metaconfigure.utility"
