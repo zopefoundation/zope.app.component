@@ -25,7 +25,6 @@ from zope.component.interfaces import IFactory
 
 from zope.app import zapi
 from zope.app.component.interface import queryInterface
-from zope.app.security.permission import checkPermission 
 from zope.app.servicenames import Adapters, Presentation
 
 PublicPermission = 'zope.Public'
@@ -47,12 +46,6 @@ def handler(serviceName, methodName, *args, **kwargs):
 # We can't use the handler for serviceType, because serviceType needs
 # the interface service.
 from zope.app.component.interface import provideInterface
-
-def checkingHandler(permission=None, *args, **kw):
-    """Check if permission is defined"""
-    if permission is not None:
-        checkPermission(None, permission)
-    handler(*args, **kw)
 
 def managerHandler(methodName, *args, **kwargs):
     method=getattr(zapi.getGlobalServices(), methodName)
@@ -106,8 +99,8 @@ def subscriber(_context, factory, for_, provides=None, permission=None):
 
     _context.action(
         discriminator = None,
-        callable = checkingHandler,
-        args = (permission, Adapters, 'subscribe',
+        callable = handler,
+        args = (Adapters, 'subscribe',
                 for_, provides, factory),
         )
 
@@ -154,8 +147,8 @@ def adapter(_context, factory, provides, for_, permission=None, name=''):
 
     _context.action(
         discriminator = ('adapter', for_, provides, name),
-        callable = checkingHandler,
-        args = (permission, Adapters, 'register',
+        callable = handler,
+        args = (Adapters, 'register',
                 for_, provides, name, factory, _context.info),
         )
     _context.action(
@@ -188,8 +181,8 @@ def utility(_context, provides, component=None, factory=None,
 
     _context.action(
         discriminator = ('utility', provides, name),
-        callable = checkingHandler,
-        args = (permission, 'Utilities', 'provideUtility',
+        callable = handler,
+        args = ('Utilities', 'provideUtility',
                 provides, component, name),
         )
     _context.action(
@@ -252,8 +245,8 @@ def resource(_context, factory, type, name, layer='default',
 
     _context.action(
         discriminator = ('resource', name, type, layer, provides),
-        callable = checkingHandler,
-        args = (permission, Presentation, 'provideResource',
+        callable = handler,
+        args = (Presentation, 'provideResource',
                 name, type, factory, layer, provides),
         )
     _context.action(
@@ -319,8 +312,8 @@ def view(_context, factory, type, name, for_, layer='default',
 
     _context.action(
         discriminator = ('view', for_, name, type, layer, provides),
-        callable = checkingHandler,
-        args = (permission, Presentation, 'provideAdapter',
+        callable = handler,
+        args = (Presentation, 'provideAdapter',
                 type, factory, name, for_, provides, layer, _context.info),
         )
     if type is not None:
