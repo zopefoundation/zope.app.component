@@ -12,10 +12,8 @@
 #
 ##############################################################################
 """
-$Id: globalinterfaceservice.py,v 1.17 2003/08/17 06:06:15 philikon Exp $
+$Id: globalinterfaceservice.py,v 1.18 2003/11/05 03:08:21 jeremy Exp $
 """
-from __future__ import generators
-
 __metaclass__ = type
 
 from zope.component.exceptions import ComponentLookupError
