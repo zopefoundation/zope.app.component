@@ -5,10 +5,12 @@
     <directive name="interface" attributes="interface"
        handler="zope.app.component.metaconfigure.interface" />
 
-    <directive name="adapter" attributes="factory provides for permission"
+    <directive name="adapter" 
+               attributes="factory provides for permission name"
        handler="zope.app.component.metaconfigure.adapter" />
 
-    <directive name="utility" attributes="component provides permission name"
+    <directive name="utility" 
+               attributes="component provides permission name factory"
        handler="zope.app.component.metaconfigure.utility" />
 
     <directive name="factory" attributes="component id permission"
@@ -16,17 +18,18 @@
 
     <directive
        name="view"
-       attributes="component type name for layer
+       attributes="component type name for layer factory
                    permission allowed_interface allowed_attributes"
        handler="zope.app.component.metaconfigure.view" />
 
     <directive name="defaultView"
-               attributes="component type name for layer"
+               attributes="component type name for layer factory
+                           permission allowed_attributes"
        handler="zope.app.component.metaconfigure.defaultView" />
 
     <directive
        name="resource"
-       attributes="component type name layer
+       attributes="component type name layer factory
                    permission allowed_interface allowed_attributes"
        handler="zope.app.component.metaconfigure.resource" />
 
@@ -36,7 +39,8 @@
     <directive name="serviceType" attributes="id interface"
        handler="zope.app.component.metaconfigure.serviceType" />
 
-    <directive name="service" attributes="serviceType component permission"
+    <directive name="service" 
+               attributes="serviceType component permission factory"
        handler="zope.app.component.metaconfigure.service" />
 
     <directive
@@ -73,7 +77,7 @@
 
         <attribute
             name="permission"
-            required="yes"
+            required="no"
             description="a permission id"
             />
 
@@ -81,6 +85,22 @@
             name="attributes"
             description="space-separated list of attribute names"
             />
+
+        <attribute
+            name="set_attributes"
+            description="space-separated list of attribute names
+                         for attributes that can be set"
+            />
+
+        <attribute
+            name="set_schema"
+            >
+            Dotted name of a schema
+
+            The non-read-only fields in the schema can be set with the
+            specified permission.
+            
+          </attribute>
 
         <attribute
             name="interface"
