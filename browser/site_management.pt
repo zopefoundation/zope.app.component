@@ -86,17 +86,18 @@
         <i>No instances of this utility are available yet.</i>
       </div>
     </div>
-    <div tal:condition="tool/add"
-         tal:define="info view/addingInfo">
-      <input type="text" width="20" name="id" value="">
-      <select name="type_name">
-        <option tal:repeat="entry info"
-                tal:attributes="value entry/action"
-                tal:content="entry/title">RAM Cache</option>
-      </select>
-      &nbsp;
-      <input type="submit" name="ADD-TOOL-SUBMIT" value="Add">
-      <input type="submit" name="CANCEL-ADD-TOOL-SUBMIT" value="Cancel">
+    <div tal:condition="tool/add">
+      <div tal:define="info view/addingInfo">
+        <input type="text" width="20" name="id" value="">
+        <select name="type_name">
+          <option tal:repeat="entry info"
+                  tal:attributes="value entry/action"
+                  tal:content="entry/title">RAM Cache</option>
+        </select>
+        &nbsp;
+        <input type="submit" name="ADD-TOOL-SUBMIT" value="Add">
+        <input type="submit" name="CANCEL-ADD-TOOL-SUBMIT" value="Cancel">
+      </div>
     </div>
     <br/>
     <div>
