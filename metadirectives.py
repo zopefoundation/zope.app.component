@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: metadirectives.py,v 1.10 2003/12/17 15:37:12 jim Exp $
+$Id: metadirectives.py,v 1.11 2003/12/18 16:28:57 eddala Exp $
 """
 
 from zope.interface import Interface
@@ -131,6 +131,11 @@ class IInterfaceDirective(Interface):
     interface = GlobalObject(
         title=u"Interface",
         required=True
+        )
+
+    type = GlobalObject(
+        title=u"Interface type",
+        required=False
         )
 
 class IAdapterDirective(Interface):

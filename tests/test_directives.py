@@ -38,6 +38,49 @@ from zope.interface import implements
 from zope.security.checker import ProxyFactory
 
 
+import re
+import pprint
+
+from zope.interface import Interface
+from zope.testing.doctestunit import DocTestSuite
+from zope.app.component.metaconfigure import interface
+from zope.app.interfaces.content import IContentType
+
+atre = re.compile(' at [0-9a-fx]+')
+
+class Context:
+    actions = ()
+    
+    def action(self, discriminator, callable, args):
+        self.actions += ((discriminator, callable, args), )
+
+    def __repr__(self):
+        stream = StringIO()
+        pprinter = pprint.PrettyPrinter(stream=stream, width=60)
+        pprinter.pprint(self.actions)
+        r = stream.getvalue()
+        return (''.join(atre.split(r))).strip()
+
+
+def testInterface():
+    """
+    >>> context = Context()
+    >>> class I(Interface):
+    ...     pass
+    >>> IContentType.isImplementedBy(I)
+    False
+    >>> interface(context, I, IContentType)
+    >>> context
+    ((None,
+      <function handler>,
+      ('Interfaces',
+       'provideInterface',
+       '',
+       <InterfaceClass zope.app.component.tests.test_directives.I>)),)
+    >>> IContentType.isImplementedBy(I)
+    True
+    """
+
 template = """<configure
    xmlns='http://namespaces.zope.org/zope'
    xmlns:test='http://www.zope.org/NS/Zope3/test'
@@ -59,9 +102,9 @@ class Test(PlacelessSetup, unittest.TestCase):
         super(Test, self).setUp()
         XMLConfig('meta.zcml', zope.app.component)()
         XMLConfig('meta.zcml', zope.app.security)()
+        
 
     def testAdapter(self):
-
         # Full import is critical!
         from zope.component.tests.components import Content, IApp, Comp
 
@@ -617,7 +660,10 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertEqual(createObject(None, 'foo').__class__, X)
 
 def test_suite():
-    return unittest.makeSuite(Test)
+    return unittest.TestSuite((
+        unittest.makeSuite(Test),
+        DocTestSuite(),
+        ))
 
 if __name__ == "__main__":
     unittest.TextTestRunner().run(test_suite())

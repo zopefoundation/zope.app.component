@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: metaconfigure.py,v 1.22 2003/12/17 10:06:20 jim Exp $
+$Id: metaconfigure.py,v 1.23 2003/12/18 16:28:57 eddala Exp $
 """
 
 from zope.configuration.exceptions import ConfigurationError
@@ -57,12 +57,15 @@ def managerHandler(methodName, *args, **kwargs):
     method=getattr(getServiceManager(None), methodName)
     method(*args, **kwargs)
 
-def interface(_context, interface):
+def interface(_context, interface, type=None):
+    if type is not None:
+        zope.interface.directlyProvides(interface, type)
     _context.action(
         discriminator = None,
         callable = handler,
         args = (Interfaces, 'provideInterface', '', interface)
         )
+
 
 def proxify(ob, checker):
     """Try to get the object proxied with the checker, but not too soon
