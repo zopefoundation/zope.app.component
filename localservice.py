@@ -150,3 +150,34 @@ def clearThreadSiteSubscriber(event):
 clearSite = setSite
 
 addCleanUp(clearSite)
+
+
+class FakeServices:
+    implements(ISiteManager)
+    
+    def __init__(self):
+        self.data = {}
+    
+    def getService(self, name):
+        return self.data[name]
+        
+
+def testingNextService(service, nextservice, servicename):
+    """A helper function that sets up next services for testing
+
+    >>> class MyService:
+    ...     __parent__ = None
+
+    >>> myfakeservice = object()
+    >>> service = MyService()
+    >>> testingNextService(service, myfakeservice, 'foo')
+    >>> getNextService(service, 'foo') is myfakeservice
+    True
+    """
+
+    if service.__parent__ is None:
+        service.__parent__ = FakeServices()
+        service.__parent__.next = FakeServices()
+
+    service.__parent__.next.data[servicename] = nextservice
+        

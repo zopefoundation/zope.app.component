@@ -26,6 +26,8 @@ from zope.component.interfaces import IServiceService
 from zope.component.service import serviceManager
 from zope.interface import implements, directlyProvides, directlyProvidedBy
 from zope.interface.verify import verifyObject
+from zope.testing import doctest
+
 from zope.app.tests.setup import placelessSetUp, placelessTearDown
 from zope.app.tests import ztapi
 from zope.app.component.hooks import setSite, getSite
@@ -264,7 +266,9 @@ class Test(unittest.TestCase):
 
 
 def test_suite():
-    return unittest.makeSuite(Test)
+    suite = unittest.makeSuite(Test)
+    suite.addTest(doctest.DocTestSuite('zope.app.component.localservice'))
+    return suite
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')
