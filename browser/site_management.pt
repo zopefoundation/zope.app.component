@@ -40,7 +40,10 @@
     <input type="submit" name="UNINSTALL-SUBMIT" value="Uninstall">
   </form>
 
-  <form action="." method="post" tal:repeat="tool view/getTools">
+  <form action="." method="post" 
+      tal:repeat="tool view/getTools"
+      tal:attributes="action string:#${tool/name}">
+    <a name="" tal:attributes="name tool/name" />
     <input type="hidden" name="activeTool" value=""
            tal:attributes="value tool/name" />
     <h3>

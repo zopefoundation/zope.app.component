@@ -19,9 +19,10 @@ import zope.interface
 import zope.event
 
 from zope.app import zapi
-from zope.app.component import site, interfaces
+from zope.app.component import site, interfaces, browser
 from zope.app.container.browser import adding
 from zope.app.event import objectevent
+
 
 class IToolType(zope.interface.interfaces.IInterface):
     """Interfaces implementing the tool type are considered tools."""
@@ -52,7 +53,7 @@ class ToolConfiguration(object):
         self.folder = folder
 
 
-class SiteManagementView(adding.Adding):
+class SiteManagementView(browser.ComponentAdding):
     """A Site Management via Tools"""
 
     activeTool = None
@@ -130,7 +131,7 @@ class SiteManagementView(adding.Adding):
 
     def getToolInstances(self, tool):
         """Find every registered utility for a given tool configuration."""
-        regManager = self.context[tool.folder].registrationManager
+        regManager = self.getSiteManagementFolder(tool).registrationManager
         return [
             {'name': reg.name,
              'url': zapi.absoluteURL(reg.component, self.request),
