@@ -13,7 +13,7 @@
 ##############################################################################
 """Component Directives Tests
 
-$Id: test_directives.py,v 1.32 2004/03/22 22:31:49 mmceahern Exp $
+$Id: test_directives.py,v 1.33 2004/03/31 23:26:23 jim Exp $
 """
 import re
 import unittest
@@ -489,7 +489,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         a1 = A1()
         a2 = A2()
         request = Request(IV)
-        view = zapi.queryMultiView((ob, a1, a2), 'test', request)
+        view = zapi.queryMultiView((ob, a1, a2), request, name='test')
         self.assertEqual(view.__class__, A3)
         self.assertEqual(view.context, (ob, a1, a2, request))
 
