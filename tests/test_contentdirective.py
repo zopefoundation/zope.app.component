@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: test_contentdirective.py,v 1.2 2003/07/28 22:19:59 jim Exp $
+$Id: test_contentdirective.py,v 1.3 2003/08/02 07:04:05 philikon Exp $
 """
 
 import unittest
@@ -38,10 +38,10 @@ from zope.app.component.tests.exampleclass import IExample, IExample2
 
 
 def configfile(s):
-    return StringIO("""<zopeConfigure
+    return StringIO("""<configure
       xmlns='http://namespaces.zope.org/zope'>
       %s
-      </zopeConfigure>
+      </configure>
       """ % s)
 
 class TestContentDirective(PlacelessSetup, unittest.TestCase):

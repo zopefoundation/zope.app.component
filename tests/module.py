@@ -50,7 +50,7 @@ class S2(Interface):
     bar2 = Text()
 
 
-template_bracket = """<zopeConfigure
+template_bracket = """<configure
    xmlns="http://namespaces.zope.org/zope">
    %s
-</zopeConfigure>"""
+</configure>"""

@@ -11,6 +11,9 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""
+$Id: metaconfigure.py,v 1.13 2003/08/02 07:04:01 philikon Exp $
+"""
 
 from zope.configuration.exceptions import ConfigurationError
 from zope.security.proxy import Proxy, ProxyFactory
@@ -18,7 +21,6 @@ from zope.component import getService, getServiceManager
 from zope.app.services.servicenames import Adapters, Interfaces, Skins
 from zope.app.services.servicenames import Views, Resources, Factories
 from zope.app.component.globalinterfaceservice import interfaceService
-from zope.configuration.action import Action
 from zope.security.checker import InterfaceChecker, CheckerPublic, \
      Checker, NamesChecker
 from zope.app.security.registries.permissionregistry import permissionRegistry
@@ -55,71 +57,42 @@ def managerHandler(methodName, *args, **kwargs):
     method(*args, **kwargs)
 
 def interface(_context, interface):
-    interface = resolveInterface(_context, interface)
-    return [
-        Action(
-          discriminator = None,
-          callable = handler,
-          args = (Interfaces, 'provideInterface', '', interface)
-        ),
-      ]
-
+    _context.action(
+        discriminator = None,
+        callable = handler,
+        args = (Interfaces, 'provideInterface', '', interface)
+        )
 
 def adapter(_context, factory, provides, for_, permission=None, name=''):
-    if for_ == '*':
-        for_ = None
-    elif not for_:
-        raise ValueError(
-            "A for interface must be provided. Use * for all objects.")
-
-    if for_:
-        for_ = resolveInterface(_context, for_)
-
-    provides = resolveInterface(_context, provides)
-    factory = map(_context.resolve, factory.split())
-
     if permission is not None:
         if permission == PublicPermission:
             permission = CheckerPublic
         checker = InterfaceChecker(provides, permission)
         factory.append(lambda c: Proxy(c, checker))
-    actions=[
-        Action(
-            discriminator = ('adapter', for_, provides, name),
-            callable = checkingHandler,
-            args = (permission, Adapters, 'provideAdapter',
-                    for_, provides, factory, name),
-               ),
-        Action(
-            discriminator = None,
-            callable = handler,
-            args = (Interfaces, 'provideInterface', '', provides)
-              )
-              ]
+    _context.action(
+        discriminator = ('adapter', for_, provides, name),
+        callable = checkingHandler,
+        args = (permission, Adapters, 'provideAdapter',
+                for_, provides, factory, name),
+        )
+    _context.action(
+        discriminator = None,
+        callable = handler,
+        args = (Interfaces, 'provideInterface', '', provides)
+        )
     if for_ is not None:
-        actions.append
-        (
-        Action(
+        _context.action(
             discriminator = None,
             callable = handler,
             args = (Interfaces, 'provideInterface', '', for_)
-              )
-         )
-
-    return actions
-
+            )
 
 def utility(_context, provides, component=None, factory=None,
             permission=None, name=''):
-    provides = resolveInterface(_context, provides)
-
     if factory:
         if component:
             raise TypeError("Can't specify factory and component.")
-
-        component = _context.resolve(factory)()
-    else:
-        component = _context.resolve(component)
+        component = factory()
 
     if permission is not None:
         if permission == PublicPermission:
@@ -128,35 +101,25 @@ def utility(_context, provides, component=None, factory=None,
 
         component = Proxy(component, checker)
 
-    return [
-        Action(
-            discriminator = ('utility', provides, name),
-            callable = checkingHandler,
-            args = (permission, 'Utilities', 'provideUtility',
-                    provides, component, name),
-            ),
-        Action(
-            discriminator = None,
-            callable = handler,
-            args = (Interfaces, 'provideInterface',
-                    provides.__module__+'.'+provides.__name__, provides)
-              )
-        ]
-
+    _context.action(
+        discriminator = ('utility', provides, name),
+        callable = checkingHandler,
+        args = (permission, 'Utilities', 'provideUtility',
+                provides, component, name),
+        )
+    _context.action(
+        discriminator = None,
+        callable = handler,
+        args = (Interfaces, 'provideInterface',
+                provides.__module__+'.'+provides.__name__, provides)
+        )
 
 def factory(_context, component, id=None, permission=None):
-    if id is None:
-        id = component
-
-    component = _context.resolve(component)
-
-    return [
-        Action(
-            discriminator = ('factory', id),
-            callable = provideFactory,
-            args = (id, component, permission),
-            )
-        ]
+    _context.action(
+        discriminator = ('factory', id),
+        callable = provideFactory,
+        args = (id, component, permission),
+        )
 
 def provideFactory(name, factory, permission):
     # make sure the permission is defined
@@ -168,12 +131,12 @@ def provideFactory(name, factory, permission):
 
     if permission:
         # XXX should getInterfaces be public, as below?
-        factory = ProxyFactory(factory,
-                               NamesChecker(('getInterfaces',),
-                                            __call__=permission))
-
+        factory = ProxyFactory(
+            factory,
+            NamesChecker(('getInterfaces',),
+                         __call__=permission)
+            )
     getService(None, Factories).provideFactory(name, factory)
-
 
 def _checker(_context, permission, allowed_interface, allowed_attributes):
     if (not allowed_attributes) and (not allowed_interface):
@@ -183,14 +146,15 @@ def _checker(_context, permission, allowed_interface, allowed_attributes):
         permission = CheckerPublic
 
     require={}
-    for name in (allowed_attributes or '').split():
-        require[name] = permission
-    if allowed_interface:
-        for name in resolveInterface(_context, allowed_interface).names(all=True):
+    if allowed_attributes:
+        for name in allowed_attributes:
             require[name] = permission
+    if allowed_interface:
+        for i in allowed_interface:
+            for name in i.names(all=True):
+                require[name] = permission
 
     checker = Checker(require.get)
-
     return checker
 
 def resource(_context, factory, type, name, layer='default',
@@ -204,11 +168,6 @@ def resource(_context, factory, type, name, layer='default',
             "allowed_attributes"
             )
 
-
-    type = _context.resolve(type)
-    factory = _context.resolve(factory)
-
-
     if permission:
 
         checker = _checker(_context, permission,
@@ -219,20 +178,18 @@ def resource(_context, factory, type, name, layer='default',
 
         factory = proxyResource
 
-    return [
-        Action(
-            discriminator = ('resource', name, type, layer),
-            callable = checkingHandler,
-            args = (permission, Resources,'provideResource',
-                    name, type, factory, layer),
-            ),
-        Action(
-            discriminator = None,
-            callable = handler,
-            args = (Interfaces, 'provideInterface',
-                    type.__module__+'.'+type.__name__, type)
-              )
-        ]
+    _context.action(
+        discriminator = ('resource', name, type, layer),
+        callable = checkingHandler,
+        args = (permission, Resources,'provideResource',
+                name, type, factory, layer),
+        )
+    _context.action(
+        discriminator = None,
+        callable = handler,
+        args = (Interfaces, 'provideInterface',
+                type.__module__+'.'+type.__name__, type)
+        )
 
 def view(_context, factory, type, name, for_, layer='default',
          permission=None, allowed_interface=None, allowed_attributes=None):
@@ -247,11 +204,6 @@ def view(_context, factory, type, name, for_, layer='default',
             "allowed_attributes"
             )
 
-    if for_ is not None:
-        for_ = resolveInterface(_context, for_)
-    type = _context.resolve(type)
-
-    factory = map(_context.resolve, factory.strip().split())
     if not factory:
         raise ConfigurationError("No view factory specified.")
 
@@ -265,33 +217,27 @@ def view(_context, factory, type, name, for_, layer='default',
 
         factory[-1] = proxyView
 
-    actions=[
-        Action(
-            discriminator = ('view', for_, name, type, layer),
-            callable = checkingHandler,
-            args = (permission, Views,'provideView', for_, name,
-                    type, factory, layer),
-            ),
-        Action(
-            discriminator = None,
-            callable = handler,
-            args = (Interfaces, 'provideInterface',
-                    type.__module__+'.'+type.__name__, type)
-            )
-            ]
+    _context.action(
+        discriminator = ('view', for_, name, type, layer),
+        callable = checkingHandler,
+        args = (permission, Views,'provideView', for_, name,
+                type, factory, layer),
+        )
+    _context.action(
+        discriminator = None,
+        callable = handler,
+        args = (Interfaces, 'provideInterface',
+                type.__module__+'.'+type.__name__, type)
+        )
+
     if for_ is not None:
-        actions.append
-        (
-        Action(
+        _context.action(
             discriminator = None,
             callable = handler,
             args = (Interfaces, 'provideInterface',
                     for_.__module__+'.'+for_.__name__,
                     for_)
-              )
-         )
-
-    return actions
+            )
 
 def defaultView(_context, type, name, for_, **__kw):
 
@@ -299,55 +245,40 @@ def defaultView(_context, type, name, for_, **__kw):
         for_ = None
 
     if __kw:
-        actions = view(_context, type=type, name=name, for_=for_, **__kw)
-    else:
-        actions = []
+        view(_context, type=type, name=name, for_=for_, **__kw)
 
-    if for_ is not None:
-        for_ = resolveInterface(_context, for_)
-    type = _context.resolve(type)
-
-    actions += [
-        Action(
+    _context.action(
         discriminator = ('defaultViewName', for_, type, name),
         callable = handler,
         args = (Views,'setDefaultViewName', for_, type, name),
-        ),
-        Action(
-            discriminator = None,
-            callable = handler,
-            args = (Interfaces, 'provideInterface',
-                    type.__module__+'.'+type.__name__, type)
-            )
-               ]
+        )
+    _context.action(
+        discriminator = None,
+        callable = handler,
+        args = (Interfaces, 'provideInterface',
+                type.__module__+'.'+type.__name__, type)
+        )
+
     if for_ is not None:
-        actions.append
-        (
-        Action(
+        _context.action(
             discriminator = None,
             callable = handler,
             args = (Interfaces, 'provideInterface',
                     for_.__module__+'.'+for_.__name__, for_)
-              )
-         )
-
-    return actions
+            )
 
 def serviceType(_context, id, interface):
-    interface = resolveInterface(_context, interface)
-    return [
-        Action(
-            discriminator = ('serviceType', id),
-            callable = managerHandler,
-            args = ('defineService', id, interface),
-            ),
-        Action(
-            discriminator = None,
-            callable = provideInterface,
-            args = (interface.__module__+'.'+interface.__name__,
-                    interface)
-            )
-        ]
+    _context.action(
+        discriminator = ('serviceType', id),
+        callable = managerHandler,
+        args = ('defineService', id, interface),
+        )
+    _context.action(
+        discriminator = None,
+        callable = provideInterface,
+        args = (interface.__module__+'.'+interface.__name__,
+                interface)
+        )
 
 def provideService(serviceType, component, permission):
     # This is needed so we can add a security proxy.
@@ -357,7 +288,6 @@ def provideService(serviceType, component, permission):
     service_manager = getServiceManager(None)
 
     if permission:
-
         for stype, interface in service_manager.getServiceDefinitions():
             if stype == serviceType:
                 break
@@ -382,39 +312,33 @@ def service(_context, serviceType, component=None, permission=None,
         if component:
             raise TypeError("Can't specify factory and component.")
 
-        component = _context.resolve(factory)()
-    else:
-        component = _context.resolve(component)
+        component = factory()
 
-    return [
-        Action(
-            discriminator = ('service', serviceType),
-            callable = provideService,
-            args = (serviceType, component, permission),
-            )
-        ]
+    _context.action(
+        discriminator = ('service', serviceType),
+        callable = provideService,
+        args = (serviceType, component, permission),
+        )
 
 def skin(_context, name, layers, type):
-    type = _context.resolve(type)
     if ',' in layers:
         raise TypeError("Commas are not allowed in layer names.")
 
-    layers = layers.strip().split()
-    actions = [
-        Action(
-            discriminator = ('skin', name, type),
-            callable = handler,
-            args = (Skins,'defineSkin',name, type, layers)
-              ),
-        Action(
-            discriminator = None,
-            callable = handler,
-            args = (Interfaces, 'provideInterface',
-                    type.__module__+'.'+type.__name__, type)
-              )
-             ]
-    return actions
+    _context.action(
+        discriminator = ('skin', name, type),
+        callable = handler,
+        args = (Skins,'defineSkin',name, type, layers)
+        )
 
+    _context.action(
+        discriminator = None,
+        callable = handler,
+        args = (Interfaces, 'provideInterface',
+                type.__module__+'.'+type.__name__, type)
+        )
+
+# XXX this will have to incorporated into
+# zope.configuration.fields.GlobalObject
 def resolveInterface(_context, id):
     interface = interfaceService.queryInterface(id, None)
     if interface is None:
