@@ -39,6 +39,11 @@
 
   <hook
       module="zope.component"
+      name="adapter_hook"
+      implementation="zope.app.component.hooks.adapter_hook" />
+
+  <hook
+      module="zope.component"
       name="queryView"
       implementation="zope.app.component.hooks.queryView" />
 
