@@ -15,8 +15,12 @@
 
 $Id$
 """
+
 __docformat__ = "reStructuredText"
+
 from zope.app import zapi
+from zope.app.i18n import ZopeMessageIDFactory as _
+
 
 class UtilityRegistrationDetails(object):
     """Utility Registration Details"""
@@ -26,7 +30,7 @@ class UtilityRegistrationDetails(object):
         return provided.__module__ + '.' + provided.__name__
 
     def name(self):
-        return self.context.name or '<no name>'
+        return self.context.name or _('<no name>')
 
     def component(self):
         url = zapi.getMultiAdapter(
