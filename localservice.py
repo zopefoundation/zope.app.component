@@ -29,7 +29,7 @@ from zope.security.proxy import trustedRemoveSecurityProxy
 
 # placeful service manager convenience tools
 
-# XXX <SteveA> What we really want here is
+# TODO: <SteveA> What we really want here is
 #
 # getLocalServices(context)
 # # if context is contained in a service manager, returns the service manager
