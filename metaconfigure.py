@@ -13,7 +13,7 @@
 ##############################################################################
 """Generic Components ZCML Handlers
 
-$Id: metaconfigure.py,v 1.37 2004/03/29 05:12:34 srichter Exp $
+$Id: metaconfigure.py,v 1.38 2004/03/30 02:01:43 srichter Exp $
 """
 from zope.interface import Interface
 from zope.component.service import UndefinedService
@@ -152,6 +152,8 @@ def adapter(_context, factory, provides, for_, permission=None, name=''):
             for f in factories:
                 ob = f(ob)
             return ob
+        # Store the original factory for documentation
+        factory.factory = factories[0]
 
     _context.action(
         discriminator = ('adapter', for_, provides, name),
