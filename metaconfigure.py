@@ -13,7 +13,7 @@
 ##############################################################################
 """Generic Components ZCML Handlers
 
-$Id: metaconfigure.py,v 1.38 2004/03/30 02:01:43 srichter Exp $
+$Id: metaconfigure.py,v 1.39 2004/04/07 21:38:14 jim Exp $
 """
 from zope.interface import Interface
 from zope.component.service import UndefinedService
@@ -159,7 +159,7 @@ def adapter(_context, factory, provides, for_, permission=None, name=''):
         discriminator = ('adapter', for_, provides, name),
         callable = checkingHandler,
         args = (permission, Adapters, 'register',
-                for_, provides, name, factory),
+                for_, provides, name, factory, _context.info),
         )
     _context.action(
         discriminator = None,
