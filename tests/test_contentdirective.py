@@ -26,8 +26,6 @@ from zope.component.interfaces import IFactory
 from zope.component.exceptions import ComponentLookupError
 from zope.configuration.xmlconfig import xmlconfig, XMLConfig
 from zope.app.tests.placelesssetup import PlacelessSetup
-from zope.security.management import system_user
-from zope.security.management import newInteraction
 from zope.app.component.interface import queryInterface
 
 # explicitly import ExampleClass and IExample using full paths
@@ -54,7 +52,6 @@ def configfile(s):
 class TestContentDirective(PlacelessSetup, unittest.TestCase):
     def setUp(self):
         super(TestContentDirective, self).setUp()
-        newInteraction(ParticipationStub(system_user))
         XMLConfig('meta.zcml', zope.app.component)()
         XMLConfig('meta.zcml', zope.app.security)()
 
@@ -141,7 +138,6 @@ class TestContentDirective(PlacelessSetup, unittest.TestCase):
 class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
     def setUp(self):
         super(TestFactorySubdirective, self).setUp()
-        newInteraction(ParticipationStub(system_user))
         XMLConfig('meta.zcml', zope.app.component)()
         XMLConfig('meta.zcml', zope.app.security)()
 
