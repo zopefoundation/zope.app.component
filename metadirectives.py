@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: metadirectives.py,v 1.9 2003/12/17 10:06:20 jim Exp $
+$Id: metadirectives.py,v 1.10 2003/12/17 15:37:12 jim Exp $
 """
 
 from zope.interface import Interface
@@ -110,7 +110,7 @@ class IBasicResourceInformation(Interface):
         )
 
     provides = GlobalObject(
-        title=u"The interface this provides.",
+        title=u"The interface this component provides.",
         description=u"""
         A view can provide an interface.  This would be used for
         views that support other views.""",
