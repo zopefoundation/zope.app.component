@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: test_contentdirective.py,v 1.11 2003/11/27 13:59:17 philikon Exp $
+$Id: test_contentdirective.py,v 1.12 2004/02/25 23:02:23 faassen Exp $
 """
 
 import unittest
@@ -26,7 +26,6 @@ from zope.component.exceptions import ComponentLookupError
 from zope.configuration.xmlconfig import xmlconfig, XMLConfig
 from zope.app.tests.placelesssetup import PlacelessSetup
 from zope.security.management import newSecurityManager, system_user
-from zope.security.proxy import Proxy
 from zope.app.security.exceptions import UndefinedPermissionError
 from zope.component import getService
 from zope.app.services.servicenames import Factories

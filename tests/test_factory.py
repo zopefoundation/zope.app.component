@@ -22,7 +22,6 @@ from zope.app.services.servicenames import Factories
 from zope.app.tests.placelesssetup import PlacelessSetup
 from zope.security.management import newSecurityManager, system_user
 
-import zope.configuration
 import zope.app.security
 import zope.app.component
 

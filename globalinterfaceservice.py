@@ -12,12 +12,11 @@
 #
 ##############################################################################
 """
-$Id: globalinterfaceservice.py,v 1.19 2003/11/21 17:11:25 jim Exp $
+$Id: globalinterfaceservice.py,v 1.20 2004/02/25 23:02:22 faassen Exp $
 """
 __metaclass__ = type
 
 from zope.component.exceptions import ComponentLookupError
-from zope.component import getService
 from zope.app.interfaces.component import IGlobalInterfaceService
 from zope.interface import implements, providedBy, implementedBy
 from zope.interface.interfaces import IInterface
