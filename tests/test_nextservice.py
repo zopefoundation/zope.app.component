@@ -12,13 +12,13 @@
 #
 ##############################################################################
 """
-$Id: test_nextservice.py,v 1.9 2003/09/21 17:31:27 jim Exp $
+$Id: test_nextservice.py,v 1.10 2004/03/13 15:21:12 srichter Exp $
 """
 
 from unittest import TestCase, main, makeSuite
 from zope.app.component.hooks import getServiceManager_hook
 from zope.app.component.nextservice import getNextServiceManager
-from zope.app.interfaces.services.service import IPossibleSite, ISite
+from zope.app.site.interfaces import IPossibleSite, ISite
 from zope.app.traversing import IContainmentRoot
 from zope.component.exceptions import ComponentLookupError
 from zope.component.interfaces import IServiceService

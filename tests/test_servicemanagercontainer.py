@@ -11,15 +11,13 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
+"""Service Manager Container Tests
 
-Revision information:
-$Id: test_servicemanagercontainer.py,v 1.10 2004/03/05 22:08:59 jim Exp $
+$Id: test_servicemanagercontainer.py,v 1.11 2004/03/13 15:21:12 srichter Exp $
 """
-
 from unittest import TestCase, main, makeSuite
 from zope.component.interfaces import IServiceService
-from zope.app.interfaces.services.service import IPossibleSite, ISite
+from zope.app.site.interfaces import IPossibleSite, ISite
 from zope.component.exceptions import ComponentLookupError
 from zope.interface.verify import verifyObject
 from zope.interface import implements
@@ -74,8 +72,7 @@ class BaseTestServiceManagerContainer:
 
 class Test(BaseTestServiceManagerContainer, TestCase):
     def makeTestObject(self):
-        from zope.app.services.servicecontainer \
-             import ServiceManagerContainer
+        from zope.app.site.servicecontainer import ServiceManagerContainer
         return ServiceManagerContainer()
 
 

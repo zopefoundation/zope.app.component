@@ -13,12 +13,12 @@
 ##############################################################################
 """
 
-$Id: hooks.py,v 1.18 2004/03/05 22:08:58 jim Exp $
+$Id: hooks.py,v 1.19 2004/03/13 15:21:11 srichter Exp $
 """
 
 from zope.component import getService
 from zope.component.interfaces import IServiceService
-from zope.app.interfaces.services.service import ISite
+from zope.app.site.interfaces import ISite
 from zope.component.service import serviceManager
 from zope.proxy import removeAllProxies
 from zope.security.proxy import trustedRemoveSecurityProxy
