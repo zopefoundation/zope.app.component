@@ -1,0 +1,69 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <serviceType
+      id="Utilities"
+      interface="zope.component.interfaces.IUtilityService" />
+
+  <service
+      serviceType="Utilities"
+      permission="zope.Public"
+      factory="zope.component.utility.GlobalUtilityService" />
+
+  <serviceType
+      id="Adapters"
+      interface="zope.component.interfaces.IAdapterService" />
+
+  <service
+      serviceType="Adapters"
+      permission="zope.Public"
+      factory="zope.component.adapter.GlobalAdapterService" />
+
+  <serviceType
+      id="Presentation"
+      interface="zope.component.interfaces.IPresentationService" />
+
+  <service
+      serviceType="Presentation"
+      permission="zope.Public"
+      factory="zope.component.presentation.GlobalPresentationService" />
+
+  <vocabulary
+      name="Interfaces"
+      factory="zope.app.utility.vocabulary.UtilityVocabulary"
+      interface="zope.interface.interfaces.IInterface" />
+
+  <hook
+      module="zope.component"
+      name="getServices"
+      implementation="zope.app.component.hooks.getServices_hook" />
+
+  <hook
+      module="zope.component"
+      name="adapter_hook"
+      implementation="zope.app.component.hooks.adapter_hook" />
+
+  <hook
+      module="zope.component"
+      name="queryView"
+      implementation="zope.app.component.hooks.queryView" />
+
+  <interface interface="zope.interface.Interface" />
+
+  <adapter
+      factory=".localservice.serviceServiceAdapter"
+      provides="zope.component.IServiceService"
+      for="zope.interface.Interface" />
+
+  <subscriber
+      factory=".localservice.threadSiteSubscriber"
+      for="zope.app.publication.interfaces.IBeforeTraverseEvent"
+      />
+
+  <subscriber
+      factory=".localservice.clearThreadSiteSubscriber"
+      for="zope.app.publication.interfaces.IEndRequestEvent"
+      />
+
+</configure>
+
+

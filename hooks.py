@@ -27,41 +27,56 @@ from zope.app.location.interfaces import ILocation
 from zope.app.location import locate
 from zope.component.servicenames import Presentation
 from zope.interface import Interface
+from zope.component.servicenames import Adapters
 import warnings
 import zope.thread
 
-siteinfo = zope.thread.local()
+class read_property(object):
+    def __init__(self, func):
+        self.func = func
+
+    def __get__(self, inst, cls):
+        if inst is None:
+            return self
+
+        return self.func(inst)
+
+class SiteInfo(zope.thread.local):
+    site = None
+    services = serviceManager
+
+    def adapter_hook(self):
+        services = self.services
+        adapters = services.getService(Adapters)
+        adapter_hook = adapters.adapter_hook
+        self.adapter_hook = adapter_hook
+        return adapter_hook
+    
+    adapter_hook = read_property(adapter_hook)
+
+siteinfo = SiteInfo()
 
 def setSite(site=None):
     if site is None:
-        siteinfo.services = None
+        services = serviceManager
     else:
-        siteinfo.services = trustedRemoveSecurityProxy(site.getSiteManager())
+        site = trustedRemoveSecurityProxy(site)
+        services = site.getSiteManager()
 
-def getSite():
+    siteinfo.site = site
+    siteinfo.services = services
     try:
-        services = siteinfo.services
+        del siteinfo.adapter_hook
     except AttributeError:
-        services = siteinfo.services = None
-        
-    if services is None:
-        return None
-
-    return services.__parent__
+        pass
     
-
+def getSite():
+    return siteinfo.site
+    
 def getServices_hook(context=None):
 
     if context is None:
-        try:
-            services = siteinfo.services
-        except AttributeError:
-            services = siteinfo.services = None
-
-        if services is None:
-            return serviceManager
-
-        return services
+        return siteinfo.services
 
     # Deprecated support for a context that isn't adaptable to
     # IServiceService.  Return the default service manager.
@@ -70,8 +85,13 @@ def getServices_hook(context=None):
                                                           serviceManager))
     except ComponentLookupError:
         return serviceManager
-    
 
+def adapter_hook(interface, object, name='', default=None):
+    try:
+        return siteinfo.adapter_hook(interface, object, name, default)
+    except ComponentLookupError:
+        return default
+    
 def queryView(object, name, request, default=None,
               providing=Interface, context=None):
     views = getService(Presentation, context)
