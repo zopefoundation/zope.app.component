@@ -12,8 +12,10 @@
 #
 ##############################################################################
 """
-$Id: globalinterfaceservice.py,v 1.9 2003/05/13 17:08:33 alga Exp $
+$Id: globalinterfaceservice.py,v 1.10 2003/05/20 19:43:25 sidnei Exp $
 """
+
+__metaclass__ = type
 
 from zope.component.exceptions import ComponentLookupError
 from zope.app.interfaces.component import IGlobalInterfaceService
