@@ -17,7 +17,7 @@ $Id$
 """
 import zope.component.interfaces
 from zope.interface import Interface, Attribute, implements
-from zope.schema import Field, Choice
+from zope.schema import Field, Choice, vocabulary
 from zope.schema.interfaces import IField
 
 from zope.app.annotation.interfaces import IAttributeAnnotatable
@@ -59,7 +59,9 @@ class IRegistration(Interface):
 
     status = Choice(
         title=_("Registration status"),
-        values=(InactiveStatus, ActiveStatus),
+        vocabulary=vocabulary.SimpleVocabulary(
+            (vocabulary.SimpleTerm(InactiveStatus, title=InactiveStatus),
+             vocabulary.SimpleTerm(ActiveStatus, title=ActiveStatus))),
         default=ActiveStatus
         )
 
