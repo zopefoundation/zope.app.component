@@ -13,7 +13,7 @@
 ##############################################################################
 """ Test handler for 'factory' subdirective of 'content' directive
 
-$Id: test_factory.py,v 1.11 2004/03/09 12:39:25 srichter Exp $
+$Id$
 """
 import unittest
 from cStringIO import StringIO

@@ -13,7 +13,7 @@
 ##############################################################################
 """Service Directive Tests
 
-$Id: test_servicedirective.py,v 1.12 2004/03/08 12:05:55 srichter Exp $
+$Id$
 """
 import unittest
 from cStringIO import StringIO

@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-Revision information: $Id: views.py,v 1.1 2003/12/17 10:05:54 jim Exp $
+Revision information: $Id$
 """
 
 from zope.interface import Interface, implements

@@ -13,7 +13,7 @@
 ##############################################################################
 """Component Directives Tests
 
-$Id: test_directives.py,v 1.33 2004/03/31 23:26:23 jim Exp $
+$Id$
 """
 import re
 import unittest

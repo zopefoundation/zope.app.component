@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: factory.py,v 1.1 2004/03/09 12:39:25 srichter Exp $
+$Id$
 """
 from zope.component.interfaces import IFactory
 from zope.interface import Interface, implements, implementedBy

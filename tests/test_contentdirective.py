@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: test_contentdirective.py,v 1.16 2004/03/09 12:39:25 srichter Exp $
+$Id$
 """
 import unittest
 from StringIO import StringIO

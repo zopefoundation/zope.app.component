@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: test_nextservice.py,v 1.10 2004/03/13 15:21:12 srichter Exp $
+$Id$
 """
 
 from unittest import TestCase, main, makeSuite

@@ -13,7 +13,7 @@
 ##############################################################################
 """Support for delegation among service managers
 
-$Id: nextservice.py,v 1.10 2004/03/13 15:21:11 srichter Exp $
+$Id$
 """
 
 from zope.component.exceptions import ComponentLookupError

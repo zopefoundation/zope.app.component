@@ -13,7 +13,7 @@
 ##############################################################################
 """Service Manager Container Tests
 
-$Id: test_servicemanagercontainer.py,v 1.11 2004/03/13 15:21:12 srichter Exp $
+$Id$
 """
 from unittest import TestCase, main, makeSuite
 from zope.component.interfaces import IServiceService
