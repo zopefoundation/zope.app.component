@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: metadirectives.py,v 1.11 2003/12/18 16:28:57 eddala Exp $
+$Id: metadirectives.py,v 1.12 2004/03/02 14:25:49 srichter Exp $
 """
 
 from zope.interface import Interface
@@ -205,6 +205,20 @@ class IFactoryDirective(Interface):
     
     id = TextLine(
         title=u"ID",
+        required=False
+        )
+
+    title = MessageID(
+        title=u"Title",
+        description=u"""
+        text suitable for use in the 'add content' menu of a
+        management interface""",
+        required=False
+        )
+
+    description = MessageID(
+        title=u"Description",
+        description=u"Longer narrative description of what this factory does",
         required=False
         )
 
