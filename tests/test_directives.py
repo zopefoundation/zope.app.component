@@ -13,7 +13,7 @@
 ##############################################################################
 """Component Directives Tests
 
-$Id: test_directives.py,v 1.30 2004/03/20 17:10:57 srichter Exp $
+$Id: test_directives.py,v 1.31 2004/03/22 17:44:50 mmceahern Exp $
 """
 import re
 import unittest
@@ -24,6 +24,7 @@ from zope.interface import Interface, implements
 from zope.testing.doctestunit import DocTestSuite
 from zope.app.component.metaconfigure import interface
 from zope.app.content.interfaces import IContentType
+from zope.app.event.interfaces import ISubscriber
 
 from zope.configuration.xmlconfig import xmlconfig, XMLConfig
 from zope.configuration.exceptions import ConfigurationError
@@ -99,7 +100,59 @@ class Test(PlacelessSetup, unittest.TestCase):
         super(Test, self).setUp()
         XMLConfig('meta.zcml', zope.app.component)()
         XMLConfig('meta.zcml', zope.app.security)()
-        
+
+    def testSubscriber(self):
+        from zope.app.component.tests.adapter import A1, A2, A3, I3
+        from zope.component.tests.components import Content
+
+        xmlconfig(StringIO(template % (
+            """
+            <subscriber
+              factory="zope.app.component.tests.adapter.A3"
+              for="zope.component.tests.components.IContent
+                   zope.app.component.tests.adapter.I1"
+              />
+            """
+            )))
+
+        content = Content()
+        a1 = A1()
+        subscribers = zapi.subscribers((content, a1), ISubscriber)
+
+        a3 = subscribers[0]
+
+        self.assertEqual(a3.__class__, A3)
+        self.assertEqual(a3.context, (content, a1))
+
+    def testMultiSubscriber(self):
+        from zope.app.component.tests.adapter import A1, A2, A3, I3
+        from zope.component.tests.components import Content
+
+        xmlconfig(StringIO(template % (
+            """
+            <subscriber
+              factory="zope.app.component.tests.adapter.A3"
+              for="zope.component.tests.components.IContent
+                   zope.app.component.tests.adapter.I1"
+              />
+            <subscriber
+              factory="zope.app.component.tests.adapter.A2"
+              for="zope.component.tests.components.IContent
+                   zope.app.component.tests.adapter.I1"
+              />
+            """
+            )))
+
+        content = Content()
+        a1 = A1()
+        subscribers = zapi.subscribers((content, a1), ISubscriber)
+
+        expectedLength = 2
+        self.assertEqual(len(subscribers), expectedLength)
+        classesNotFound = [A2, A3]
+        for a in subscribers:
+            classesNotFound.remove(a.__class__)
+        self.failIf(classesNotFound)
 
     def testAdapter(self):
         # Full import is critical!
@@ -186,7 +239,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         a2 = A2()
         a3 = zapi.queryMultiAdapter((content, a1, a2), I3)
         self.assertEqual(a3.__class__, A3)
-        self.assertEqual(a3.context, (content, a1, a2))        
+        self.assertEqual(a3.context, (content, a1, a2))
 
     def testNullAdapter(self):
         from zope.app.component.tests.adapter import A3, I3
