@@ -44,7 +44,7 @@ import pprint
 from zope.interface import Interface
 from zope.testing.doctestunit import DocTestSuite
 from zope.app.component.metaconfigure import interface
-from zope.app.interfaces.content import IContentType
+from zope.app.content.interfaces import IContentType
 
 atre = re.compile(' at [0-9a-fA-Fx]+')
 
