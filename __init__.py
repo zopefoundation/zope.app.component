@@ -19,6 +19,10 @@ __docformat__ = "reStructuredText"
 import zope.component
 from zope.app import zapi
 
+# BBB: Will go away in 3.3.
+from zope.app.component.bbb import localservice
+import sys
+sys.modules['zope.app.component.localservice'] = localservice
 
 _marker = object()
 
