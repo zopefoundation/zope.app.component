@@ -30,7 +30,7 @@ from zope.app.servicenames import Adapters, Presentation
 
 PublicPermission = 'zope.Public'
 
-# I prefer the indirection (using getService and getServiceManager vs.
+# I prefer the indirection (using getService and getServices vs.
 # directly importing the various services)  not only because it makes
 # unit tests easier, but also because it reinforces that the services
 # should always be obtained through the
@@ -55,7 +55,7 @@ def checkingHandler(permission=None, *args, **kw):
     handler(*args, **kw)
 
 def managerHandler(methodName, *args, **kwargs):
-    method=getattr(zapi.getServiceManager(None), methodName)
+    method=getattr(zapi.getGlobalServices(), methodName)
     method(*args, **kwargs)
 
 def interface(_context, interface, type=None):
@@ -390,7 +390,7 @@ def provideService(serviceType, component, permission):
     # We have to wait till execution time so we can find out the interface.
     # Waaaa.
 
-    service_manager = zapi.getServiceManager(None)
+    service_manager = zapi.getGlobalServices()
 
     if permission:
         for stype, interface in service_manager.getServiceDefinitions():

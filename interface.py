@@ -145,7 +145,7 @@ def queryInterface(id, default=None):
     
     """
     
-    return zapi.queryUtility(None, IInterface, default, id)
+    return zapi.queryUtility(IInterface, default, id)
 
 def searchInterface(context, search_string=None, base=None):
     """Interfaces search

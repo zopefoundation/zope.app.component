@@ -364,7 +364,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         # Full import is critical!
         from zope.component.tests.components import IApp, comp
 
-        self.assertEqual(zapi.queryUtility(None, IV, None), None)
+        self.assertEqual(zapi.queryUtility(IV, None), None)
 
         xmlconfig(StringIO(template % (
             """
@@ -375,7 +375,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        self.assertEqual(zapi.getUtility(None, IApp), comp)
+        self.assertEqual(zapi.getUtility(IApp), comp)
 
     def testNamedUtility(self):
 
@@ -384,7 +384,7 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         self.testUtility()
 
-        self.assertEqual(zapi.queryUtility(None, IV, None, name='test'), None)
+        self.assertEqual(zapi.queryUtility(IV, None, name='test'), None)
 
         xmlconfig(StringIO(template % (
             """
@@ -396,14 +396,14 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        self.assertEqual(zapi.getUtility(None, IApp, "test"), comp)
+        self.assertEqual(zapi.getUtility(IApp, "test"), comp)
 
     def testUtilityFactory(self):
 
         # Full import is critical!
         from zope.component.tests.components import IApp, Comp
 
-        self.assertEqual(zapi.queryUtility(None, IV, None), None)
+        self.assertEqual(zapi.queryUtility(IV, None), None)
 
         xmlconfig(StringIO(template % (
             """
@@ -414,14 +414,14 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        self.assertEqual(zapi.getUtility(None, IApp).__class__, Comp)
+        self.assertEqual(zapi.getUtility(IApp).__class__, Comp)
 
     def testProtectedUtility(self):
 
         # Full import is critical!
         from zope.component.tests.components import IApp, comp
 
-        self.assertEqual(zapi.queryUtility(None, IV, None), None)
+        self.assertEqual(zapi.queryUtility(IV, None), None)
 
         xmlconfig(StringIO(template % (
             """
@@ -433,7 +433,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        utility = ProxyFactory(zapi.getUtility(None, IApp))
+        utility = ProxyFactory(zapi.getUtility(IApp))
         items = [item[0] for item in getTestProxyItems(utility)]
         self.assertEqual(items, ['a', 'f'])
         self.assertEqual(getProxiedObject(utility), comp)
@@ -771,7 +771,7 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         ob = Ob()
         self.assertEqual(
-            zapi.queryResource(ob, 'test', Request(IV), None), None)
+            zapi.queryResource('test', Request(IV), None), None)
         xmlconfig(StringIO(template % (
             """
             <resource name="test"
@@ -780,15 +780,14 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        self.assertEqual(zapi.queryResource(ob, 'test', Request(IV), None
-                                            ).__class__,
-                         R1)
+        self.assertEqual(
+            zapi.queryResource('test', Request(IV), None).__class__,
+            R1)
 
     def testResourceThatProvidesAnInterface(self):
 
         ob = Ob()
-        self.assertEqual(
-            zapi.queryResource(ob, 'test', Request(IV), None), None)
+        self.assertEqual(zapi.queryResource('test', Request(IV), None), None)
 
         xmlconfig(StringIO(template %
             '''
@@ -800,7 +799,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             '''
             ))
 
-        v = zapi.queryResource(ob, 'test', Request(IR), None, providing=IV)
+        v = zapi.queryResource('test', Request(IR), None, providing=IV)
         self.assertEqual(v, None)
 
         xmlconfig(StringIO(template %
@@ -814,14 +813,14 @@ class Test(PlacelessSetup, unittest.TestCase):
             '''
             ))
 
-        v = zapi.queryResource(ob, 'test', Request(IR), None, providing=IV)
+        v = zapi.queryResource('test', Request(IR), None, providing=IV)
 
         self.assertEqual(v.__class__, R1)
 
     def testUnnamedResourceThatProvidesAnInterface(self):
 
         ob = Ob()
-        self.assertEqual(zapi.queryResource(ob, '', Request(IV), None), None)
+        self.assertEqual(zapi.queryResource('', Request(IV), None), None)
 
         xmlconfig(StringIO(template %
             '''
@@ -832,7 +831,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             '''
             ))
 
-        v = zapi.queryResource(ob, '', Request(IR), None, providing=IV)
+        v = zapi.queryResource('', Request(IR), None, providing=IV)
         self.assertEqual(v, None)
 
         xmlconfig(StringIO(template %
@@ -845,7 +844,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             '''
             ))
 
-        v = zapi.queryResource(ob, '', Request(IR), None, providing=IV)
+        v = zapi.queryResource('', Request(IR), None, providing=IV)
 
         self.assertEqual(v.__class__, R1)
 
@@ -866,7 +865,7 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         ob = Ob()
         self.assertEqual(
-            zapi.queryResource(ob, 'test', Request(IV), None), None)
+            zapi.queryResource('test', Request(IV), None), None)
 
         xmlconfig(StringIO(template % (
             '''
@@ -883,10 +882,10 @@ class Test(PlacelessSetup, unittest.TestCase):
             )))
 
         self.assertEqual(
-            zapi.queryResource(ob, 'test', Request(IV), None).__class__,
+            zapi.queryResource('test', Request(IV), None).__class__,
             R1)
         self.assertEqual(
-            zapi.queryResource(ob, 'test', Request(IV, 'zmi'), None).__class__,
+            zapi.queryResource('test', Request(IV, 'zmi'), None).__class__,
             RZMI)
 
     def testFactory(self):

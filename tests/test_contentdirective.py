@@ -158,7 +158,7 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
 </content>
                        """)
         xmlconfig(f)
-        factory = zapi.getUtility(None, IFactory, 'Example')
+        factory = zapi.getUtility(IFactory, 'Example')
         self.assertEquals(factory.title, "Example content")
         self.assertEquals(factory.description, "Example description")
 
@@ -177,8 +177,7 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
         self.assertRaises(ComponentLookupError, zapi.getUtility,
                           None, IFactory, 'Example')
         factory = zapi.getUtility(
-            None, IFactory,
-            'zope.app.component.tests.exampleclass.ExampleClass')
+            IFactory, 'zope.app.component.tests.exampleclass.ExampleClass')
         self.assertEquals(factory.title, "Example content")
         self.assertEquals(factory.description, "Example description")
 
@@ -195,7 +194,7 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
 </content>
             """)
         xmlconfig(f)
-        factory = zapi.getUtility(None, IFactory, 'Example')
+        factory = zapi.getUtility(IFactory, 'Example')
         self.assert_(hasattr(factory, '__Security_checker__'))
 
 
