@@ -147,6 +147,13 @@ class IAdapterRegistration(registration.IComponentRegistration):
         required=False,
         )
 
+    # XXX: for now
+    factoryName = zope.schema.TextLine(
+        title=_(u"Factory Name"),
+        readonly=True,
+        required=False,
+        )
+
 
 class IUtilityRegistration(IAdapterRegistration):
     """Utility registration object.

@@ -5,180 +5,135 @@
 <!-- SiteManagementFolder -->
 
   <addMenuItem
-      class="zope.app.site.folder.SiteManagementFolder"
-      permission="zope.ManageServices"
+      class="zope.app.component.site.SiteManagementFolder"
+      permission="zope.ManageSite"
       title="Site-Management Folder"
       />
 
   <page
-    for="zope.app.site.interfaces.ISiteManagementFolder"
-    permission="zope.ManageServices" 
-    class="zope.app.container.browser.contents.JustContents"
-    name="index.html" attribute="index" />
+      for="zope.app.component.interfaces.ISiteManagementFolder"
+      permission="zope.ManageSite" 
+      class="zope.app.container.browser.contents.JustContents"
+      name="index.html" attribute="index" 
+      />
 
   <page
-     name="contents.html"
-     for="zope.app.site.interfaces.ISiteManagementFolder"
-     menu="zmi_views" title="Contents"
-     permission="zope.ManageServices"
-     class="zope.app.container.browser.contents.Contents"
-     attribute="contents" />
+      name="contents.html"
+      for="zope.app.component.interfaces.ISiteManagementFolder"
+      menu="zmi_views" title="Contents"
+      permission="zope.ManageSite"
+      class="zope.app.container.browser.contents.Contents"
+      attribute="contents" 
+      />
 
   <view
-     name="+"
-     menu="zmi_actions" title="Add"
-     for="zope.app.site.interfaces.ISiteManagementFolder"
-     permission="zope.ManageServices"
-     class="zope.app.site.browser.ComponentAdding">
-
+      name="+"
+      menu="zmi_actions" title="Add"
+      for="zope.app.component.interfaces.ISiteManagementFolder"
+      permission="zope.ManageSite"
+      class="zope.app.component.browser.ComponentAdding"
+      >
     <page name="index.html"  attribute="index"  />
     <page name="action.html" attribute="action" />
-
   </view>
 
-<!-- For services, just treat @@manage as @@index.html by default -->
-
-  <!-- Get first accessable item from zmi_views menu -->
-  <page
-     for="zope.app.site.interfaces.ILocalService"
-     name="index.html"
-     permission="zope.ManageServices"
-     class="zope.app.publisher.browser.managementviewselector.ManagementViewSelector"
-     allowed_interface="zope.publisher.interfaces.browser.IBrowserPublisher"
-     />
-
-<!-- Service Manager navigation action -->
+<!-- Site Manager navigation action -->
 
   <page
-      for="zope.app.site.interfaces.IPossibleSite"
-      name="addServiceManager.html"
-      permission="zope.ManageServices"
+      for="zope.app.component.interfaces.IPossibleSite"
+      name="addSiteManager.html"
+      permission="zope.ManageSite"
       class=".MakeSite"
       attribute="addSiteManager"
       />
 
   <menuItem
       menu="zmi_actions" title="Make a site"
-      for="zope.app.site.interfaces.IPossibleSite"
-      action="addServiceManager.html"
+      for="zope.app.component.interfaces.IPossibleSite"
+      action="addSiteManager.html"
       filter="python:
-          not modules['zope.app.site.interfaces'].ISite.providedBy(context)"
-      permission="zope.ManageServices"
+         not modules['zope.app.component.interfaces'].ISite.providedBy(context)"
+      permission="zope.ManageSite"
       />
 
   <menuItem
       menu="zmi_actions"
       title="Manage Site"
-      for="zope.app.site.interfaces.ISite"
+      for="zope.app.component.interfaces.ISite"
       action="++etc++site/@@SelectedManagementView.html"
-      permission="zope.ManageServices"
+      permission="zope.ManageSite"
       />
 
-<!-- ServiceManager -->
+<!-- SiteManager -->
 
-  <page
-     for="zope.app.site.interfaces.ISiteManager"
+  <!--XXX: page
+     for="zope.app.component.interfaces.ILocalSiteManager"
      name="tasks.html"
      menu="zmi_views" title="Tasks"
      template="tasks.pt"
-     permission="zope.ManageServices" />
+     permission="zope.ManageSite" /-->
 
-
-  <page
-     for="zope.app.site.interfaces.ISiteManager"
-     name="services.html"
-     menu="zmi_views" title="Services"
-     template="services.pt"
-     class=".ServiceSummary"
-     permission="zope.ManageServices" />
-
-  <page
-     for="zope.app.site.interfaces.ISiteManager"
-     name="serviceActivation.html"
-     template="serviceactivation.pt"
-     class=".ServiceActivation"
-     permission="zope.ManageServices" />
-
-
-  <page
-      for="zope.app.site.interfaces.ISiteManager"
+  <!-- XXX: page
+      for="zope.app.component.interfaces.ILocalSiteManager"
       name="interfacebrowse.html"
       template="interfacebrowse.pt"
       class=".Interfaces"
       permission="zope.ManageServices"
       menu="zmi_views" title="Interface Browse" 
-      />
+      /-->
   
-  <page
-      for="zope.app.site.interfaces.ISiteManager"
+  <!-- XXX: page
+      for="zope.app.component.interfaces.ILocalSiteManager"
       name="interfacedetail.html"
       template="interfacedetail.pt"
       class=".Detail"
       permission="zope.ManageServices"
-      />
+      /-->
 
-  <page
-      for="zope.app.site.interfaces.ISiteManager"
+  <!-- page
+      for="zope.app.component.interfaces.ILocalSiteManager"
       name="interfacemethoddetail.html"
       template="interfacemethoddetail.pt"
       class=".MethodDetail"
       permission="zope.ManageServices"
-      />
-
-
-  <icon
-      name="zmi_icon"
-      for="zope.app.site.interfaces.ISiteManager"
-      file="service_manager.gif" />
+      /-->
 
   <menuItems
       menu="zmi_actions"
-      for="zope.app.site.interfaces.ISiteManager">
+      for="zope.app.component.interfaces.ILocalSiteManager">
 
     <menuItem
         title="Visit default folder"
         action="default/@@SelectedManagementView.html"
-        permission="zope.ManageServices" />
-    <menuItem
-        title="Add service"
-        action="default/AddService"
-        permission="zope.ManageServices" />
-
-    <!-- Does not work -->
-    <!--menuItem
-        title="Add utility"
-        action="default/AddUtility"
-        permission="zope.ManageServices" /-->
-
+        permission="zope.ManageSite"
+        />
   </menuItems>
 
   <page
       name="contents.html"
-      for="zope.app.site.interfaces.ISiteManager"
+      for="zope.app.component.interfaces.ILocalSiteManager"
       menu="zmi_views" title="Software"
-      permission="zope.ManageServices"
+      permission="zope.ManageSite"
       class="zope.app.container.browser.contents.Contents"
       attribute="contents" />
 
   <view
       name="+"
       menu="zmi_actions" title="Add Site Management Folder"
-      for="zope.app.site.interfaces.ISiteManager"
-      permission="zope.ManageServices"
+      for="zope.app.component.interfaces.ILocalSiteManager"
+      permission="zope.ManageSite"
       class="zope.app.container.browser.adding.Adding" 
       >
-
     <page name="index.html" attribute="index"/>
     <page name="action.html" attribute="action"/>
   </view>
 
   <pages
-      for="zope.app.site.interfaces.ISiteManager"
-      permission="zope.ManageServices"
-      class="zope.app.container.browser.contents.JustContents">
-
+      for="zope.app.component.interfaces.ILocalSiteManager"
+      permission="zope.ManageSite"
+      class="zope.app.container.browser.contents.JustContents"
+      >
     <page name="index.html" attribute="index" />
-
   </pages>
 
 <!-- Adapter Registration -->
@@ -188,32 +143,27 @@
     name="index.html"
     menu="zmi_views"
     label="Change adapter"
-    permission="zope.ManageServices"
+    permission="zope.ManageSite"
     />
 
-  <addform
+  <!-- XXX: addform
       schema="..interfaces.IAdapterRegistration"
       name="AdapterRegistration"
       content_factory="..site.AdapterRegistration"
-      arguments="provided factoryName"
-      keyword_arguments="required name permission"
+      arguments="required provided factoryName"
+      keyword_arguments="name permission"
       label="Register an adapter"
       permission="zope.ManageServices"
       fields="required provided name permission factoryName" 
       menu="add_registration" title="Adapter Registration"
-      />
+      /-->
 
 <!-- Tools Views -->
 
-  <servicetool
-      title="Service Tools"
-      description="Service tool management."
-      />
-
   <page
      name="tools.html"
-     for="zope.app.site.interfaces.ISiteManager"
-     permission="zope.ManageContent"
+     for="zope.app.component.interfaces.ILocalSiteManager"
+     permission="zope.ManageSite"
      template="tools.pt"
      menu="zmi_views" title="Tools"
      class=".tools.ToolsOverview"
@@ -221,17 +171,8 @@
 
   <page
      name="tools.html"
-     for="zope.app.utility.interfaces.ILocalUtility"
-     permission="zope.ManageContent"
-     class=".tools.ToolsBacklink"
-     attribute="getLink"
-     menu="zmi_actions" title="Tools"
-     />
-
-  <page
-     name="tools.html"
-     for="zope.app.site.interfaces.ILocalService"
-     permission="zope.ManageContent"
+     for="zope.app.component.interfaces.ILocalUtility"
+     permission="zope.ManageSite"
      class=".tools.ToolsBacklink"
      attribute="getLink"
      menu="zmi_actions" title="Tools"

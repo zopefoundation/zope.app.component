@@ -1,26 +1,148 @@
 <configure xmlns="http://namespaces.zope.org/zope">
 
-  <vocabulary
-      name="Interfaces"
-      factory="zope.app.utility.vocabulary.UtilityVocabulary"
-      interface="zope.interface.interfaces.IInterface" />
-
   <interface interface="zope.interface.Interface" />
 
+
+  <!-- Registration Framework -->
+
+  <content class=".registration.RegistrationManager">
+    <factory
+        id="zope.app.component.RegistrationManager"
+        title="Registration Manager" />
+    <implements
+        interface="zope.app.annotation.interfaces.IAttributeAnnotatable"
+        />
+    <require
+        permission="zope.ManageSite"
+        interface="zope.app.container.interfaces.IReadContainer" />
+    <require
+        permission="zope.ManageSite"
+        interface="zope.app.container.interfaces.IWriteContainer
+                   zope.app.container.interfaces.INameChooser" 
+        />
+  </content>
+
+  <class class=".registration.Registered">
+    <allow attributes="registrations" />
+  </class>
+
   <adapter
-      factory=".localservice.serviceServiceAdapter"
-      provides="zope.component.IServiceService"
-      for="zope.interface.Interface" />
+      for=".interfaces.registration.IRegisterable"
+      provides=".interfaces.registration.IRegistered"
+      factory=".registration.Registered"
+      trusted="true"
+      />
 
   <subscriber
-      factory=".localservice.threadSiteSubscriber"
+      factory=".registration.ComponentRegistrationRemoveSubscriber"
+      for=".interfaces.registration.IComponentRegistration
+           zope.app.container.interfaces.IObjectRemovedEvent"
+      />
+
+  <subscriber
+      for=".interfaces.registration.IComponentRegistration
+           zope.app.container.interfaces.IObjectAddedEvent"
+      factory=".registration.ComponentRegistrationAddSubscriber"
+      />
+
+  <subscriber
+      for=".interfaces.registration.IRegisterable
+           zope.app.container.interfaces.IObjectMovedEvent"
+      factory=".registration.RegisterableMoveSubscriber"
+      />
+
+
+  <!-- Site and Site Manager Framework -->
+
+  <module module=".interfaces">
+    <allow attributes="ISite" />
+  </module>
+
+  <content class=".site.LocalSiteManager">
+    <implements
+        interface="zope.app.annotation.interfaces.IAttributeAnnotatable" />
+    <require
+        permission="zope.ManageSite"
+        interface="zope.app.container.interfaces.IReadContainer" />
+    <require
+        permission="zope.ManageSite"
+        interface="zope.component.interfaces.ISiteManager
+                   zope.app.container.interfaces.IWriteContainer" />
+  </content>
+
+  <!-- XXX: We allow these attributes to be changed. We need some subscriber
+       that updated the registries once attributes change. -->
+  <content class=".site.AdapterRegistration">
+    <require
+        permission="zope.ManageSite"
+        interface=".interfaces.IAdapterRegistration"
+        set_schema=".interfaces.IAdapterRegistration"
+        />
+  </content>
+
+  <content class=".site.UtilityRegistration">    
+    <require
+        permission="zope.ManageSite"
+        interface=".interfaces.IUtilityRegistration"
+        set_schema=".interfaces.IUtilityRegistration" 
+        />
+  </content>
+
+  <content class=".site.SiteManagementFolder">
+    <factory />
+    <implements
+        interface="zope.app.annotation.interfaces.IAttributeAnnotatable"
+        />
+    <require
+        permission="zope.ManageSite"
+        interface="zope.app.container.interfaces.IReadContainer" />
+    <require
+        permission="zope.ManageSite"
+        interface="zope.app.container.interfaces.IWriteContainer"
+        attributes="registrationManager" 
+        />
+  </content>
+  
+  <adapter 
+      for="zope.component.interfaces.ISiteManager"
+      provides="zope.app.filerepresentation.interfaces.IDirectoryFactory"
+      factory=".site.SMFolderFactory"
+      permission="zope.ManageContent"
+      />
+
+  <adapter
+      for="zope.interface.Interface" 
+      provides="zope.component.interfaces.ISiteManager"
+      factory=".site.SiteManagerAdapter"
+      />
+
+  <subscriber
       for="zope.app.publication.interfaces.IBeforeTraverseEvent"
+      factory=".site.threadSiteSubscriber"
       />
 
   <subscriber
-      factory=".localservice.clearThreadSiteSubscriber"
       for="zope.app.publication.interfaces.IEndRequestEvent"
+      factory=".site.clearThreadSiteSubscriber"
       />
+
+  <subscriber
+      for=".interfaces.ISite
+           zope.app.container.interfaces.IObjectMovedEvent"
+      factory=".site.changeSiteConfigurationAfterMove"
+      />
+
+
+  <!-- Vocabularies -->
+ 
+  <vocabulary
+      name="Interfaces"
+      factory=".vocabulary.UtilityVocabulary"
+      interface="zope.interface.interfaces.IInterface" />
+
+  <vocabulary
+    name="Utility Component Interfaces"
+    factory=".vocabulary.UtilityComponentInterfacesVocabulary" />
 
 </configure>
 
