@@ -13,12 +13,13 @@
 ##############################################################################
 """
 
-$Id: test_contentdirective.py,v 1.7 2003/08/04 23:12:48 sidnei Exp $
+$Id: test_contentdirective.py,v 1.8 2003/08/05 14:24:57 sidnei Exp $
 """
 
 import unittest
 from StringIO import StringIO
 
+from zope.component.exceptions import ComponentLookupError
 from zope.configuration.xmlconfig import xmlconfig, XMLConfig
 from zope.app.tests.placelesssetup import PlacelessSetup
 from zope.security.management import newSecurityManager, system_user
@@ -154,6 +155,25 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
                        """)
         xmlconfig(f)
         factory = getService(None, Factories).getFactory('Example')
+        self.assertEquals(factory.title, "Example content")
+        self.assertEquals(factory.description, "Example description")
+
+    def testFactoryNoId(self):
+        f = configfile("""
+<permission id="zope.Foo" title="Zope Foo Permission" />
+
+<content class="zope.app.component.tests.exampleclass.ExampleClass">
+    <factory
+      permission="zope.Foo"
+      title="Example content"
+      description="Example description"
+    />
+</content>
+                       """)
+        xmlconfig(f)
+        fservice = getService(None, Factories)
+        self.assertRaises(ComponentLookupError, fservice.getFactory, 'Example')
+        factory = fservice.getFactory('zope.app.component.tests.exampleclass.ExampleClass')
         self.assertEquals(factory.title, "Example content")
         self.assertEquals(factory.description, "Example description")
 

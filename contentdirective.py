@@ -13,7 +13,7 @@
 ##############################################################################
 """ Register class directive.
 
-$Id: contentdirective.py,v 1.7 2003/08/04 23:12:44 sidnei Exp $
+$Id: contentdirective.py,v 1.8 2003/08/05 14:24:53 sidnei Exp $
 """
 from zope.interface import classProvides
 from types import ModuleType
@@ -31,6 +31,11 @@ from zope.schema.interfaces import IField
 
 PublicPermission = 'zope.Public'
 
+def dottedName(klass):
+    if klass is None:
+        return 'None'
+    return klass.__module__ + '.' + klass.__name__
+
 class ProtectionDeclarationException(Exception):
     """Security-protection-specific exceptions."""
     pass
@@ -47,7 +52,7 @@ def assertPermission(permission=None, *args, **kw):
 class ContentDirective:
 
     def __init__(self, _context, class_):
-        self.__id = class_
+        self.__id = dottedName(class_)
         self.__class = class_
         if isinstance(self.__class, ModuleType):
             raise ConfigurationError('Content class attribute must be a class')
