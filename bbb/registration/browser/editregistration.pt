@@ -1,0 +1,69 @@
+<html metal:use-macro="context/@@standard_macros/view">
+<head>
+  <title metal:fill-slot="title" i18n:translate="">
+    View Registration Manager
+  </title>
+</head>
+<body>
+<div metal:fill-slot="body">
+
+  <h2 i18n:translate="">Registration Manager</h2>
+
+  <form action="." method="POST"
+        tal:define="message view/update"
+        tal:attributes="action request/URL">
+
+    <p tal:condition="message" tal:content="message" />
+
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th align="left" i18n:translate="">Summary</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="config view/configInfo">
+          <td valign="top">
+            <input type="checkbox" name='keys:list' value='1'
+                   tal:attributes="value config/name" />
+          </td>
+          <td>
+            <a href="." tal:attributes="href config/name">
+              <span tal:content="config/line1|default">
+                Config item <span tal:content="config/name" />
+              </span>
+            </a>
+            <span tal:condition="not:config/active"
+                i18n:translate="">(disabled)</span>
+            <br />
+            <span tal:content="config/line2|default">
+              (No implementation summary)
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="row">
+      <input type="submit" name='refresh_submit' value="Refresh" 
+             i18n:attributes="value refresh-button" />
+      <input type="submit" name='UPDATE_SUBMIT' value="Submit" 
+             i18n:attributes="value submit-button" />
+      <input type="submit" name='remove_submit' value="Remove" 
+             i18n:attributes="value remove-button" />
+      &nbsp;&nbsp;
+      <input type="submit" name='top_submit' value="Top"
+             i18n:attributes="value top-button" />
+      <input type="submit" name='up_submit' value="Up"
+             i18n:attributes="value up-button" />
+      <input type="submit" name='down_submit' value="Down"
+             i18n:attributes="value down-button" />
+      <input type="submit" name='bottom_submit' value="Bottom"
+             i18n:attributes="value bottom-button" />
+    </div>
+  </form>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<zope:configure 
+   xmlns:zope="http://namespaces.zope.org/zope"
+   xmlns="http://namespaces.zope.org/browser">
+
+  <page
+      for="zope.app.registration.interfaces.IRegistrationStack"
+      name="ChangeRegistrations"
+      template="changeregistrations.pt"
+      class=".ChangeRegistrations"
+      allowed_interface=
+                   "zope.app.form.browser.interfaces.IFormCollaborationView"
+      permission="zope.ManageServices" />
+
+  <!-- BBB: Backward-compatibility: 12/07/2004 -->
+  <zope:view
+      for="zope.app.registration.interfaces.IComponentPath"
+      type="zope.publisher.interfaces.browser.IBrowserRequest"
+      provides="zope.app.form.interfaces.IInputWidget"
+      factory=".ComponentPathWidget"
+      permission="zope.Public"
+      />
+
+  <zope:view
+      for="zope.app.registration.interfaces.IComponentPath"
+      type="zope.publisher.interfaces.browser.IBrowserRequest"
+      provides="zope.app.form.interfaces.IDisplayWidget"
+      factory=".ComponentPathWidget"
+      permission="zope.Public"
+      />
+  <!-- BBB: End of backward-compatibility block -->
+
+
+  <zope:view
+      for="zope.app.registration.interfaces.IComponent"
+      type="zope.publisher.interfaces.browser.IBrowserRequest"
+      provides="zope.app.form.interfaces.IInputWidget"
+      factory=".ComponentWidget"
+      permission="zope.Public"
+      />
+
+  <zope:view
+      for="zope.app.registration.interfaces.IComponent"
+      type="zope.publisher.interfaces.browser.IBrowserRequest"
+      provides="zope.app.form.interfaces.IDisplayWidget"
+      factory=".ComponentWidget"
+      permission="zope.Public"
+      />
+
+<!-- RegistrationManager -->
+
+  <page
+     name="index.html" 
+     for="zope.app.registration.interfaces.IRegistrationManager"
+     menu="zmi_views" title="Registration"
+     permission="zope.ManageServices"
+     class=".EditRegistration"
+     template="editregistration.pt" />
+
+<!-- For now, we'll allow CMs to be added, but we won't include them
+     in the add_component menu. -->
+  <view
+       for="zope.app.registration.interfaces.IRegistrationManager"
+       name="+"
+       menu="zmi_actions" title="Add"
+       permission="zope.ManageServices"
+       class=".RegistrationAdding">
+    <page name="index.html"  attribute="index"  />
+    <page name="action.html" attribute="action" />
+  </view>
+
+<!-- Error views -->
+
+  <page
+      for="
+      zope.app.registration.interfaces.INoRegistrationManagerError"
+      name="index.html"
+      permission="zope.ManageServices"
+      template="../../exception/browser/user.pt"
+      class="zope.app.exception.browser.user.UserErrorView" />
+
+  <page
+      for="zope.app.registration.interfaces.INoLocalServiceError"
+      name="index.html"
+      permission="zope.ManageServices"
+      template="../../exception/browser/user.pt"
+      class="zope.app.exception.browser.user.UserErrorView" />
+
+
+<!-- Generic page for objects that keep track of their registrations.
+     Objects that need to override one of these may need to override
+     both.  The "registrations.html" page is only used for objects
+     that have more than one registration.
+     -->
+
+  <page
+      for="zope.app.registration.interfaces.IRegisterable"
+      name="registrations.html"
+      template="registered.pt"
+      class=".Registered"
+      permission="zope.ManageServices"
+      />
+
+  <page
+      for="zope.app.registration.interfaces.IRegisterable"
+      name="registration.html"
+      template="registration.pt"
+      class=".RegistrationView"
+      permission="zope.ManageServices"
+      menu="zmi_views" title="Registration"
+      />
+
+</zope:configure>

@@ -1,0 +1,26 @@
+<table width="100%" i18n:domain="zope">
+  <tr tal:define="message view/message" tal:condition="message">
+     <td></td>
+     <td colspan="2"><em tal:content="message">xxxx</em></td>
+  </tr>
+  <tr tal:repeat="registration view/registrations">
+     <td><input type="radio" name="Roles" value="0"
+             tal:attributes="
+             name view/name;
+             value registration/id;
+             checked registration/active;
+             "
+             />
+     </td>
+     <td tal:condition="python: registration['id'] != 'disable'"><a href="."
+            tal:attributes="href registration/registration/@@absolute_url"
+            tal:content="registration/id"
+         >foo/bar</a></td>
+     <td tal:condition="python: registration['id'] == 'disable'"
+         i18n:translate="">
+         Disabled</td>
+     <td tal:content="structure registration/summary">
+         Registration summary
+     </td>
+  </tr>
+</table>
