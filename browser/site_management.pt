@@ -62,7 +62,7 @@
         <span tal:condition="not:instance/rename">
           <span tal:condition="instance/active">
             <a href="" style="color: green"
-               tal:attributes="href instance/url"
+               tal:attributes="href string:${instance/url}/@@SelectedManagementView.html"
                tal:content="instance/name">
               sql-queries
             </a>
@@ -70,7 +70,7 @@
           </span>
           <span tal:condition="not:instance/active">
             <a href="" style="color: red"
-               tal:attributes="href instance/url"
+               tal:attributes="href string:${instance/url}/@@SelectedManagementView.html"
                tal:content="instance/name">
               sql-queries
             </a>
