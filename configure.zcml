@@ -16,12 +16,6 @@
          permission="zope.Public"
          factory="zope.component.adapter.GlobalAdapterService" />
 
-<serviceType id="Factories"
-             interface="zope.component.interfaces.IFactoryService" />
-<service serviceType="Factories"
-         permission="zope.Public"
-         component="zope.component.factory.factoryService" />
-
 <serviceType id="Presentation"
              interface="zope.component.interfaces.IPresentationService" />
 <service serviceType="Presentation"
