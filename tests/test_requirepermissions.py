@@ -11,8 +11,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-""" Test handler for 'require' subdirective of 'content' directive """
+"""Test handler for 'require' subdirective of 'content' directive
 
+$Id$
+"""
 from cStringIO import StringIO
 import unittest
 

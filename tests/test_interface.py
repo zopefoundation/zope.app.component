@@ -11,6 +11,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Interface utility tests
+
+$Id$
+"""
 import unittest
 from zope.testing.doctestunit import DocTestSuite
 
