@@ -11,16 +11,16 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""These are the interfaces for the common fields.
-
-$Id: interfacefield.py,v 1.2 2002/12/25 14:12:45 jim Exp $
+"""
+$Id: interfacefield.py,v 1.3 2002/12/30 18:43:05 stevea Exp $
 """
 
-from zope.schema import ValueSet
+from zope.schema import ValueSet, Tuple
 from zope.interface import Interface
 from zope.interface.interfaces import IInterface
 from zope.schema.interfaces import ValidationError
 from zope.app.interfaces.component.interfacefield import IInterfaceField
+from zope.app.interfaces.component.interfacefield import IInterfacesField
 
 class InterfaceField(ValueSet):
     __doc__ = IInterfaceField.__doc__
@@ -41,3 +41,25 @@ class InterfaceField(ValueSet):
 
         if not value.extends(self.type, 0):
             raise ValidationError("Does not extend", value, self.type)
+
+class InterfacesField(Tuple):
+    __doc__ = IInterfacesField.__doc__
+    __implements__ = IInterfacesField
+
+    value_type = Interface
+
+    def __init__(self, value_type=Interface, *args, **kw):
+        super(InterfacesField, self).__init__(*args, **kw)
+        self.validate((value_type,))
+        self.value_type = value_type
+        # Not using schema.Sequence.value_types
+
+    def _validate(self, value):
+        super(InterfacesField, self)._validate(value)
+
+        for item in value:
+            if not IInterface.isImplementedBy(item):
+                raise ValidationError("Not an interface", item)
+
+            if not item.extends(self.value_type, 0):
+                raise ValidationError("Does not extend", item, self.value_type)
