@@ -1,32 +1,32 @@
 <configure
-   xmlns='http://namespaces.zope.org/zope'
+   xmlns="http://namespaces.zope.org/zope"
    package="zope.component"
    i18n_domain="zope"
    >
 
-<serviceType id='Utilities'
-             interface='zope.component.interfaces.IUtilityService' />
-<service serviceType='Utilities'
-         permission='zope.Public'
-         component='zope.component.utility.utilityService' />
+<serviceType id="Utilities"
+             interface="zope.component.interfaces.IUtilityService" />
+<service serviceType="Utilities"
+         permission="zope.Public"
+         component="zope.component.utility.utilityService" />
 
-<serviceType id='Adapters'
-             interface='zope.component.interfaces.IAdapterService' />
-<service serviceType='Adapters'
-         permission='zope.Public'
-         factory='zope.component.adapter.GlobalAdapterService' />
+<serviceType id="Adapters"
+             interface="zope.component.interfaces.IAdapterService" />
+<service serviceType="Adapters"
+         permission="zope.Public"
+         factory="zope.component.adapter.GlobalAdapterService" />
 
-<serviceType id='Factories'
-             interface='zope.component.interfaces.IFactoryService' />
-<service serviceType='Factories'
-         permission='zope.Public'
-         component='zope.component.factory.factoryService' />
+<serviceType id="Factories"
+             interface="zope.component.interfaces.IFactoryService" />
+<service serviceType="Factories"
+         permission="zope.Public"
+         component="zope.component.factory.factoryService" />
 
-<serviceType id='Presentation'
-             interface='zope.component.interfaces.IPresentationService' />
-<service serviceType='Presentation'
-         permission='zope.Public'
-         factory='zope.component.presentation.GlobalPresentationService' />
+<serviceType id="Presentation"
+             interface="zope.component.interfaces.IPresentationService" />
+<service serviceType="Presentation"
+         permission="zope.Public"
+         factory="zope.component.presentation.GlobalPresentationService" />
 
 <hook module="zope.component"
       name="getServiceManager"
@@ -37,13 +37,13 @@
       implementation="zope.app.component.hooks.queryView" />
 
 <serviceType
-    id='Interfaces'
-    interface='zope.app.interfaces.component.IInterfaceService' />
+    id="Interfaces"
+    interface="zope.app.interfaces.component.IInterfaceService" />
 
 <service
-   serviceType='Interfaces'
-   permission='zope.Public'
-   component='zope.app.component.globalinterfaceservice.interfaceService' />
+   serviceType="Interfaces"
+   permission="zope.Public"
+   component="zope.app.component.globalinterfaceservice.interfaceService" />
 
 <interface interface="zope.interface.Interface" />
 
