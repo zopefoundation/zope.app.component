@@ -17,10 +17,37 @@ $Id$
 """
 __docformat__ = "reStructuredText"
 from zope.component.bbb.service import IService
+from zope.cachedescriptors import property
 
+from zope.app import zapi
 import registration
 
+
+class BBBSiteManagerContainer(object):
+
+    def _sm(self):
+        if '_ServiceManagerContainer__sm' in self.__dict__:
+            return self._ServiceManagerContainer__sm
+        elif '_SiteManagerContainer__sm' in self.__dict__:
+            return self._SiteManagerContainer__sm
+        else:
+            return None
+    _sm = property.Lazy(_sm)
+    
+
 class BBBSiteManager(object):
+
+    def utilities(self):
+        gsm = zapi.getGlobalSiteManager()
+        from zope.app.component.site import LocalUtilityRegistry
+        return LocalUtilityRegistry(gsm.utilities)
+    utilities = property.Lazy(utilities)
+
+    def adapters(self):
+        gsm = zapi.getGlobalSiteManager()
+        from zope.app.component import adapter
+        return adapter.LocalAdapterRegistry(gsm.adapters)        
+    adapters = property.Lazy(adapters)
 
     def queryRegistrationsFor(self, cfg, default=None):
         return self.queryRegistrations(cfg.name, default)
@@ -73,3 +100,9 @@ class BBBSiteManager(object):
         # Ignore, hoping that noone uses this horrible method
         return []
 
+class BBBUtilityRegistration(object):
+
+    def provided(self):
+        if 'interface' in self.__dict__:
+            return self.interface
+    provided = property.Lazy(provided)

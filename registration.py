@@ -94,7 +94,8 @@ class SimpleRegistration(Persistent, Contained):
               'This method must be implemented by each specific regstration.' 
 
 
-class ComponentRegistration(SimpleRegistration):
+class ComponentRegistration(bbb.registration.BBBComponentRegistration,
+                            SimpleRegistration):
     """Component registration.
 
     Subclasses should define a getInterface() method returning the interface
@@ -103,7 +104,9 @@ class ComponentRegistration(SimpleRegistration):
     implements(interfaces.IComponentRegistration)
 
     def __init__(self, component, permission=None):
-        self.component = component
+        # BBB: Will go away in 3.3.
+        super(ComponentRegistration, self).__init__(component, permission)
+        # self.component = component        
         if permission == 'zope.Public':
             permission = CheckerPublic
         self.permission = permission
@@ -205,7 +208,8 @@ class Registered(bbb.registration.BBBRegistered, object):
                     reg.component is self.registerable)]
 
 
-class RegistrationManager(BTreeContainer):
+class RegistrationManager(bbb.registration.BBBRegistrationManager,
+                          BTreeContainer):
     """Registration manager
 
     Manages registrations within a package.
@@ -232,7 +236,7 @@ class RegistrationManager(BTreeContainer):
         return chosenName
 
 
-class RegisterableContainer(object):
+class RegisterableContainer(bbb.registration.BBBRegisterableContainer):
     """Mix-in to implement `IRegisterableContainer`"""
     implements(interfaces.IRegisterableContainer,
                interfaces.IRegisterableContainerContaining)

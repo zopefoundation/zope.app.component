@@ -16,7 +16,12 @@
 $Id$
 """
 __docformat__ = "reStructuredText"
+from persistent import Persistent
+from zope.cachedescriptors.property import Lazy
 from zope.interface import implements
+from zope.proxy import removeAllProxies
+from zope.security.checker import InterfaceChecker, CheckerPublic
+from zope.security.proxy import Proxy, removeSecurityProxy
 
 from zope.app import zapi
 from zope.app.container.contained import Contained
@@ -24,7 +29,7 @@ from zope.app.container.contained import Contained
 import interfaces
 
 
-class RegistrationStack(Contained):
+class RegistrationStack(Contained, Persistent):
     """Registration registry implemention
 
        A registration stack provides support for a collection of
@@ -107,6 +112,96 @@ class RegistrationStack(Contained):
         return tuple(data)
 
 
+NULL_COMPONENT = object()
+
+class BBBComponentRegistration(object):
+
+    _BBB_componentPath = None
+
+    def __init__(self, component, permission=None):
+        # BBB: 12/05/2004
+        if isinstance(component, (str, unicode)):
+            self.componentPath = component
+        else:
+            # We always want to set the plain component. Untrusted code will
+            # get back a proxied component anyways.
+            self.component = removeSecurityProxy(component)
+        if permission == 'zope.Public':
+            permission = CheckerPublic
+        self.permission = permission
+
+    def getComponent(self):
+        return self.__BBB_getComponent()
+
+    def __BBB_getComponent(self):
+        if self._component is NULL_COMPONENT:
+            return self.__BBB_old_getComponent(self._BBB_componentPath)
+
+        # This condition should somehow make it in the final code, since it
+        # honors the permission.
+        if self.permission:
+            checker = InterfaceChecker(self.getInterface(), self.permission)
+            return Proxy(self._component, checker)
+
+        return self._component
+
+    def __BBB_old_getComponent(self, path):
+        service_manager = zapi.getSiteManager(self)
+
+        # Get the root and unproxy it
+        if path.startswith("/"):
+            # Absolute path
+            root = removeAllProxies(zapi.getRoot(service_manager))
+            component = zapi.traverse(root, path)
+        else:
+            # Relative path.
+            ancestor = self.__parent__.__parent__
+            component = zapi.traverse(ancestor, path)
+
+        if self.permission:
+            if type(component) is Proxy:
+                # There should be at most one security Proxy around an object.
+                # So, if we're going to add a new security proxy, we need to
+                # remove any existing one.
+                component = removeSecurityProxy(component)
+
+            interface = self.getInterface()
+
+            checker = InterfaceChecker(interface, self.permission)
+
+            component = Proxy(component, checker)
+
+        return component
+
+    def __BBB_setComponent(self, component):
+        self._BBB_componentPath = None
+        self._component = component
+
+    component = property(__BBB_getComponent, __BBB_setComponent)
+
+    def __BBB_getComponentPath(self):
+        if self._BBB_componentPath is not None:
+            return self._BBB_componentPath
+        return '/' + '/'.join(zapi.getPath(self.component))
+
+    def __BBB_setComponentPath(self, path):
+        self._component = NULL_COMPONENT
+        self._BBB_componentPath = path
+
+    componentPath = property(__BBB_getComponentPath, __BBB_setComponentPath)
+
+    def __setstate__(self, dict):
+        super(BBBComponentRegistration, self).__setstate__(dict)
+        # For some reason the component path is not set correctly by the
+        # default __setstate__ mechanism.
+        if 'componentPath' in dict:
+            self._component = NULL_COMPONENT
+            self._BBB_componentPath = dict['componentPath']
+
+        if isinstance(self._BBB_componentPath, (str, unicode)):
+            self._component = NULL_COMPONENT
+
+
 class BBBRegistry(object):
 
     def queryRegistrationsFor(self, cfg, default=None):
@@ -117,7 +212,23 @@ class BBBRegistry(object):
         pass
     
 
+class BBBRegistrationManager(object):
+
+    def _SampleContainer__data(self):
+        from BTrees.OOBTree import OOBTree
+        if '_data' in self.__dict__:
+            return OOBTree(self._data)
+    _SampleContainer__data = Lazy(_SampleContainer__data)
+
+
 class BBBRegisterableContainer(object):
+
+    def registrationManager(self):
+        from zope.app.component.registration import RegistrationManager
+        for obj in self.values():
+            if isinstance(obj, RegistrationManager):
+                return obj
+    registrationManager = Lazy(registrationManager)
 
     def getRegistrationManager(self):
         return self.registrationManager

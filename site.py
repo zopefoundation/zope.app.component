@@ -42,6 +42,8 @@ from zope.app.event import objectevent
 from zope.app.filerepresentation.interfaces import IDirectoryFactory
 from zope.app.traversing.interfaces import IContainmentRoot
 
+# Goes away in 3.3.
+import bbb.site
 
 class SiteManagementFolder(registration.RegisterableContainer,
                            BTreeContainer):
@@ -58,7 +60,7 @@ class SMFolderFactory(object):
         return SiteManagementFolder()
 
 
-class SiteManagerContainer(Contained):
+class SiteManagerContainer(bbb.site.BBBSiteManagerContainer, Contained):
     """Implement access to the site manager (++etc++site).
 
     This is a mix-in that implements the IPossibleSite
@@ -66,11 +68,12 @@ class SiteManagerContainer(Contained):
     """
     zope.interface.implements(interfaces.IPossibleSite)
 
-    __sm = None
+    # BBB: Deactive in 3.3 again. Now provided by BBBSiteManagerContainer
+    #_sm = None
 
     def getSiteManager(self):
-        if self.__sm is not None:
-            return self.__sm
+        if self._sm is not None:
+            return self._sm
         else:
             raise ComponentLookupError('no site manager defined')
 
@@ -79,7 +82,7 @@ class SiteManagerContainer(Contained):
             raise TypeError("Already a site")
 
         if zope.component.interfaces.ISiteManager.providedBy(sm):
-            self.__sm = sm
+            self._sm = sm
             sm.__name__ = '++etc++site'
             sm.__parent__ = self
         else:
@@ -122,6 +125,7 @@ class LocalUtilityRegistry(adapter.LocalAdapterRegistry):
 
 
 class LocalSiteManager(BTreeContainer,
+                       bbb.site.BBBSiteManager,
                        zope.component.site.SiteManager):
     """Local Site Manager implementation"""
     zope.interface.implements(
@@ -246,7 +250,8 @@ class AdapterRegistration(registration.ComponentRegistration):
         return zapi.getSiteManager(self)
 
 
-class UtilityRegistration(registration.ComponentRegistration):
+class UtilityRegistration(bbb.site.BBBUtilityRegistration,
+                          registration.ComponentRegistration):
     """Utility component registration for persistent components
 
     This registration configures persistent components in packages to
