@@ -13,7 +13,7 @@
 ##############################################################################
 """Component Directives Tests
 
-$Id: test_directives.py,v 1.29 2004/03/18 12:19:20 jim Exp $
+$Id: test_directives.py,v 1.30 2004/03/20 17:10:57 srichter Exp $
 """
 import re
 import unittest
@@ -668,25 +668,6 @@ class Test(PlacelessSetup, unittest.TestCase):
 
 
     def testDefaultView(self):
-
-        ob = Ob()
-        self.assertEqual(zapi.queryView(ob, 'test', Request(IV), None), None)
-
-        xmlconfig(StringIO(template % (
-            """
-            <defaultView name="test"
-                  factory="zope.app.component.tests.views.V1"
-                  for="zope.app.component.tests.views.IC"
-                  type="zope.app.component.tests.views.IV"/>
-            """
-            )))
-
-        self.assertEqual(
-            zapi.queryView(ob, 'test', Request(IV), None).__class__,
-            V1)
-        self.assertEqual(zapi.getDefaultViewName(ob, Request(IV)), 'test')
-
-    def testDefaultViewOnly(self):
 
         ob = Ob()
         self.assertEqual(zapi.queryView(ob, 'test', Request(IV), None), None)
