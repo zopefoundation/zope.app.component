@@ -13,7 +13,7 @@
 ##############################################################################
 """Interface fields tests
 
-$Id: test_interfacefield.py,v 1.3 2002/12/30 18:43:05 stevea Exp $
+$Id: test_interfacefield.py,v 1.4 2003/01/06 18:39:34 stevea Exp $
 """
 
 from unittest import TestCase, TestSuite, main, makeSuite
@@ -41,13 +41,23 @@ class TestInterfaceField(TestCase):
         class I2(I1): pass
         class I3(I2): pass
 
-        field = InterfaceField(type=I2)
+        field = InterfaceField(basetype=I2)
 
         field.validate(I2)
         field.validate(I3)
 
         self.assertRaises(ValidationError, field.validate, Interface)
         self.assertRaises(ValidationError, field.validate, I1)
+        self.assertRaises(ValidationError, field.validate, None)
+
+    def test_validate_w_none(self):
+        class I1(Interface): pass
+
+        field = InterfaceField(basetype=None)
+
+        field.validate(None)
+        field.validate(Interface)
+        field.validate(I1)
 
 class TestInterfacesField(TestCase):
 
@@ -68,14 +78,23 @@ class TestInterfacesField(TestCase):
         class I2(I1): pass
         class I3(I2): pass
 
-        field = InterfacesField(value_type=I2)
+        field = InterfacesField(basetype=I2)
 
         field.validate((I2,))
         field.validate((I3,))
 
         self.assertRaises(ValidationError, field.validate, (Interface,))
         self.assertRaises(ValidationError, field.validate, (I1,))
+        self.assertRaises(ValidationError, field.validate, (None,))
 
+    def test_validate_w_none(self):
+        class I1(Interface): pass
+
+        field = InterfacesField(basetype=None)
+
+        field.validate((None,))
+        field.validate((Interface,))
+        field.validate((I1,))
 
 def test_suite():
     return TestSuite((makeSuite(TestInterfaceField),

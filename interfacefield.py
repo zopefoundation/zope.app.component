@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: interfacefield.py,v 1.4 2003/01/05 18:56:47 stevea Exp $
+$Id: interfacefield.py,v 1.5 2003/01/06 18:39:32 stevea Exp $
 """
 
 from zope.schema import ValueSet, Tuple
@@ -26,39 +26,68 @@ class InterfaceField(ValueSet):
     __doc__ = IInterfaceField.__doc__
     __implements__ = IInterfaceField
 
-    type = Interface
+    # This is the most base basetype.
+    # This isn't the default value. See the 'basetype' arg of __init__ for
+    # that.
+    basetype = None
 
-    def __init__(self, type=Interface, *args, **kw):
+    def __init__(self, basetype=Interface, *args, **kw):
+        # XXX Workaround for None indicating a missing value
+        if basetype is None:
+            kw['required'] = False
         super(InterfaceField, self).__init__(*args, **kw)
-        self.validate(type)
-        self.type = type
+        self.validate(basetype)
+        self.basetype = basetype
 
     def _validate(self, value):
         super(InterfaceField, self)._validate(value)
+        basetype = self.basetype
+        
+        if value is None and basetype is None:
+            return
 
+        if basetype is None:
+            basetype = Interface
+            
         if not IInterface.isImplementedBy(value):
             raise ValidationError("Not an interface", value)
 
-        if not value.extends(self.type, 0):
-            raise ValidationError("Does not extend", value, self.type)
+        if not value.extends(basetype, 0):
+            raise ValidationError("Does not extend", value, basetype)
 
 class InterfacesField(Tuple):
     __doc__ = IInterfacesField.__doc__
     __implements__ = IInterfacesField
 
-    value_type = Interface
+    # This is the most base basetype.
+    # This isn't the default value. See the 'basetype' arg of __init__ for
+    # that.
+    basetype = None
 
-    def __init__(self, value_type=Interface, default=(), *args, **kw):
+    def __init__(self, basetype=Interface, default=(), *args, **kw):
+        # XXX Workaround for None indicating a missing value
+        if basetype is None:
+            kw['required'] = False
         super(InterfacesField, self).__init__(default=default, *args, **kw)
-        self.validate((value_type,))
-        self.value_type = value_type
+        self.validate((basetype,))
+        self.basetype = basetype
         # Not using schema.Sequence.value_types
 
     def _validate(self, value):
         super(InterfacesField, self)._validate(value)
+        basetype = self.basetype
+        if basetype is None:
+            none_ok = True
+            basetype = Interface
+        else:
+            none_ok = False
         for item in value:
+            if item is None and none_ok:
+                continue
+                
             if not IInterface.isImplementedBy(item):
                 raise ValidationError("Not an interface", item)
 
-            if not item.extends(self.value_type, 0):
-                raise ValidationError("Does not extend", item, self.value_type)
+            if not item.extends(basetype, 0):
+                raise ValidationError("Does not extend", item, basetype)
+
