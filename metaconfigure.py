@@ -13,7 +13,7 @@
 ##############################################################################
 """Generic Components ZCML Handlers
 
-$Id: metaconfigure.py,v 1.32 2004/03/18 12:19:22 jim Exp $
+$Id: metaconfigure.py,v 1.33 2004/03/20 17:10:55 srichter Exp $
 """
 from zope.interface import Interface
 from zope.component.service import UndefinedService
@@ -287,19 +287,13 @@ def view(_context, factory, type, name, for_, layer='default',
                     args = ('', iface)
                     )
 
-def defaultView(_context, type, name, for_, **__kw):
+def defaultView(_context, type, name, for_):
 
-    if __kw:
-        view(_context, type=type, name=name, for_=for_, **__kw)
-
-    if len(for_) == 1:
-        _context.action(
-            discriminator = ('defaultViewName', for_[0], type, name),
-            callable = handler,
-            args = (Presentation, 'setDefaultViewName', for_[0], type, name),
-            )
-    else:
-        raise TypeError("Can't use multiple for in defaultView")
+    _context.action(
+        discriminator = ('defaultViewName', for_, type, name),
+        callable = handler,
+        args = (Presentation, 'setDefaultViewName', for_, type, name),
+        )
     
     _context.action(
         discriminator = None,
