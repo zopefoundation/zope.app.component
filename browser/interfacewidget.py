@@ -13,12 +13,12 @@
 ##############################################################################
 """Interface widgets
 
-$Id: interfacewidget.py,v 1.3 2004/03/17 17:35:24 philikon Exp $
+$Id: interfacewidget.py,v 1.4 2004/03/19 20:26:23 srichter Exp $
 """
 from xml.sax.saxutils import quoteattr
 
 from zope.interface import Interface, implements
-from zope.publisher.browser import BrowserView
+from zope.app.publisher.browser import BrowserView
 from zope.component import getService
 from zope.component.exceptions import ComponentLookupError
 
