@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: metadirectives.py,v 1.6 2003/11/21 17:11:29 jim Exp $
+$Id: metadirectives.py,v 1.7 2003/12/14 06:02:13 srichter Exp $
 """
 
 from zope.interface import Interface
@@ -313,35 +313,50 @@ class IRequireSubdirective(Interface):
 
     permission = Id(
         title=u"Permission",
+        description=u"""
+        Specifies the permission by id that will be required to
+        access or mutate the attributes and methods specified.""",
         required=False
         )
 
     attributes = Tokens(
-        title=u"Attributes",
+        title=u"Attributes and methods",
+        description=u"""
+        This is a list of attributes and methods that can be accessed.""",
         required=False,
         value_type=PythonIdentifier()
         )
         
     set_attributes = Tokens(
         title=u"Attributes that can be set",
+        description=u"""
+        This is a list of attributes that can be modified/mutated.""",
         required=False,
         value_type=PythonIdentifier()
         )
 
     interface = Tokens(
-        title=u"Interface",
+        title=u"Interfaces",
+        description=u"""
+        The listed interfaces' methods and attributes can be accessed.""",
         required=False,
         value_type=GlobalObject()
         )
 
     set_schema = Tokens(
         title=u"The attributes specified by the schema can be set",
+        description=u"""
+        The listed schemas' properties can be modified/mutated.""",
         required=False,
         value_type=GlobalObject()
         )
 
     like_class = GlobalObject(
         title=u"Configure like this class",
+        description=u"""
+        This argument says that this content class should be configured in the
+        same way the specified class' security is. If this argument is
+        specifed, no other argument can be used.""",
         required=False
         )
     
