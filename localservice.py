@@ -46,8 +46,7 @@ from zope.security.proxy import trustedRemoveSecurityProxy
 #
 # getNextService(context, name):
 # # Returns the next service manager's service with that name.
-#
-# plus queryXXX versions.
+
 
 
 ##def getLocalService(context, name):
@@ -59,9 +58,9 @@ from zope.security.proxy import trustedRemoveSecurityProxy
 ##def queryLocalService(context, name, default=None):
 ##    try:
 ##        sm = getLocalServices(context)
+##        return sm.getService(name)
 ##    except ComponentLookupError:
 ##        return default
-##    return sm.queryService(name, default)
 
 def queryNextService(context, name, default=None):
     try:
@@ -72,10 +71,7 @@ def queryNextService(context, name, default=None):
 def getNextService(context, name):
     """Returns the service with the given name from the next service manager.
     """
-    service = getNextServices(context).queryService(name)
-    if service is None:
-        raise ComponentLookupError(name)
-    return service
+    return getNextServices(context).getService(name)
 
 def getNextServices(context):
     """Returns the next service manager to the one that contains 'context'.

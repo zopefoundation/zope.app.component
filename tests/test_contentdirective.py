@@ -174,8 +174,8 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
 </content>
                        """)
         xmlconfig(f)
-        self.assertRaises(ComponentLookupError, zapi.getUtility,
-                          None, IFactory, 'Example')
+        self.assertRaises(ComponentLookupError, zapi.getUtility, IFactory, 
+                          'Example')
         factory = zapi.getUtility(
             IFactory, 'zope.app.component.tests.exampleclass.ExampleClass')
         self.assertEquals(factory.title, "Example content")

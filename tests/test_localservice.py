@@ -36,11 +36,10 @@ class ServiceManager:
     def __init__(self):
         self.dummy_service = object()
 
-    def queryService(self, name, default=None):
+    def getService(self, name):
         if name == 'dummy':
             return self.dummy_service
-        else:
-            return default
+        raise ComponentLookupError(name)
 
 class Folder:
     implements(IPossibleSite)

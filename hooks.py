@@ -17,7 +17,7 @@ $Id$
 """
 
 import warnings
-from zope.component import getService, getAdapter, queryAdapter
+from zope.component import getService, getAdapter
 from zope.component.interfaces import IServiceService
 from zope.app.site.interfaces import ISite
 from zope.component.service import serviceManager
@@ -76,7 +76,7 @@ def queryView(object, name, request, default=None,
     # XXX test
     #if context is None:
     #    context = object
-    views = getService(context, Presentation)
+    views = getService(Presentation, context)
     view = views.queryView(object, name, request, default=default,
                            providing=providing)
     if ILocation.providedBy(view):

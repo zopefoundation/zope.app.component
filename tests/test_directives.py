@@ -326,8 +326,7 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         self.testAdapter()
         self.assertEqual(IApp(Content()).__class__, Comp)
-        self.assertEqual(zapi.queryNamedAdapter(Content(), IV, 'test'),
-                         None)
+        self.assertEqual(zapi.queryAdapter(Content(), IV, 'test'), None)
 
         xmlconfig(StringIO(template % (
             """
@@ -341,8 +340,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             )))
 
         self.assertEqual(
-            zapi.getNamedAdapter(Content(), IApp, "test").__class__,
-            Comp)
+            zapi.getAdapter(Content(), IApp, "test").__class__, Comp)
 
     def testProtectedAdapter(self):
 
@@ -385,7 +383,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         # Full import is critical!
         from zope.component.tests.components import IApp, comp
 
-        self.assertEqual(zapi.queryUtility(IV, None), None)
+        self.assertEqual(zapi.queryUtility(IV), None)
 
         xmlconfig(StringIO(template % (
             """
@@ -405,7 +403,7 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         self.testUtility()
 
-        self.assertEqual(zapi.queryUtility(IV, None, name='test'), None)
+        self.assertEqual(zapi.queryUtility(IV, 'test'), None)
 
         xmlconfig(StringIO(template % (
             """
@@ -424,7 +422,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         # Full import is critical!
         from zope.component.tests.components import IApp, Comp
 
-        self.assertEqual(zapi.queryUtility(IV, None), None)
+        self.assertEqual(zapi.queryUtility(IV), None)
 
         xmlconfig(StringIO(template % (
             """
@@ -442,7 +440,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         # Full import is critical!
         from zope.component.tests.components import IApp, comp
 
-        self.assertEqual(zapi.queryUtility(IV, None), None)
+        self.assertEqual(zapi.queryUtility(IV), None)
 
         xmlconfig(StringIO(template % (
             """

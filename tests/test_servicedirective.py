@@ -92,7 +92,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             )))
 
     def testServiceConfig(self):
-        self.assertRaises(ComponentLookupError, getService, None, "Foo")
+        self.assertRaises(ComponentLookupError, getService, "Foo")
 
         xmlconfig(StringIO(template % (
             """
@@ -108,13 +108,13 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        service = getService(None, "Foo")
+        service = getService("Foo")
         self.assertEqual(service.foo(), "foo here")
         self.assertEqual(service.foobar(), "foobarred")
         self.assertEqual(service.bar(), "you shouldn't get this")
 
     def testServiceFactoryConfig(self):
-        self.assertRaises(ComponentLookupError, getService, None, "Foo")
+        self.assertRaises(ComponentLookupError, getService, "Foo")
 
         xmlconfig(StringIO(template % (
             """
@@ -130,13 +130,13 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        service = getService(None, "Foo")
+        service = getService("Foo")
         self.assertEqual(service.foo(), "foo here")
         self.assertEqual(service.foobar(), "foobarred")
         self.assertEqual(service.bar(), "you shouldn't get this")
 
     def testPublicProtectedServiceConfig(self):
-        self.assertRaises(ComponentLookupError, getService, None, "Foo")
+        self.assertRaises(ComponentLookupError, getService, "Foo")
 
         xmlconfig(StringIO(template % (
             """
@@ -153,14 +153,14 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        service = getService(None, "Foo")
+        service = getService("Foo")
         service = ProxyFactory(service) # simulate untrusted code!
         self.assertEqual(service.foo(), "foo here")
         self.assertEqual(service.foobar(), "foobarred")
         self.assertRaises(Forbidden, getattr, service, 'bar')
 
     def testProtectedServiceConfig(self):
-        self.assertRaises(ComponentLookupError, getService, None, "Foo")
+        self.assertRaises(ComponentLookupError, getService, "Foo")
 
         xmlconfig(StringIO(template % (
             """
@@ -191,7 +191,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         from zope.security.management import newInteraction
         newInteraction(ParticipationStub('someuser'))
 
-        service = getService(None, "Foo")
+        service = getService("Foo")
         service = ProxyFactory(service) # simulate untrusted code!
 
         self.assertRaises(Unauthorized, getattr, service, 'foo')

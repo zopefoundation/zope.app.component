@@ -17,7 +17,6 @@ $Id$
 __metaclass__ = type
 
 from zope.component.exceptions import ComponentLookupError
-from zope.component import getService
 from zope.interface import directlyProvides
 from zope.interface.interfaces import IInterface
 from types import ClassType
@@ -145,7 +144,7 @@ def queryInterface(id, default=None):
     
     """
     
-    return zapi.queryUtility(IInterface, default, id)
+    return zapi.queryUtility(IInterface, id, default)
 
 def searchInterface(context, search_string=None, base=None):
     """Interfaces search
