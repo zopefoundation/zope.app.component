@@ -81,7 +81,7 @@ class LayerField(GlobalObject):
     Test 3: Get the layer from the utility service
     ----------------------------------------------
 
-    >>> from zope.app.tests import ztapi
+    >>> from zope.app.testing import ztapi
     >>> ztapi.provideUtility(ILayer, layer1, 'layer1')
 
     >>> field.fromUnicode('layer1') is layer1

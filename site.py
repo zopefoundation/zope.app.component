@@ -30,6 +30,7 @@ import zope.event
 import zope.interface
 import zope.component
 from zope.component.exceptions import ComponentLookupError
+from zope.security.proxy import removeSecurityProxy
 
 from zope.app import zapi
 from zope.app.component import adapter
@@ -98,11 +99,30 @@ def _findNextSiteManager(site):
             # we're the root site, return None
             return None
 
-        site = zapi.getParent(site)
+        try:
+            site = zapi.getParent(site)
+        except TypeError:
+            # there was not enough context; probably run from a test
+            return None
 
         if interfaces.ISite.providedBy(site):
             return site.getSiteManager()
-    
+
+
+class LocalUtilityRegistry(adapter.LocalAdapterRegistry):
+    """Custom local adapter registry for utilities, since utilities do not
+    just register themselves as null adapters, but also as subscribers."""
+
+    def _updateAdaptersFromRegistration(self, radapters, registration):
+        # Register as null adapter
+        key = (False, registration.with, registration.name,
+               registration.provided)
+        radapters[key] = removeSecurityProxy(registration.component)
+        # Register as subscriber
+        key = (True, registration.with, '', registration.provided)
+        radapters[key] = radapters.get(key, ()) + (
+            removeSecurityProxy(registration.component), )
+
 
 class LocalSiteManager(BTreeContainer,
                        zope.component.site.SiteManager):
@@ -127,7 +147,7 @@ class LocalSiteManager(BTreeContainer,
         # Set up adapter registries
         gsm = zapi.getGlobalSiteManager()
         self.adapters = adapter.LocalAdapterRegistry(gsm.adapters)
-        self.utilities = adapter.LocalAdapterRegistry(gsm.utilities)
+        self.utilities = LocalUtilityRegistry(gsm.utilities)
 
         # Setup located registry attributes
         next = _findNextSiteManager(site)
@@ -286,8 +306,9 @@ def SiteManagerAdapter(ob):
             return current.getSiteManager()
         current = getattr(current, '__parent__', None)
         if current is None:
-            raise ComponentLookupError(
-                "Could not adapt %r to ISiteManager" %ob)
+            # It is not a location or has no parent, so we return the global
+            # site manager
+            return zapi.getGlobalSiteManager()
 
 
 def threadSiteSubscriber(event):

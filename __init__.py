@@ -24,20 +24,20 @@ from zope.app import zapi
 
 import sys
 import zope.app
-from zope.app.component.bbb import registration as bbb_registration
-sys.modules['zope.app.registration'] = bbb_registration
-zope.app.registration = bbb_registration
-from zope.app.component.bbb import localservice
-sys.modules['zope.app.component.localservice'] = localservice
-from zope.app.component.bbb import site
-sys.modules['zope.app.site'] = site
-zope.app.site = site
-from zope.app.component.bbb import adapter as bbb_adapter
-sys.modules['zope.app.adapter'] = bbb_adapter
-zope.app.adapter = bbb_adapter
-from zope.app.component.bbb import utility
-sys.modules['zope.app.utility'] = utility
-zope.app.utility = utility
+#from zope.app.component.bbb import registration as bbb_registration
+#sys.modules['zope.app.registration'] = bbb_registration
+#zope.app.registration = bbb_registration
+#from zope.app.component.bbb import localservice
+#sys.modules['zope.app.component.localservice'] = localservice
+#from zope.app.component.bbb import site
+#sys.modules['zope.app.site'] = site
+#zope.app.site = site
+#from zope.app.component.bbb import adapter as bbb_adapter
+#sys.modules['zope.app.adapter'] = bbb_adapter
+#zope.app.adapter = bbb_adapter
+#from zope.app.component.bbb import utility
+#sys.modules['zope.app.utility'] = utility
+#zope.app.utility = utility
 
 ##############################################################################
 

@@ -15,6 +15,8 @@
 
 $Id$
 """
+import zope.interface
+from zope.component.interfaces import ISiteManager
 from zope.app import zapi
 from zope.app.testing import setup
 from zope.app.testing.placelesssetup import PlacelessSetup
@@ -71,19 +73,32 @@ class PlacefulSetup(PlacelessSetup):
 
     def makeSite(self, path='/'):
         folder = zapi.traverse(self.rootFolder, path)
-        return setup.createServiceManager(folder, True)
+        return setup.createSiteManager(folder, True)
 
     def createRootFolder(self):
         self.rootFolder = rootFolder()
 
-    def createStandardServices(self):
-        '''Create a bunch of standard placeful services'''
 
-        setup.createStandardServices(self.rootFolder)
+class SiteManagerStub(object):
+    zope.interface.implements(ISiteManager)
+    
+    next = None
 
+    def __init__(self):
+        self._utils = {}
+
+    def setNext(self, next):
+        self.next = next
+
+    def provideUtility(self, iface, util, name=''):
+        self._utils[(iface, name)] = util
+
+    def queryUtility(self, iface, name='', default=None):
+        return self._utils.get((iface, name), default)
+    
 
 def testingNextUtility(utility, nextutility, interface, name='',
-                       service=None, nextservice=None):
+                       sitemanager=None, nextsitemanager=None):
     """Provide a next utility for testing.
 
     Since utilities must be registered in services, we really provide a next
@@ -138,16 +153,15 @@ def testingNextUtility(utility, nextutility, interface, name='',
       True
     
     """
-    UtilityService = type('UtilityService', (GlobalUtilityService,),
-                          {'__parent__': None})
-    if service is None:
-        service = UtilityService()
-    if nextservice is None:
-        nextservice = UtilityService()
-    from zope.app.component.localservice import testingNextService
-    testingNextService(service, nextservice, zapi.servicenames.Utilities)
+    if sitemanager is None:
+        sitemanager = SiteManagerStub()
+    if nextsitemanager is None:
+        nextsitemanager = SiteManagerStub()
+    sitemanager.setNext(nextsitemanager)
 
-    service.provideUtility(interface, utility, name)
-    utility.__parent__ = service
-    nextservice.provideUtility(interface, nextutility, name)
-    nextutility.__parent__ = nextservice
+    sitemanager.provideUtility(interface, utility, name)
+    utility.__conform__ = \
+       lambda iface: iface.isOrExtends(ISiteManager) and sitemanager or None
+    nextsitemanager.provideUtility(interface, nextutility, name)
+    nextutility.__conform__ = \
+       lambda iface: iface.isOrExtends(ISiteManager) and nextsitemanager or None

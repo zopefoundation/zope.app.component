@@ -1,0 +1,26 @@
+<html metal:use-macro="context/@@standard_macros/view">
+<body>
+<div metal:fill-slot="body">
+
+  <h2 i18n:translate="">
+    Available Tools
+  </h2>
+  <br/>
+
+  <tal:block repeat="tool view/getTools">
+    <h4>
+      <a href="" 
+          tal:attributes="href tool/action"
+          tal:content="tool/title"
+          i18n:translate="">
+        Menu Title
+      </a>
+     </h4>
+     <p tal:content="tool/description">
+       Tool Description
+     </p>
+  </tal:block>
+
+</div>
+</body>
+</html>

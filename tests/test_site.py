@@ -22,8 +22,9 @@ import zope.interface
 from zope.testing import doctest
 
 from zope.app.testing import setup
-from zope.app.component import interfaces
+from zope.app.component import interfaces, site
 from zope.app.folder import folder
+import zope.app.publication.interfaces
 
 class SiteManagerStub(object):
     zope.interface.implements(interfaces.ILocalSiteManager)
@@ -126,6 +127,40 @@ def test_setThreadSite_clearThreadSite():
       True
     """
 
+class BaseTestSiteManagerContainer(unittest.TestCase):
+    """This test is for objects that don't have site managers by
+    default and that always give back the site manager they were
+    given.
+
+    Subclasses need to define a method, 'makeTestObject', that takes no
+    arguments and that returns a new site manager
+    container that has no site manager."""
+
+    def test_IPossibleSite_verify(self):
+        zope.interface.verify.verifyObject(interfaces.IPossibleSite,
+                                           self.makeTestObject())
+
+    def test_get_and_set(self):
+        smc = self.makeTestObject()
+        self.failIf(interfaces.ISite.providedBy(smc))
+        sm = site.LocalSiteManager(smc)
+        smc.setSiteManager(sm)
+        self.failUnless(interfaces.ISite.providedBy(smc))
+        self.failUnless(smc.getSiteManager() is sm)
+        zope.interface.verify.verifyObject(interfaces.ISite, smc)
+
+    def test_set_w_bogus_value(self):
+        smc=self.makeTestObject()
+        self.assertRaises(Exception, smc.setSiteManager, self)
+
+
+
+class SiteManagerContainerTest(BaseTestSiteManagerContainer):
+    def makeTestObject(self):
+        from zope.app.component.site import SiteManagerContainer
+        return SiteManagerContainer()
+
+
 def setUp(test):
     setup.placefulSetUp()
 
@@ -135,6 +170,7 @@ def tearDown(test):
 def test_suite():
     return unittest.TestSuite((
         doctest.DocTestSuite(),
+        unittest.makeSuite(SiteManagerContainerTest),
         doctest.DocFileSuite('../site.txt',
                              setUp=setUp, tearDown=tearDown),
         ))

@@ -23,9 +23,7 @@ import zope.interface
 import zope.schema
 from zope.security.proxy import removeSecurityProxy
 
-import zope.app.component.localservice
 import zope.app.container.contained
-import zope.app.site.interfaces
 from zope.app import zapi
 from zope.app.component import registration
 from zope.app.component import interfaces
@@ -96,11 +94,6 @@ class LocalAdapterRegistry(zope.interface.adapter.AdapterRegistry,
         self.next = next
         self.adaptersChanged()
 
-    def _getKey(self, registration):
-        """Return the key of a registration."""
-        return (False, registration.with,
-                registration.name, registration.provided)
-
     def register(self, registration):
         """See zope.app.component.interfaces.registration.IRegistry"""
         self._registrations += (registration,)
@@ -138,6 +131,13 @@ class LocalAdapterRegistry(zope.interface.adapter.AdapterRegistry,
         """Used by LocalSurrogate"""
         return self.base.get(spec)
 
+    def _updateAdaptersFromRegistration(self, radapters, registration):
+        """Only to be used by _updateAdaptersFromLocalData, but can be
+        overridden to implement custom behavior."""
+        key = (False, registration.with, registration.name,
+               registration.provided)
+        radapters[key] = removeSecurityProxy(registration.component)
+
     def _updateAdaptersFromLocalData(self, adapters):
         """Update all adapter surrogates locally."""
         for registration in self._registrations:
@@ -154,8 +154,7 @@ class LocalAdapterRegistry(zope.interface.adapter.AdapterRegistry,
             # storing the value amd we can't store proxies.
             # (Why can't we?)  we need to think more about
             # why/if this is truly safe
-            key = self._getKey(registration)
-            radapters[key] = removeSecurityProxy(registration.component)
+            self._updateAdaptersFromRegistration(radapters, registration)
 
 
     def adaptersChanged(self):
@@ -173,7 +172,7 @@ class LocalAdapterRegistry(zope.interface.adapter.AdapterRegistry,
             # Throw away all of our surrogates, rather than dirtrying
             # them individually
             super(LocalAdapterRegistry, self).__init__()
-
+            
             for sub in self.subs:
                 sub.adaptersChanged()
 
