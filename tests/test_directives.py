@@ -27,7 +27,6 @@ from zope.component.exceptions import ComponentLookupError
 from zope.component import getView, queryView, queryResource
 from zope.component import createObject
 from zope.component import getDefaultViewName
-from zope.component import queryAdapter
 from zope.component import getNamedAdapter, queryNamedAdapter
 from zope.component import getUtility, queryUtility
 
@@ -110,7 +109,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         # Full import is critical!
         from zope.component.tests.components import Content, IApp, Comp
 
-        self.assertEqual(queryAdapter(Content(), IV, None), None)
+        self.assertEqual(IV(Content(), None), None)
 
         xmlconfig(StringIO(template % (
             """
@@ -154,7 +153,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         # Full import is critical!
         from zope.component.tests.components import Content, IApp, Comp
 
-        self.assertEqual(queryAdapter(Content(), IV, None), None)
+        self.assertEqual(IV(Content(), None), None)
 
         xmlconfig(StringIO(template % (
             """
