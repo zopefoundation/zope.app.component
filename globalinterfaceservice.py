@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: globalinterfaceservice.py,v 1.15 2003/08/09 18:11:25 sidnei Exp $
+$Id: globalinterfaceservice.py,v 1.16 2003/08/16 00:43:18 srichter Exp $
 """
 from __future__ import generators
 
@@ -47,9 +47,9 @@ class InterfaceService:
             # XXX Should use getService(), but that breaks a few
             # tests that do too basic setup to get the utilities
             # service started. I'll fix this later
-            utility = utilityService.queryUtility(IInterface, name=id)
-            if utility is not None:
-                return utility
+            utilities = self._queryUtilityInterfaces(search_string=id)
+            if utilities:
+                return utilities[0][1]
         return default
 
     def searchInterface(self, search_string=None, base=None):
@@ -74,7 +74,7 @@ class InterfaceService:
             yield id, interface
 
     def _getAllDocs(self,interface):
-        docs = [str(interface.__name__).lower(),
+        docs = [str(interface.getName()).lower(),
                 str(interface.__doc__).lower()]
 
         for name in interface:
@@ -83,8 +83,6 @@ class InterfaceService:
         return '\n'.join(docs)
 
     def _queryUtilityInterfaces(self, interface=None, search_string=None):
-        if interface is None:
-            interface = IInterface
         # XXX Should use getService(), but that breaks a few
         # tests that do too basic setup to get the utilities
         # service started. I'll fix this later
@@ -98,7 +96,7 @@ class InterfaceService:
 
     def provideInterface(self, id, interface):
         if not id:
-            id = "%s.%s" % (interface.__module__, interface.__name__)
+            id = "%s.%s" % (interface.__module__, interface.getName())
 
         self.__data[id]=(interface, self._getAllDocs(interface))
 

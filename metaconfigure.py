@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: metaconfigure.py,v 1.17 2003/08/04 15:37:46 philikon Exp $
+$Id: metaconfigure.py,v 1.18 2003/08/16 00:43:18 srichter Exp $
 """
 
 from zope.configuration.exceptions import ConfigurationError
@@ -111,7 +111,7 @@ def utility(_context, provides, component=None, factory=None,
         discriminator = None,
         callable = handler,
         args = (Interfaces, 'provideInterface',
-                provides.__module__+'.'+provides.__name__, provides)
+                provides.__module__+'.'+provides.getName(), provides)
         )
 
 def factory(_context, component, id=None, permission=None):
@@ -188,7 +188,7 @@ def resource(_context, factory, type, name, layer='default',
         discriminator = None,
         callable = handler,
         args = (Interfaces, 'provideInterface',
-                type.__module__+'.'+type.__name__, type)
+                type.__module__+'.'+type.getName(), type)
         )
 
 def view(_context, factory, type, name, for_, layer='default',
@@ -227,7 +227,7 @@ def view(_context, factory, type, name, for_, layer='default',
         discriminator = None,
         callable = handler,
         args = (Interfaces, 'provideInterface',
-                type.__module__+'.'+type.__name__, type)
+                type.__module__+'.'+type.getName(), type)
         )
 
     if for_ is not None:
@@ -235,7 +235,7 @@ def view(_context, factory, type, name, for_, layer='default',
             discriminator = None,
             callable = handler,
             args = (Interfaces, 'provideInterface',
-                    for_.__module__+'.'+for_.__name__,
+                    for_.__module__+'.'+for_.getName(),
                     for_)
             )
 
@@ -256,7 +256,7 @@ def defaultView(_context, type, name, for_, **__kw):
         discriminator = None,
         callable = handler,
         args = (Interfaces, 'provideInterface',
-                type.__module__+'.'+type.__name__, type)
+                type.__module__+'.'+type.getName(), type)
         )
 
     if for_ is not None:
@@ -264,7 +264,7 @@ def defaultView(_context, type, name, for_, **__kw):
             discriminator = None,
             callable = handler,
             args = (Interfaces, 'provideInterface',
-                    for_.__module__+'.'+for_.__name__, for_)
+                    for_.__module__+'.'+for_.getName(), for_)
             )
 
 def serviceType(_context, id, interface):
@@ -276,7 +276,7 @@ def serviceType(_context, id, interface):
     _context.action(
         discriminator = None,
         callable = provideInterface,
-        args = (interface.__module__+'.'+interface.__name__,
+        args = (interface.__module__+'.'+interface.getName(),
                 interface)
         )
 
@@ -334,7 +334,7 @@ def skin(_context, name, layers, type):
         discriminator = None,
         callable = handler,
         args = (Interfaces, 'provideInterface',
-                type.__module__+'.'+type.__name__, type)
+                type.__module__+'.'+type.getName(), type)
         )
 
 #XXX you will be terminated soon

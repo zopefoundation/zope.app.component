@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: hooks.py,v 1.9 2003/06/01 15:59:29 jim Exp $
+$Id: hooks.py,v 1.10 2003/08/16 00:43:18 srichter Exp $
 """
 
 from zope.component import getService
@@ -137,7 +137,7 @@ def queryNamedAdapter(object, interface, name, default=None, context=None):
 ##                                context.__class__.__module__,
 ##                                context.__class__.__name__,
 ##                                interface.__module__,
-##                                interface.__name__,
+##                                interface.getName(),
 ##                                ))
     if wrapped:
         data = getWrapperData(context, create=True)

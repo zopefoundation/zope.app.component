@@ -13,7 +13,7 @@
 ##############################################################################
 """ Register class directive.
 
-$Id: contentdirective.py,v 1.8 2003/08/05 14:24:53 sidnei Exp $
+$Id: contentdirective.py,v 1.9 2003/08/16 00:43:18 srichter Exp $
 """
 from zope.interface import classProvides
 from types import ModuleType
@@ -75,7 +75,7 @@ class ContentDirective:
                 args = (Interfaces, 'provideInterface',
                         interface.__module__+
                         '.'+
-                        interface.__name__,
+                        interface.getName(),
                         interface)
                 )
 
@@ -126,7 +126,7 @@ class ContentDirective:
             discriminator = None,
             callable = handler,
             args = (Interfaces, 'provideInterface',
-                    interface.__module__+ '.'+ interface.__name__,
+                    interface.__module__+ '.'+ interface.getName(),
                     interface)
             )
 
@@ -167,7 +167,7 @@ class ContentDirective:
             discriminator = None,
             callable = handler,
             args = (Interfaces, 'provideInterface',
-                    schema.__module__+ '.'+ schema.__name__,
+                    schema.__module__+ '.'+ schema.getName(),
                     schema)
             )
 
