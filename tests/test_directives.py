@@ -19,7 +19,7 @@ from zope.configuration.xmlconfig import xmlconfig, XMLConfig
 from zope.configuration.exceptions import ConfigurationError
 from zope.app.security.exceptions import UndefinedPermissionError
 
-from zope.proxy import getObject as proxiedObject
+from zope.proxy import getProxiedObject
 from zope.security.proxy import getTestProxyItems
 
 import zope.app.component
@@ -123,7 +123,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         adapter = getAdapter(Content(), IApp)
         items = [item[0] for item in getTestProxyItems(adapter)]
         self.assertEqual(items, ['a', 'f'])
-        self.assertEqual(proxiedObject(adapter).__class__, Comp)
+        self.assertEqual(getProxiedObject(adapter).__class__, Comp)
 
     def testAdapterUndefinedPermission(self):
         config = StringIO(template % (
@@ -216,7 +216,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         utility = getUtility(None, IApp)
         items = [item[0] for item in getTestProxyItems(utility)]
         self.assertEqual(items, ['a', 'f'])
-        self.assertEqual(proxiedObject(utility), comp)
+        self.assertEqual(getProxiedObject(utility), comp)
 
     def testUtilityUndefinedPermission(self):
         config = StringIO(template % (
