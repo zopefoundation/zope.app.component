@@ -11,7 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"$Id: classfactory.py,v 1.6 2003/09/21 17:31:21 jim Exp $"
+"$Id: classfactory.py,v 1.7 2003/12/03 05:41:05 jim Exp $"
 
 from zope.interface import implements, implementedBy
 from zope.component.interfaces import IFactory
@@ -35,6 +35,6 @@ class ClassFactory:
         return self._class(*args, **kwargs)
 
     def getInterfaces(self):
-        return tuple(implementedBy(self._class))
+        return implementedBy(self._class)
 
 __doc__ = "%s\n\n%s" % (ClassFactory.__doc__, __doc__)
