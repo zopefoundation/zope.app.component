@@ -25,6 +25,8 @@ from zope.app.site.interfaces import ISite, ISiteManager
 from zope.app.event.interfaces import ISubscriber
 from zope.testing.cleanup import addCleanUp
 from zope.app.component.hooks import setSite
+from zope.component.service import IGlobalServiceManager
+from zope.security.proxy import trustedRemoveSecurityProxy
 
 # placeful service manager convenience tools
 
@@ -79,7 +81,10 @@ def getNextService(context, name):
 def getNextServices(context):
     """Returns the next service manager to the one that contains 'context'.
     """
-    return getLocalServices(context).next
+    services = getLocalServices(context).next
+    if IGlobalServiceManager.providedBy(services):
+        services = trustedRemoveSecurityProxy(services)
+    return services
 
 def queryNextServices(context, default=None):
     try:

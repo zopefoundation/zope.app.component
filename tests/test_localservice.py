@@ -134,6 +134,7 @@ class Test(unittest.TestCase):
         self.assertRaises(ComponentLookupError,
                           getNextService, self.p1, 'dummy')
 
+
     def test_queryNextServices(self):
         from zope.app.component.localservice import queryNextServices
         marker = object()
@@ -167,6 +168,13 @@ class Test(unittest.TestCase):
                           getNextServices, self.unparented_folder)
         self.assertRaises(ComponentLookupError,
                           getNextServices, self.unrooted_subfolder)
+
+    def test_getNextServices_security(self):
+        from zope.app.component.localservice import getNextServices
+        from zope.security.checker import ProxyFactory, NamesChecker
+        sm = ProxyFactory(self.sm1, NamesChecker(('next',)))
+        # Check that serviceManager is not proxied
+        self.assert_(getNextServices(sm) is serviceManager)
 
     def test_queryLocalServices(self):
         from zope.app.component.localservice import queryLocalServices
