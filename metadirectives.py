@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: metadirectives.py,v 1.14 2004/03/15 20:41:56 jim Exp $
+$Id: metadirectives.py,v 1.15 2004/03/20 17:10:56 srichter Exp $
 """
 
 from zope.interface import Interface
@@ -234,6 +234,25 @@ class IViewDirective(IBasicViewInformation, IBasicResourceInformation):
         required=False,
         value_type=GlobalObject()
         )
+
+class IDefaultViewDirective(IBasicResourceInformation):
+    """The name of the view that should be the default.
+
+    This name refers to view that should be the
+    view used by default (if no view name is supplied
+    explicitly).
+    """
+
+    for_ = GlobalObject(
+        title=u"The interface this view is the default for.",
+        description=u"""
+        The view is the default view for the supplied interface. If
+        this is not supplied, the view applies to all objects (XXX
+        this ought to change).""",
+        required=False
+        )
+
+
 
 class IResourceDirective(IBasicComponentInformation,
                          IBasicResourceInformation):
