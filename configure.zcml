@@ -28,6 +28,7 @@
          permission="zope.Public"
          factory="zope.component.presentation.GlobalPresentationService" />
 
+
 <hook module="zope.component"
       name="getServiceManager"
       implementation="zope.app.component.hooks.getServiceManager_hook" />
@@ -35,15 +36,6 @@
 <hook module="zope.component"
       name="queryView"
       implementation="zope.app.component.hooks.queryView" />
-
-<serviceType
-    id="Interfaces"
-    interface="zope.app.interfaces.component.IInterfaceService" />
-
-<service
-   serviceType="Interfaces"
-   permission="zope.Public"
-   component="zope.app.component.globalinterfaceservice.interfaceService" />
 
 <interface interface="zope.interface.Interface" />
 
