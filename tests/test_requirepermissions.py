@@ -14,14 +14,15 @@
 """ Test handler for 'require' subdirective of 'content' directive """
 
 from cStringIO import StringIO
+import unittest
+
+import zope.app.component
+import zope.app.security
+
 from zope.app.component.globalinterfaceservice import queryInterface
 from zope.app.component.tests import module
 from zope.app.tests.placelesssetup import PlacelessSetup
 from zope.security.checker import selectChecker
-import unittest
-import zope.app.component
-import zope.app.security
-import zope.configuration
 from zope.interface import implements
 
 # So we can use config parser to exercise protectClass stuff.

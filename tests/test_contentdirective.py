@@ -13,20 +13,20 @@
 ##############################################################################
 """
 
-$Id: test_contentdirective.py,v 1.8 2003/08/05 14:24:57 sidnei Exp $
+$Id: test_contentdirective.py,v 1.9 2003/08/17 06:06:17 philikon Exp $
 """
 
 import unittest
 from StringIO import StringIO
+
+import zope.app.security
+import zope.app.component
 
 from zope.component.exceptions import ComponentLookupError
 from zope.configuration.xmlconfig import xmlconfig, XMLConfig
 from zope.app.tests.placelesssetup import PlacelessSetup
 from zope.security.management import newSecurityManager, system_user
 from zope.security.proxy import Proxy
-import zope.configuration
-import zope.app.security
-import zope.app.component
 from zope.app.security.exceptions import UndefinedPermissionError
 from zope.component import getService
 from zope.app.services.servicenames import Factories

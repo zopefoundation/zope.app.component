@@ -13,8 +13,6 @@
 ##############################################################################
 import unittest
 
-from zope.interface import Interface
-
 from zope.app.interfaces.component import IGlobalInterfaceService
 from zope.app.component.globalinterfaceservice import InterfaceService
 from zope.app.component.tests.absIInterfaceService \

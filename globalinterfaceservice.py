@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: globalinterfaceservice.py,v 1.16 2003/08/16 00:43:18 srichter Exp $
+$Id: globalinterfaceservice.py,v 1.17 2003/08/17 06:06:15 philikon Exp $
 """
 from __future__ import generators
 
@@ -21,7 +21,6 @@ __metaclass__ = type
 from zope.component.exceptions import ComponentLookupError
 from zope.component import getService
 from zope.app.interfaces.component import IGlobalInterfaceService
-from zope.app.services.servicenames import Utilities
 from zope.interface import implements, providedBy
 from zope.interface.interfaces import IInterface
 from zope.component.utility import utilityService
