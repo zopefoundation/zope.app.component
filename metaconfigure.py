@@ -77,8 +77,27 @@ def proxify(ob, checker):
 
     return ob
 
-def subscriber(_context, factory, for_, provides=None, permission=None,
-               trusted=False):
+_handler=handler
+def subscriber(_context, for_, factory=None, handler=None, provides=None,
+               permission=None, trusted=False):
+
+    if factory is None:
+        if handler is None:
+            raise TypeError("No factory or handler provides")
+        if provides is not None:
+            raise TypeError("Cannot use handler with provides")
+        factory = handler
+    else:
+        if handler is not None:
+            raise TypeError("Cannot use handler with factory")
+        if provides is None:
+            import warnings
+            warnings.warn(
+                "Use of factory without provides to indicate a handler "
+                "is deprecated and will change it's meaning in Zope X3.3. "
+                "Use the handler attribute instead.",
+                DeprecationWarning)
+    
     factory = [factory]
 
     if permission is not None:
@@ -108,7 +127,7 @@ def subscriber(_context, factory, for_, provides=None, permission=None,
 
     _context.action(
         discriminator = None,
-        callable = handler,
+        callable = _handler,
         args = (zapi.servicenames.Adapters, 'subscribe',
                 for_, provides, factory),
         )

@@ -31,12 +31,12 @@
       for="zope.interface.Interface" />
 
   <subscriber
-      factory=".localservice.threadSiteSubscriber"
+      handler=".localservice.threadSiteSubscriber"
       for="zope.app.publication.interfaces.IBeforeTraverseEvent"
       />
 
   <subscriber
-      factory=".localservice.clearThreadSiteSubscriber"
+      handler=".localservice.clearThreadSiteSubscriber"
       for="zope.app.publication.interfaces.IEndRequestEvent"
       />
 

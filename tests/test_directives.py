@@ -174,7 +174,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             <subscriber
               for="zope.component.tests.components.IContent
                    zope.app.component.tests.adapter.I1"
-              factory="zope.app.component.tests.adapter.Handler"
+              handler="zope.app.component.tests.adapter.Handler"
               />
             """
             )))

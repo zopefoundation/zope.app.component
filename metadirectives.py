@@ -221,7 +221,13 @@ class ISubscriberDirective(zope.interface.Interface):
     factory = zope.configuration.fields.GlobalObject(
         title=_("Subscriber factory"),
         description=_("A factory used to create the subscriber instance."),
-        required=True
+        required=False,
+        )
+
+    handler = zope.configuration.fields.GlobalObject(
+        title=_("Handler"),
+        description=_("A callable object that handles events."),
+        required=False,
         )
 
     provides = zope.configuration.fields.GlobalInterface(
