@@ -12,16 +12,17 @@
 #
 ##############################################################################
 """
-$Id: globalinterfaceservice.py,v 1.10 2003/05/20 19:43:25 sidnei Exp $
+$Id: globalinterfaceservice.py,v 1.11 2003/06/07 06:37:21 stevea Exp $
 """
 
 __metaclass__ = type
 
 from zope.component.exceptions import ComponentLookupError
 from zope.app.interfaces.component import IGlobalInterfaceService
+from zope.interface import implements
 
 class InterfaceService:
-    __implements__ = IGlobalInterfaceService
+    implements(IGlobalInterfaceService)
 
     def __init__(self, data=None):
         if data is None:

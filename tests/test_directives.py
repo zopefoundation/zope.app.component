@@ -34,6 +34,7 @@ from zope.component import getUtility, queryUtility
 from zope.app.tests.placelesssetup import PlacelessSetup
 from zope.component.tests.views import IV, IC, V1, VZMI, R1, RZMI
 from zope.component.tests.request import Request
+from zope.interface import implements
 
 
 template = """<zopeConfigure
@@ -43,7 +44,7 @@ template = """<zopeConfigure
    </zopeConfigure>"""
 
 class Ob:
-    __implements__ = IC
+    implements(IC)
 
 def definePermissions():
     XMLConfig('meta.zcml', zope.app.component)()

@@ -22,6 +22,7 @@ import unittest
 import zope.app.component
 import zope.app.security
 import zope.configuration
+from zope.interface import implements
 
 # So we can use config parser to exercise protectClass stuff.
 from zope.configuration.xmlconfig import XMLConfig
@@ -56,7 +57,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             def m2(self):
                 return "m2"
         class C(B):
-            __implements__ = module.I
+            implements(module.I)
             def m3(self):
                 return "m3"
             def m4(self):

@@ -13,11 +13,11 @@
 ##############################################################################
 """ Register class directive.
 
-$Id: contentdirective.py,v 1.1 2003/05/12 16:32:39 stevea Exp $
+$Id: contentdirective.py,v 1.2 2003/06/07 06:37:21 stevea Exp $
 """
 from zope.interface import classProvides
 from types import ModuleType
-from zope.interface.implements import implements
+from zope.interface import implements, classImplements
 from zope.configuration.interfaces import INonEmptyDirective
 from zope.configuration.interfaces import ISubdirectiveHandler
 from zope.component import getService
@@ -51,7 +51,7 @@ def assertPermission(permission=None, *args, **kw):
 class ContentDirective:
 
     classProvides(INonEmptyDirective)
-    __implements__ = ISubdirectiveHandler
+    implements(ISubdirectiveHandler)
 
     def __init__(self, _context, class_):
         self.__id = class_
@@ -70,11 +70,10 @@ class ContentDirective:
             resolved_interface = resolveInterface(_context, interface)
             r += [
                 Action(
-                    discriminator = ('ContentDirective', self.__class, object()),
-                    callable = implements,
-                    # the last argument is check=1, which causes implements
-                    # to verify that the class does implement the interface
-                    args = (self.__class, resolved_interface, 1),
+                    discriminator = (
+                        'ContentDirective', self.__class, object()),
+                    callable = classImplements,
+                    args = (self.__class, resolved_interface),
                     ),
                 Action(
                    discriminator = None,

@@ -12,18 +12,18 @@
 #
 ##############################################################################
 """
-$Id: interfacefield.py,v 1.8 2003/05/13 17:08:33 alga Exp $
+$Id: interfacefield.py,v 1.9 2003/06/07 06:37:21 stevea Exp $
 """
 
 from zope.schema import Enumerated, Field, Tuple
-from zope.interface import Interface
+from zope.interface import Interface, implements
 from zope.interface.interfaces import IInterface
 from zope.schema.interfaces import ValidationError
 from zope.app.interfaces.component import IInterfaceField, IInterfacesField
 
 class InterfaceField(Enumerated, Field):
     __doc__ = IInterfaceField.__doc__
-    __implements__ = IInterfaceField
+    implements(IInterfaceField)
 
     # This is the most base basetype.
     # This isn't the default value. See the 'basetype' arg of __init__ for
@@ -56,7 +56,7 @@ class InterfaceField(Enumerated, Field):
 
 class InterfacesField(Tuple):
     __doc__ = IInterfacesField.__doc__
-    __implements__ = IInterfacesField
+    implements(IInterfacesField)
 
     # This is the most base basetype.
     # This isn't the default value. See the 'basetype' arg of __init__ for
