@@ -19,7 +19,8 @@ from zope.configuration.xmlconfig import xmlconfig, XMLConfig
 from zope.configuration.exceptions import ConfigurationError
 from zope.app.security.exceptions import UndefinedPermissionError
 
-from zope.security.proxy import getTestProxyItems, getObject as proxiedObject
+from zope.proxy import getObject as proxiedObject
+from zope.security.proxy import getTestProxyItems
 
 import zope.app.component
 from zope.component.exceptions import ComponentLookupError

@@ -46,7 +46,7 @@ class Test(PlacelessSetup, unittest.TestCase):
 
     def testFactory(self):
         from zope.component import getService
-        from zope.proxy.introspection import removeAllProxies
+        from zope.proxy import removeAllProxies
         f = configfile("""
 <permission id="zope.Foo" title="Zope Foo Permission" />
 <content class="zope.app.component.tests.exampleclass.ExampleClass">
@@ -65,7 +65,7 @@ class Test(PlacelessSetup, unittest.TestCase):
 
     def testFactoryDefaultId(self):
         from zope.component import getService
-        from zope.proxy.introspection import removeAllProxies
+        from zope.proxy import removeAllProxies
         f = configfile("""
 <permission id="zope.Foo" title="Zope Foo Permission" />
 <content class="zope.app.component.tests.exampleclass.ExampleClass">

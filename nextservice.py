@@ -13,13 +13,13 @@
 ##############################################################################
 """Support for delegation among service managers
 
-$Id: nextservice.py,v 1.5 2003/05/27 14:18:12 jim Exp $
+$Id: nextservice.py,v 1.6 2003/05/28 15:46:04 jim Exp $
 """
 
 from zope.component.exceptions import ComponentLookupError
 from zope.component.service import serviceManager
 from zope.context import getWrapperContainer
-from zope.proxy.introspection import removeAllProxies
+from zope.proxy import removeAllProxies
 from zope.app.interfaces.services.service import IServiceManagerContainer
 from zope.app.component.hooks import getServiceManager_hook
 
