@@ -132,6 +132,50 @@ class IRegistry(zope.component.interfaces.IRegistry):
         """
 
 
+class ILocatedRegistry(zope.component.interfaces.IRegistry):
+    """A registry that is located in a tree of registries.
+
+    
+    """
+    next = Attribute("Set the next local registry in the tree. This attribute "
+                     "represents the parent of this registry node. If the "
+                     "value is `None`, then this registry represents the "
+                     "root of the tree")
+
+    subs = Attribute("A collection of registries that describe the next level "
+                     "of the registry tree. They are the children of this "
+                     "registry node. This attribute should never be "
+                     "manipulated manually. Use `addSub()` and `removeSub()` "
+                     "instead.")
+
+    base = Attribute("Outside of the local registry tree lies the global "
+                     "registry, which is known as the base to every local "
+                     "registry in the tree.")
+
+    def addSub(sub):
+        """Add a new sub-registry to the node.
+
+        Important: This method should *not* be used manually. It is
+        automatically called by `setNext()`. To add a new registry to the
+        tree, use `sub.setNext(self, self.base)` instead!
+        """
+
+    def removeSub(sub):
+        """Remove a sub-registry to the node.
+
+        Important: This method should *not* be used manually. It is
+        automatically called by `setNext()`. To remove a registry from the
+        tree, use `sub.setNext(None)` instead!
+        """
+
+    def setNext(next, base=None):
+        """Set the next/parent registry in the tree.
+
+        This method should ensure that all relevant registies are updated
+        correctly as well.
+        """
+
+
 class IRegistrationManager(IContainerNamesContainer):
     """Manage Registrations"""
 

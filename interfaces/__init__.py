@@ -24,19 +24,40 @@ from zope.app.container.constraints import ItemTypePrecondition
 from zope.app.i18n import ZopeMessageIDFactory as _
 import registration
 
+class ILocalAdapterRegistry(registration.IRegistry,
+                            registration.ILocatedRegistry):
+
+    def adaptersChanged():
+        """Update the adapter surrogates, since the registrations changed."""
+
+    def baseChanged():
+        """Someone changed the base registry
+
+        This should only happen during testing
+        """
+
 class IComponentManager(zope.interface.Interface):
 
-    def queryComponent(type=None, filter=None, all=0):
+    def queryComponent(type=None, filter=None, all=True):
         """Return all components that match the given type and filter
+
+        The arguments are:
+
+        type -- An argument is the interface a returned component must
+                provide.
+
+        filter -- A Python expression that must evaluate to `True` for any
+                  returned component; `None` means that no filter has been
+                  specified.
+
+        all -- A flag indicating whether all component managers in
+               this place should be queried, or just the local one.
 
         The objects are returned a sequence of mapping objects with keys:
 
         path -- The component path
 
         component -- The component
-
-        all -- A flag indicating whether all component managers in
-               this place should be queried, or just the local one.
         """
 
 class IBindingAware(zope.interface.Interface):
@@ -84,31 +105,6 @@ class ILocalSiteManager(ISiteManager, IComponentManager,
     services.
     """
 
-    def queryRegistrations(name, default=None):
-        """Return an IRegistrationRegistry for the registration name.
-
-        queryRegistrationsFor(cfg, default) is equivalent to
-        queryRegistrations(cfg.name, default)
-        """
-
-    def createRegistrationsFor(registration):
-        """Create and return an IRegistrationRegistry for the registration
-        name.
-
-        createRegistrationsFor(cfg, default) is equivalent to
-        createRegistrations(cfg.name, default)
-        """
-
-    def listRegistrationNames():
-        """Return a list of all registered registration names.
-        """
-
-    def queryActiveComponent(name, default=None):
-        """Finds the registration registry for a given name, checks if it has
-        an active registration, and if so, returns its component.  Otherwise
-        returns default.
-        """
-
     def addSubsite(subsite):
         """Add a subsite of the site
 
@@ -152,14 +148,6 @@ class ISiteManagementFolder(registration.IRegisterableContainer,
             ),
         )
 
-class ISiteManagementFolders(IContainer, IComponentManager):
-    """A collection of ISiteManagementFolder objects.
-
-    An ISiteManagementFolders object supports simple containment as
-    well as package query and lookup.
-    
-    """
-
 class ILocalUtility(registration.IRegisterable):
     """Local utility marker.
 
@@ -173,20 +161,32 @@ class ILocalUtility(registration.IRegisterable):
     """
 
 
+class IAdapterRegistration(registration.IComponentRegistration):
+    """Local Adapter Registration for Local Adapter Registry
 
-
-
-class IAdapterRegistration(registration.IRegistration):
-
+    The adapter registration is used to provide local adapters via the
+    adapter registry. It is an extended component registration, whereby the
+    component is the adapter factory in this case.
+    """
     required = zope.schema.Choice(
-        title = _(u"For interface"),
-        description = _(u"The interface of the objects being adapted"),
+        title = _("For interface"),
+        description = _("The interface of the objects being adapted"),
         vocabulary="Interfaces",
-        readonly = True)
+        readonly = True,
+        required=False,
+        default=None)
+
+    with = zope.schema.Tuple(
+        title = _("With interfaces"),
+        description = _("Additionally required interfaces"),
+        readonly=True,
+        value_type = zope.schema.Choice(vocabulary='Interfaces'),
+        required=False,
+        default=())
 
     provided = zope.schema.Choice(
-        title = _(u"Provided interface"),
-        description = _(u"The interface provided"),
+        title = _("Provided interface"),
+        description = _("The interface provided"),
         vocabulary="Interfaces",
         readonly = True,
         required = True)
@@ -197,38 +197,31 @@ class IAdapterRegistration(registration.IRegistration):
         required=False,
         )
 
-    factoryName = zope.schema.BytesLine(
-        title=_(u"The dotted name of a factory for creating the adapter"),
-        readonly = True,
-        required = True,
-        )
-
     permission = zope.schema.Choice(
-        title=_(u"The permission required for use"),
+        title=_("The permission required for use"),
         vocabulary="Permission Ids",
         readonly=False,
         required=False,
         )
-        
-    factory = zope.interface.Attribute(
-        _("Factory to be called to construct the component")
-        )
 
-class IUtilityRegistration(registration.IComponentRegistration):
+
+class IUtilityRegistration(IAdapterRegistration):
     """Utility registration object.
 
-    This is keyed off name (which may be empty) and interface. It inherits the
-    `component` property.
+    Adapter registries are also used to to manage utilities, since utilities
+    are adapters that are instantiated and have no required interfaces. Thus,
+    utility registrations must fulfill all requirements of an adapter
+    registration as well.
     """
 
     name = zope.schema.TextLine(
         title=_("Register As"),
-        description=_("The name that is registered"),
+        description=_("The name under which the utility will be known."),
         readonly=True,
         required=True,
         )
 
-    interface = zope.schema.Choice(
+    provided = zope.schema.Choice(
         title=_("Provided interface"),
         description=_("The interface provided by the utility"),
         vocabulary="Utility Component Interfaces",

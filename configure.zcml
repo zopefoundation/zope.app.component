@@ -1,0 +1,27 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <vocabulary
+      name="Interfaces"
+      factory="zope.app.utility.vocabulary.UtilityVocabulary"
+      interface="zope.interface.interfaces.IInterface" />
+
+  <interface interface="zope.interface.Interface" />
+
+  <adapter
+      factory=".localservice.serviceServiceAdapter"
+      provides="zope.component.IServiceService"
+      for="zope.interface.Interface" />
+
+  <subscriber
+      factory=".localservice.threadSiteSubscriber"
+      for="zope.app.publication.interfaces.IBeforeTraverseEvent"
+      />
+
+  <subscriber
+      factory=".localservice.clearThreadSiteSubscriber"
+      for="zope.app.publication.interfaces.IEndRequestEvent"
+      />
+
+</configure>
+
+

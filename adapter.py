@@ -11,41 +11,34 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Adapter Service
+"""Local/Persistent Adapter Registry
 
 $Id$
 """
 __docformat__ = 'restructuredtext' 
-import sys
-from persistent.dict import PersistentDict
-from persistent import Persistent
+import persistent
 
 import zope.component.adapter
 import zope.interface
 import zope.schema
-from zope.interface.adapter import adapterImplied, Default
-from zope.interface.adapter import Surrogate, AdapterRegistry
 from zope.security.proxy import removeSecurityProxy
 
 import zope.app.component.localservice
 import zope.app.container.contained
 import zope.app.site.interfaces
-import zope.component.interfaces
-from zope.app import zapi
-from zope.app.component.interfaces.registration import IRegistry
+from zope.app.component import registration
+from zope.app.component import interfaces
 from zope.app.i18n import ZopeMessageIDFactory as _
 
 
-class LocalSurrogate(Surrogate):
-    """Local surrogates
+class LocalSurrogate(zope.interface.adapter.Surrogate):
+    """Local Surrogate
 
-    Local surrogates are transient, rather than persistent.
-
-    Their adapter data are stored in their registry objects.
+    Local surrogates are transient, rather than persistent. Their adapter
+    data are stored in their registry objects.
     """
-
     def __init__(self, spec, registry):
-        Surrogate.__init__(self, spec, registry)
+        super(LocalSurrogate, self).__init__(spec, registry)
         self.registry = registry
         registry.baseFor(spec).subscribe(self)
 
@@ -59,32 +52,40 @@ class LocalSurrogate(Surrogate):
         else:
             adapters = base.adapters
         self.adapters = adapters
-        Surrogate.clean(self)
+        super(LocalSurrogate, self).clean()
 
 
-class LocalAdapterRegistry(AdapterRegistry, Persistent):
+class LocalAdapterRegistry(zope.interface.adapter.AdapterRegistry,
+                           persistent.Persistent):
     """Local/persistent surrogate registry"""
-
-    zope.interface.implements(IRegistry)
+    zope.interface.implements(interfaces.ILocalAdapterRegistry)
     
     _surrogateClass = LocalSurrogate
 
-    # Next local registry, may be None
-    nextRegistry = None
-
-    subRegistries = ()
+    # See interfaces.registration.ILocatedRegistry
+    next = None
+    subs = ()
 
     def __init__(self, base, next=None):
-
         # Base registry. This is always a global registry
         self.base = base
-
+        # `adapters` is simple dict, since it is populated during every load
         self.adapters = {}
-        self.registrations = PersistentDict()
-        AdapterRegistry.__init__(self)
-        self.setNextRegistry(next)
+        self._registrations = ()
+        super(LocalAdapterRegistry, self).__init__()
+        self.setNext(next)
 
-    def setNextRegistry(self, next, base=None):
+    def addSub(self, sub):
+        """See interfaces.registration.ILocatedRegistry"""
+        self.subs += (sub, )
+
+    def removeSub(self, sub):
+        """See interfaces.registration.ILocatedRegistry"""
+        self.subs = tuple(
+            [s for s in self.subs if s is not sub] )
+
+    def setNext(self, next, base=None):
+        """See interfaces.registration.ILocatedRegistry"""
         if base is not None:
             self.base = base
         if self.next is not None:
@@ -94,14 +95,32 @@ class LocalAdapterRegistry(AdapterRegistry, Persistent):
         self.next = next
         self.adaptersChanged()
 
-    def addSubRegistry(self, sub):
-        self.subs += (sub, )
+    def _getKey(self, registration):
+        """Return the key of a registration."""
+        return (False, registration.with,
+                registration.name, registration.provided)
 
-    def removeSubRegistry(self, sub):
-        self.subs = tuple([s for s in self.subs if s is not sub])
+    def register(self, registration):
+        """See zope.app.component.interfaces.registration.IRegistry"""
+        self._registrations += (registration,)
+        self.adaptersChanged()
+
+    def unregister(self, registration):
+        """See zope.app.component.interfaces.registration.IRegistry"""
+        self._registrations = tuple([reg for reg in self._registrations
+                                     if reg is not registration])
+        self.adaptersChanged()
+
+    def registered(self, registration):
+        """See zope.app.component.interfaces.registration.IRegistry"""
+        return registration in self._registrations
+
+    def registrations(self):
+        """See zope.app.component.interfaces.registration.IRegistry"""
+        return self._registrations
 
     def __getstate__(self):
-        state = Persistent.__getstate__(self).copy()
+        state = super(LocalAdapterRegistry, self).__getstate__().copy()
         
         for name in ('_default', '_null', 'adapter_hook',
                      'lookup', 'lookup1', 'queryAdapter', 'get',
@@ -111,35 +130,35 @@ class LocalAdapterRegistry(AdapterRegistry, Persistent):
         return state
 
     def __setstate__(self, state):
-        Persistent.__setstate__(self, state)
-        AdapterRegistry.__init__(self)
+        super(LocalAdapterRegistry, self).__setstate__(state)
+        super(LocalAdapterRegistry, self).__init__()
     
     def baseFor(self, spec):
+        """Used by LocalSurrogate"""
         return self.base.get(spec)
 
     def _updateAdaptersFromLocalData(self, adapters):
-        for required, stacks in self.stacks.iteritems():
+        """Update all adapter surrogates locally."""
+        for registration in self._registrations:
+            required = registration.required
             if required is None:
-                required = Default
+                required = zope.interface.adapter.Default
             radapters = adapters.get(required)
             if not radapters:
                 radapters = {}
                 adapters[required] = radapters
 
-            for key, stack in stacks.iteritems():
-                registration = stack.active()
-                if registration is not None:
+            # Needs more thought:
+            # We have to remove the proxy because we're
+            # storing the value amd we can't store proxies.
+            # (Why can't we?)  we need to think more about
+            # why/if this is truly safe
+            key = self._getKey(registration)
+            radapters[key] = removeSecurityProxy(registration.component)
 
-                    # Needs more thought:
-                    # We have to remove the proxy because we're
-                    # storing the value amd we can't store proxies.
-                    # (Why can't we?)  we need to think more about
-                    # why/if this is truly safe
-                    
-                    radapters[key] = removeSecurityProxy(registration.factory)
 
     def adaptersChanged(self):
-
+        """See interfaces.registration.ILocalAdapterRegistry"""
         adapters = {}
         if self.next is not None:
             for required, radapters in self.next.adapters.iteritems():
@@ -152,74 +171,45 @@ class LocalAdapterRegistry(AdapterRegistry, Persistent):
 
             # Throw away all of our surrogates, rather than dirtrying
             # them individually
-            AdapterRegistry.__init__(self)
+            super(LocalAdapterRegistry, self).__init__()
 
             for sub in self.subs:
                 sub.adaptersChanged()
 
     def baseChanged(self):
-        """Someone changed the base service
-
-        This should only happen during testing
-        """
-        AdapterRegistry.__init__(self)
+        """See interfaces.registration.ILocalAdapterRegistry"""
+        super(LocalAdapterRegistry, self).__init__()
         for sub in self.subs:
             sub.baseChanged()
-                
-
-    def registrations(self):
-        for stacks in self.stacks.itervalues():
-            for stack in stacks.itervalues():
-                for info in stack.info():
-                    yield info['registration']
 
 
-class LocalAdapterBasedService(
-    zope.app.container.contained.Contained,
-    Persistent,
-    ):
-    """A service that uses local surrogate registries
+class AdapterRegistration(registration.ComponentRegistration):
+    """A simple implementation of the adapter registration interface."""
+    zope.interface.implements(interfaces.IAdapterRegistration)
 
-    A local surrogate-based service needs to maintain connections
-    between it's surrogate registries and those of containing ans
-    sub-services.
+    def __init__(self, required, provided, factory,
+                 name='', permission=None, registry=None):
+        if not isinstance(required, (tuple, list)):
+            self.required = required
+            self.with = ()
+        else:
+            self.required = required[0]
+            self.with = tuple(required[1:])
+        self.provided = provided
+        self.name = name
+        self.component = factory
+        self.permission = permission
+        self.registry = registry
 
-    The service must implement a `setNext` method that will be called
-    with the next local service, which may be ``None``, and the global
-    service. This method will be called when a service is bound.
-    
-    """
+    def getRegistry(self):
+        return self.registry
 
-    zope.interface.implements(
-        zope.app.site.interfaces.IBindingAware,
-        )
-
-    def __updateNext(self, servicename):
-        next = zope.app.component.localservice.getNextService(
-            self, servicename)
-        global_ = zapi.getGlobalServices().getService(servicename)
-        if next == global_:
-            next = None
-        self.setNext(next, global_)
-        
-    def bound(self, servicename):
-        self.__updateNext(servicename)
-        
-        # Now, we need to notify any sub-site services. This is
-        # a bit complicated because our immediate subsites might not have
-        # the same service. Sigh
-        sm = zapi.getServices(self)
-        self.__notifySubs(sm.subSites, servicename)
-
-    def unbound(self, servicename):
-        sm = zapi.getServices(self)
-        self.__notifySubs(sm.subSites, servicename)
-
-    def __notifySubs(self, subs, servicename):
-        for sub in subs:
-            s = sub.queryLocalService(servicename)
-            if s is not None:
-                s.__updateNext(servicename)
-            else:
-                self.__notifySubs(sub.subSites, servicename)
-
+    def __repr__(self):
+        return ('<%s: ' %self.__class__.__name__ +
+                'required=%r, ' %self.required +
+                'with=' + `self.with` + ', ' +
+                'provided=%r, ' %self.provided +
+                'name=%r, ' %self.name +
+                'component=%r, ' %self.component +
+                'permission=%r' %self.permission +
+                '>')
