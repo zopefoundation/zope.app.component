@@ -28,7 +28,7 @@ from zope.app.content.interfaces import IContentType
 from zope.configuration.xmlconfig import xmlconfig, XMLConfig
 from zope.configuration.exceptions import ConfigurationError
 
-from zope.proxy import getProxiedObject
+from zope.security.proxy import removeSecurityProxy
 from zope.security.proxy import getTestProxyItems
 
 import zope.app.component
@@ -124,6 +124,47 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertEqual(a3.__class__, A3)
         self.assertEqual(a3.context, (content, a1))
 
+    def testTrustedSubscriber(self):
+        from zope.app.component.tests.adapter import A1, A2, A3, I3
+        from zope.app.component.tests.adapter import IS
+        from zope.component.tests.components import Content
+
+        xmlconfig(StringIO(template % (
+            """
+            <subscriber
+              provides="zope.app.component.tests.adapter.IS"
+              factory="zope.app.component.tests.adapter.A3"
+              for="zope.component.tests.components.IContent
+                   zope.app.component.tests.adapter.I1"
+              trusted="yes"
+              />
+            """
+            )))
+
+        # With an unproxied object, business as usual
+        content = Content()
+        a1 = A1()
+        subscribers = zapi.subscribers((content, a1), IS)
+
+        a3 = subscribers[0]
+
+        self.assertEqual(a3.__class__, A3)
+        self.assertEqual(a3.context, (content, a1))
+
+        # Now with a proxied object:
+        from zope.security.checker import ProxyFactory
+        p = ProxyFactory(content)
+
+        # we get a proxied subscriber:
+        a3 = zapi.subscribers((p, a1), IS)[0]
+        from zope.security.proxy import Proxy
+        self.assertEqual(type(a3), Proxy)
+
+
+        # around an unproxied object:
+        from zope.security.proxy import removeSecurityProxy
+        self.assert_(removeSecurityProxy(a3).context[0] is content)
+
     def testSubscriber_w_no_provides(self):
         from zope.app.component.tests.adapter import A1, A2, Handler, I3
         from zope.component.tests.components import Content
@@ -211,7 +252,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             """
             )))
 
-        # With an unproxied object, busoness as usual
+        # With an unproxied object, business as usual
         ob = Content()
         self.assertEqual(type(I1(ob)), type(A1()))
 
@@ -225,9 +266,9 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertEqual(type(a), Proxy)
 
         # around an unproxied object:
-        from zope.security.proxy import getProxiedObject
-        a = getProxiedObject(a)
-        a.context[0] is ob
+        from zope.security.proxy import removeSecurityProxy
+        a = removeSecurityProxy(a)
+        self.assert_(a.context[0] is ob)
         
         
 
@@ -398,7 +439,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         adapter = ProxyFactory(IApp(Content()))
         items = [item[0] for item in getTestProxyItems(adapter)]
         self.assertEqual(items, ['a', 'f'])
-        self.assertEqual(getProxiedObject(adapter).__class__, Comp)
+        self.assertEqual(removeSecurityProxy(adapter).__class__, Comp)
 
     def testAdapterUndefinedPermission(self):
         config = StringIO(template % (
@@ -490,7 +531,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         utility = ProxyFactory(zapi.getUtility(IApp))
         items = [item[0] for item in getTestProxyItems(utility)]
         self.assertEqual(items, ['a', 'f'])
-        self.assertEqual(getProxiedObject(utility), comp)
+        self.assertEqual(removeSecurityProxy(utility), comp)
 
     def testUtilityUndefinedPermission(self):
         config = StringIO(template % (

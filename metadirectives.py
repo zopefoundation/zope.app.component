@@ -232,6 +232,20 @@ class ISubscriberDirective(zope.interface.Interface):
         required=False
         )
 
+    trusted = zope.configuration.fields.Bool(
+        title=u"Trusted",
+        description=u"""Make the subscriber a trusted subscriber
+
+        Trusted subscribers have unfettered access to the objects they
+        adapt.  If asked to adapt security-proxied objects, then,
+        rather than getting an unproxied subscriber of security-proxied
+        objects, you get a security-proxied subscriber of unproxied
+        objects.
+        """,
+        required=False,
+        default=False,
+        )
+
 class IUtilityDirective(IBasicComponentInformation):
     """Register a utility"""
 
