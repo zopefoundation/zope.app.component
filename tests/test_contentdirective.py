@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: test_contentdirective.py,v 1.9 2003/08/17 06:06:17 philikon Exp $
+$Id: test_contentdirective.py,v 1.10 2003/09/21 17:31:21 jim Exp $
 """
 
 import unittest
@@ -211,7 +211,7 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
             """)
         xmlconfig(f)
         factory = getService(None, Factories).getFactory('Example')
-        self.failUnless(type(factory) is Proxy)
+        self.assert_(hasattr(factory, '__Security_checker__'))
 
 
 def test_suite():
