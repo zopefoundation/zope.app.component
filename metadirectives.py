@@ -201,7 +201,7 @@ class ISubscriberDirective(Interface):
         title=u"Interfaces or classes that this subscriber depends on",
         description=u"This should be a list of interfaces or classes",
         required=True,
-        value_type=GlobalObject()
+        value_type=GlobalObject(missing_value = object()),
         )
 
     permission = Permission(
