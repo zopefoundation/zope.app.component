@@ -16,7 +16,7 @@
 $Id$
 """
 
-from zope.component import getService, getAdapter
+from zope.component import getService
 from zope.component.interfaces import IServiceService
 from zope.app.site.interfaces import ISite
 from zope.component.service import serviceManager
@@ -64,17 +64,14 @@ def getServices_hook(context=None):
 
         return services
 
+    # Deprecated support for a context that isn't adaptable to
+    # IServiceService.  Return the default service manager.
     try:
-        # This try-except is just backward compatibility really
-        return trustedRemoveSecurityProxy(getAdapter(context, IServiceService))
+        return trustedRemoveSecurityProxy(IServiceService(context,
+                                                          serviceManager))
     except ComponentLookupError:
-        # Deprecated support for a context that isn't adaptable to
-        # IServiceService.  Return the default service manager.
-        ## warnings.warn("getServices' context arg must be None or"
-        ##               "  adaptable to IServiceService.",
-        ##               DeprecationWarning, warningLevel())
         return serviceManager
-
+    
 
 def queryView(object, name, request, default=None,
               providing=Interface, context=None):
