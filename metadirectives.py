@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: metadirectives.py,v 1.7 2003/12/14 06:02:13 srichter Exp $
+$Id: metadirectives.py,v 1.8 2003/12/14 08:48:59 srichter Exp $
 """
 
 from zope.interface import Interface
@@ -130,27 +130,36 @@ class IAdapterDirective(Interface):
 
     factory = Tokens(
         title=u"Adapter factory/factories",
+        description=u"""A list of factories (usually just one) that create the
+        adapter instance.""",
         required=True,
         value_type=GlobalObject()
         )
 
     provides = GlobalObject(
         title=u"Interface the component provides",
+        description=u"""This attribute specifes the interface the adapter
+        instance must provide.""",
         required=True
         )
 
     for_ = GlobalObject(
         title=u"Interface the component is used for",
+        description=u"""This is the interface from which is being adapted.""",
         required=True
         )
 
     permission = Id(
         title=u"Permission",
+        description=u"""This adapter is only available, if the principal has
+        this permission.""",
         required=False
         )
 
     name = TextLine(
         title=u"Name",
+        description=u"""Adapters can have names. This attribute allows you to
+        specify the name for this adapter.""",
         required=False
         )
 
