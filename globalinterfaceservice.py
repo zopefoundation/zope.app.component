@@ -11,11 +11,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
-$Id: globalinterfaceservice.py,v 1.20 2004/02/25 23:02:22 faassen Exp $
-"""
-__metaclass__ = type
+"""Global Interface Service
 
+$Id: globalinterfaceservice.py,v 1.21 2004/03/03 17:07:23 srichter Exp $
+"""
 from zope.component.exceptions import ComponentLookupError
 from zope.app.interfaces.component import IGlobalInterfaceService
 from zope.interface import implements, providedBy, implementedBy
@@ -23,7 +22,7 @@ from zope.interface.interfaces import IInterface
 from zope.component.utility import utilityService
 from types import ClassType
 
-class InterfaceService:
+class InterfaceService(object):
     implements(IGlobalInterfaceService)
 
     def __init__(self, data=None):
@@ -105,7 +104,6 @@ class InterfaceService:
         self.__data[id]=(interface, self._getAllDocs(interface))
 
     _clear = __init__
-
 
 
 interfaceService = InterfaceService()
