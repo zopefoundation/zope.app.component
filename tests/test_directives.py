@@ -131,6 +131,46 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertEqual(a3.__class__, A3)
         self.assertEqual(a3.context, (content, a1))
 
+    def testSubscriber_wo_for(self):
+        xmlconfig(StringIO(template % (
+            '''
+            <subscriber
+              provides="zope.app.component.tests.adapter.IS"
+              factory="zope.app.component.tests.adapter.A3"
+              />
+            '''
+            )))
+
+        content = Content()
+        a1 = A1()
+        a2 = A2()
+        subscribers = zapi.subscribers((content, a1, a2), IS)
+
+        a3 = subscribers[0]
+
+        self.assertEqual(a3.__class__, A3)
+        self.assertEqual(a3.context, (content, a1, a2))
+
+    def testHandlerSubscriber_no_for(self):
+        xmlconfig(StringIO(template % (
+            '''
+            <subscriber
+              handler="zope.app.component.tests.adapter.A3"
+              />
+            '''
+            )))
+
+        content = Content()
+        a1 = A1()
+        a2 = A2()
+        subscribers = zapi.subscribers((content, a1, a2), None)
+
+        a3 = subscribers[0]
+
+        self.assertEqual(a3.__class__, A3)
+        self.assertEqual(a3.context, (content, a1, a2))
+        
+
     def testTrustedSubscriber(self):
         xmlconfig(StringIO(template % (
             '''

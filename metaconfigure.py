@@ -59,8 +59,9 @@ def proxify(ob, checker):
     return ob
 
 _handler=handler
-def subscriber(_context, for_, factory=None, handler=None, provides=None,
+def subscriber(_context, for_=None, factory=None, handler=None, provides=None,
                permission=None, trusted=False):
+
 
     if factory is None:
         if handler is None:
@@ -78,6 +79,16 @@ def subscriber(_context, for_, factory=None, handler=None, provides=None,
                 "is deprecated and will change it's meaning in Zope X3.3. "
                 "Use the handler attribute instead.",
                 DeprecationWarning)
+
+    if for_ is None:
+        try:
+            for_ = factory.__component_adapts__
+        except AttributeError:
+            pass
+
+        if for_ is None:
+            raise TypeError("No for attribute was provided and can't "
+                            "determine what the factory (or handler) adapts.")
     
     factory = [factory]
 

@@ -246,7 +246,7 @@ class ISubscriberDirective(zope.interface.Interface):
     for_ = zope.configuration.fields.Tokens(
         title=_("Interfaces or classes that this subscriber depends on"),
         description=_("This should be a list of interfaces or classes"),
-        required=True,
+        required=False,
         value_type=zope.configuration.fields.GlobalObject(
           missing_value = object(),
           ),
