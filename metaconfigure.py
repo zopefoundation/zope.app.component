@@ -13,7 +13,7 @@
 ##############################################################################
 """Generic Components ZCML Handlers
 
-$Id: metaconfigure.py,v 1.35 2004/03/22 22:31:49 mmceahern Exp $
+$Id: metaconfigure.py,v 1.36 2004/03/23 22:08:16 srichter Exp $
 """
 from zope.interface import Interface
 from zope.component.service import UndefinedService
@@ -437,12 +437,4 @@ def defaultSkin(_context, name):
         discriminator = 'defaultSkin',
         callable = handler,
         args = (Presentation, 'setDefaultSkin', name)
-        )
-
-def usage(_context, name):
-
-    _context.action(
-        discriminator = ('usage', name),
-        callable = handler,
-        args = (Presentation, 'defineUsage', name)
         )
