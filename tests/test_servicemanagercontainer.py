@@ -14,13 +14,12 @@
 """
 
 Revision information:
-$Id: test_servicemanagercontainer.py,v 1.4 2003/02/04 10:25:44 sidnei Exp $
+$Id: test_servicemanagercontainer.py,v 1.5 2003/05/01 19:35:08 faassen Exp $
 """
 
-from unittest import TestCase, TestSuite, main, makeSuite
+from unittest import TestCase, main, makeSuite
 from zope.component.interfaces import IServiceService
-from zope.app.interfaces.services.service \
-     import IServiceManagerContainer
+from zope.app.interfaces.services.service import IServiceManagerContainer
 from zope.component.exceptions import ComponentLookupError
 from zope.interface.verify import verifyObject
 from zope.proxy.context import getbaseobject

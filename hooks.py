@@ -13,15 +13,11 @@
 ##############################################################################
 """
 
-$Id: hooks.py,v 1.4 2003/03/23 22:35:38 jim Exp $
+$Id: hooks.py,v 1.5 2003/05/01 19:35:07 faassen Exp $
 """
 from zope.component.interfaces import IServiceService
-from zope.app.interfaces.services.service \
-     import IServiceManagerContainer
-from zope.component.exceptions import ComponentLookupError
+from zope.app.interfaces.services.service import IServiceManagerContainer
 from zope.proxy.context import getWrapperContainer, ContextWrapper
-from zope.component import getServiceManager
-from zope.component.exceptions import ComponentLookupError
 from zope.component.service import serviceManager
 from zope.proxy.introspection import removeAllProxies
 from zope.security.proxy import trustedRemoveSecurityProxy

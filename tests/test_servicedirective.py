@@ -13,21 +13,13 @@
 ##############################################################################
 
 import unittest
-import sys
-import os
 from cStringIO import StringIO
 
 from zope.exceptions import Forbidden, Unauthorized
 
 from zope.configuration.xmlconfig import testxmlconfig as xmlconfig, XMLConfig
-from zope.configuration.exceptions import ConfigurationError
-
-from zope.security.proxy \
-     import getTestProxyItems, getObject as proxiedObject, ProxyFactory
-
+from zope.security.proxy import ProxyFactory
 from zope.component.exceptions import ComponentLookupError
-
-from zope.app.component.tests.service import IFooService, FooService
 
 import zope.app.component
 from zope.component import getService

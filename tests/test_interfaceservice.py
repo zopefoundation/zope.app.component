@@ -17,12 +17,8 @@ from zope.testing.cleanup import CleanUp
 from zope.app.interfaces.component.globalinterfaceservice \
      import IGlobalInterfaceService
 from zope.app.component.globalinterfaceservice import InterfaceService
-from zope.app.component.globalinterfaceservice import IInterfaceService
 from zope.interface.verify import verifyObject
 from zope.component.exceptions import ComponentLookupError
-from zope.component.service \
-     import serviceManager, defineService
-
 
 class B(Interface):
     pass

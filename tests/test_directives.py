@@ -13,8 +13,6 @@
 ##############################################################################
 
 import unittest
-import sys
-import os
 from cStringIO import StringIO
 
 from zope.configuration.xmlconfig import xmlconfig, XMLConfig
@@ -25,7 +23,7 @@ from zope.security.proxy import getTestProxyItems, getObject as proxiedObject
 
 import zope.app.component
 from zope.component.exceptions import ComponentLookupError
-from zope.component import getView, queryView, getResource, queryResource
+from zope.component import getView, queryView, queryResource
 from zope.component import createObject
 from zope.component import getDefaultViewName
 

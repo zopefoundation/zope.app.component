@@ -18,14 +18,10 @@ from zope.component import getService, getServiceManager
 from zope.app.services.servicenames import Adapters, Interfaces, Skins
 from zope.app.services.servicenames import Views, Resources, Factories
 from zope.app.component.globalinterfaceservice import interfaceService
-from zope.configuration import namespace
-from zope.interface import Interface
 from zope.configuration.action import Action
-from zope.security.checker \
-     import InterfaceChecker, CheckerPublic, NamesChecker, Checker
+from zope.security.checker import InterfaceChecker, CheckerPublic, Checker
 from zope.app.security.registries.permissionregistry import permissionRegistry
-from zope.component.service \
-     import UndefinedService
+from zope.component.service import UndefinedService
 
 # I prefer the indirection (using getService and getServiceManager vs.
 # directly importing the various services)  not only because it makes
