@@ -9,14 +9,14 @@
   <div class="message"
        tal:define="message view/update"
        tal:condition="message"
-       tal:content="message">
+       tal:content="message"  i18n:translate="">
     Status Message
   </div>
 
   <h2>
-    <b>Unique Utilities</b>
+    <b i18n:translate="">Unique Utilities</b>
   </h2>
-  <div>
+  <div i18n:translate="">
     Unique utilities can only exist once per site manager and have no name.
   </div>
   <br/>
@@ -36,8 +36,10 @@
       </a>
     </div>
     <br/>
-    <input type="submit" name="INSTALL-SUBMIT" value="Install">&nbsp;
-    <input type="submit" name="UNINSTALL-SUBMIT" value="Uninstall">
+    <input type="submit" name="INSTALL-SUBMIT" value="Install"
+     i18n:attributes="value INSTALL-SUBMIT">&nbsp;
+    <input type="submit" name="UNINSTALL-SUBMIT" value="Uninstall"
+     i18n:attributes="value UNINSTALL-SUBMIT">
   </form>
 
   <form action="." method="post" 
@@ -85,7 +87,8 @@
         </span>
 
       </div>
-      <div tal:condition="not:instances">
+      <div tal:condition="not:instances"
+         i18n:translate="">
         <i>No instances of this utility are available yet.</i>
       </div>
     </div>
@@ -98,23 +101,31 @@
                   tal:content="entry/title">RAM Cache</option>
         </select>
         &nbsp;
-        <input type="submit" name="ADD-TOOL-SUBMIT" value="Add">
-        <input type="submit" name="CANCEL-ADD-TOOL-SUBMIT" value="Cancel">
+        <input type="submit" name="ADD-TOOL-SUBMIT" value="Add"
+          i18n:attributes="value ADD-TOOL-SUBMIT">
+        <input type="submit" name="CANCEL-ADD-TOOL-SUBMIT" value="Cancel"
+          i18n:attributes="value CANCEL-ADD-TOOL-SUBMIT">
       </div>
     </div>
     <br/>
     <div>
       <input type="submit" name="ACTIVATE-SUBMIT" value="Activate"
+             i18n:attributes="value ACTIVATE-SUBMIT"
              tal:condition="not:tool/rename">&nbsp;
       <input type="submit" name="DEACTIVATE-SUBMIT" value="Deactivate"
+             i18n:attributes="value DEACTIVATE-SUBMIT"
              tal:condition="not:tool/rename">
       &nbsp;&nbsp;
       <input type="submit" name="ADD-SUBMIT" value="Add"
+             i18n:attributes="value ADD-SUBMIT"
              tal:condition="not:tool/rename">&nbsp;
       <input type="submit" name="DELETE-SUBMIT" value="Delete"
+             i18n:attributes="value DELETE-SUBMIT"
              tal:condition="not:tool/rename">&nbsp;
-      <input type="submit" name="RENAME-SUBMIT" value="Rename">&nbsp;
+      <input type="submit" name="RENAME-SUBMIT" value="Rename"
+             i18n:attributes="value RENAME-SUBMIT">&nbsp;
       <input type="submit" name="RENAME-CANCEL-SUBMIT" value="Cancel"
+             i18n:attributes="value RENAME-CANCEL-SUBMIT"
              tal:condition="tool/rename">&nbsp;
     </div>
     <br/>
