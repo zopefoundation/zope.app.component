@@ -23,7 +23,7 @@ from zope.interface.interfaces import IInterface
 from types import ClassType
 from zope.app import zapi
 
-def provideInterface(id, interface, iface_type=None):
+def provideInterface(id, interface, iface_type=None, info=''):
     """register Interface with utility service
 
     >>> from zope.app.tests.placelesssetup import setUp, tearDown
@@ -80,7 +80,7 @@ def provideInterface(id, interface, iface_type=None):
         iface_type = IInterface
         
     utilityService = zapi.getGlobalService(zapi.servicenames.Utilities)
-    utilityService.provideUtility(iface_type, interface, name=id)
+    utilityService.provideUtility(iface_type, interface, id, info)
 
 
 
