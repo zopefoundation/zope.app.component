@@ -31,7 +31,6 @@ from zope.configuration.xmlconfig import xmlconfig, ZopeXMLConfigurationError
 PREFIX = module.__name__ + '.'
 
 def defineDirectives():
-    XMLConfig('metameta.zcml', zope.configuration)()
     XMLConfig('meta.zcml', zope.app.component)()
     XMLConfig('meta.zcml', zope.app.security)()
     xmlconfig(StringIO("""<zopeConfigure

@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: test_contentdirective.py,v 1.1 2003/05/12 16:32:40 stevea Exp $
+$Id: test_contentdirective.py,v 1.2 2003/07/28 22:19:59 jim Exp $
 """
 
 import unittest
@@ -48,7 +48,6 @@ class TestContentDirective(PlacelessSetup, unittest.TestCase):
     def setUp(self):
         PlacelessSetup.setUp(self)
         newSecurityManager(system_user)
-        XMLConfig('metameta.zcml', zope.configuration)()
         XMLConfig('meta.zcml', zope.app.component)()
         XMLConfig('meta.zcml', zope.app.security)()
 
@@ -136,7 +135,6 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
     def setUp(self):
         PlacelessSetup.setUp(self)
         newSecurityManager(system_user)
-        XMLConfig('metameta.zcml', zope.configuration)()
         XMLConfig('meta.zcml', zope.app.component)()
         XMLConfig('meta.zcml', zope.app.security)()
 
