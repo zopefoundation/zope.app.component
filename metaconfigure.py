@@ -63,8 +63,16 @@ def interface(_context, interface):
       ]
 
 
-def adapter(_context, factory, provides, for_=None, permission=None, name=''):
-    if for_ is not None: for_ = _context.resolve(for_)
+def adapter(_context, factory, provides, for_, permission=None, name=''):
+    if for_ == '*':
+        for_ = None
+    elif not for_:
+        raise ValueError(
+            "A for interface must be provided. Use * for all objects.")
+        
+    if for_:
+        for_ = _context.resolve(for_)
+
     provides = _context.resolve(provides)
     factory = map(_context.resolve, factory.split())
 
