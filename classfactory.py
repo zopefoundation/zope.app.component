@@ -11,14 +11,16 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"$Id: classfactory.py,v 1.7 2003/12/03 05:41:05 jim Exp $"
+"""
+$Id: classfactory.py,v 1.8 2004/03/08 11:23:02 philikon Exp $
+"""
 
 from zope.interface import implements, implementedBy
 from zope.component.interfaces import IFactory
 from zope.security.checker import NamesChecker, CheckerPublic
 
 class ClassFactory:
-    "Class that creates a factory component from a class"
+    """Class that creates a factory component from a class"""
 
     implements(IFactory)
 
