@@ -383,6 +383,33 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertEqual(a3.__class__, A3)
         self.assertEqual(a3.context, (content, a1, a2))
 
+    def testProtectedMultiAdapter(self):
+        from zope.app.component.tests.adapter import A1, A2, A3, I3
+        from zope.component.tests.components import Content
+
+        xmlconfig(StringIO(template % (
+            """
+            <adapter
+              factory="zope.app.component.tests.adapter.A3
+                      "
+              provides="zope.app.component.tests.adapter.I3"
+              for="zope.component.tests.components.IContent
+                   zope.app.component.tests.adapter.I1
+                   zope.app.component.tests.adapter.I2
+                  "
+              permission="zope.Public"
+              />
+            """
+            )))
+
+        content = Content()
+        a1 = A1()
+        a2 = A2()
+        a3 = ProxyFactory(zapi.queryMultiAdapter((content, a1, a2), I3))
+        self.assertEqual(a3.__class__, A3)
+        items = [item[0] for item in getTestProxyItems(a3)]
+        self.assertEqual(items, ['f1', 'f2', 'f3'])
+
     def testMultiAdapter_wo_for_or_provides(self):
         from zope.app.component.tests.adapter import A1, A2, A3, I3
         from zope.component.tests.components import Content

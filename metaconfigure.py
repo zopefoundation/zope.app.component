@@ -173,12 +173,6 @@ def adapter(_context, factory, provides=None, for_=None, permission=None,
         if provides is None:
             raise TypeError("Missing 'provides' attribute")            
 
-    if permission is not None:
-        if permission == PublicPermission:
-            permission = CheckerPublic
-        checker = InterfaceChecker(provides, permission)
-        factory.append(lambda c: proxify(c, checker))
-
     # Generate a single factory from multiple factories:
     factories = factory
     if len(factories) == 1:
@@ -188,12 +182,13 @@ def adapter(_context, factory, provides=None, for_=None, permission=None,
     elif len(factories) > 1 and len(for_) != 1:
         raise ValueError("Can't use multiple factories and multiple for")
     else:
-        def factory(ob):
-            for f in factories:
-                ob = f(ob)
-            return ob
-        # Store the original factory for documentation
-        factory.factory = factories[0]
+        factory = _rolledUpFactory(factories)
+
+    if permission is not None:
+        if permission == PublicPermission:
+            permission = CheckerPublic
+        checker = InterfaceChecker(provides, permission)
+        factory = _protectedFactory(factory, checker)
 
     if trusted:
         factory = TrustedAdapterFactory(factory)
@@ -217,6 +212,32 @@ def adapter(_context, factory, provides=None, for_=None, permission=None,
                     callable = provideInterface,
                     args = ('', iface)
                     )
+
+def _rolledUpFactory(factories):
+    # This has to be named 'factory', aparently, so as not to confuse
+    # apidoc :(
+    def factory(ob):
+        for f in factories:
+            ob = f(ob)
+        return ob
+    # Store the original factory for documentation
+    factory.factory = factories[0]
+    return factory
+
+def _protectedFactory(original_factory, checker):
+    # This has to be named 'factory', aparently, so as not to confuse
+    # apidoc :(
+    def factory(*args):
+        ob = original_factory(*args)
+        try:
+            ob.__Security_checker__ = checker
+        except AttributeError:
+            ob = Proxy(ob, checker)
+        
+        return ob
+    factory.factory = factory
+    return factory
+
 
 def utility(_context, provides=None, component=None, factory=None,
             permission=None, name=''):

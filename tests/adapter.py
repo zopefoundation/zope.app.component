@@ -27,7 +27,9 @@ class I2(zope.interface.Interface):
     pass
 
 class I3(zope.interface.Interface):
-    pass
+    def f1(): pass
+    def f2(): pass
+    def f3(): pass
 
 class IS(zope.interface.Interface):
     pass
