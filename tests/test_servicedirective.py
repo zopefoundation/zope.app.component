@@ -60,12 +60,13 @@ class Test(PlacelessSetup, unittest.TestCase):
             UndefinedService,
             xmlconfig,
             StringIO(template % (
-            '''
+            """
             <service
-                serviceType="Foo"
-                component="zope.app.component.tests.service.fooService"
-                />
-            '''
+              serviceType="Foo"
+              component="
+              zope.app.component.tests.service.fooService"
+              />
+            """
             )))
 
     def testDuplicateServiceConfig(self):
@@ -73,36 +74,39 @@ class Test(PlacelessSetup, unittest.TestCase):
             ConfigurationConflictError,
             xmlconfig,
             StringIO(template % (
-            '''
-            <serviceType
-                id="Foo"
-                interface="zope.app.component.tests.service.IFooService"
-                />
+            """
+            <serviceType id="Foo"
+                         interface="
+               zope.app.component.tests.service.IFooService"
+               />
             <service
               serviceType="Foo"
-              component="zope.app.component.tests.service.fooService"
+              component="
+              zope.app.component.tests.service.fooService"
               />
             <service
               serviceType="Foo"
-              component="zope.app.component.tests.service.foo2"
+              component="
+              zope.app.component.tests.service.foo2"
               />
-            '''
+            """
             )))
 
     def testServiceConfig(self):
         self.assertRaises(ComponentLookupError, getService, "Foo")
 
         xmlconfig(StringIO(template % (
-            '''
-            <serviceType
-                id="Foo"
-                interface="zope.app.component.tests.service.IFooService"
-                />
+            """
+            <serviceType id="Foo"
+                         interface="
+               zope.app.component.tests.service.IFooService"
+               />
             <service
-                serviceType="Foo"
-                component="zope.app.component.tests.service.fooService"
-                />
-            '''
+              serviceType="Foo"
+              component="
+              zope.app.component.tests.service.fooService"
+              />
+            """
             )))
 
         service = getService("Foo")
@@ -114,16 +118,17 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertRaises(ComponentLookupError, getService, "Foo")
 
         xmlconfig(StringIO(template % (
-            '''
-            <serviceType
-                id="Foo"
-                interface="zope.app.component.tests.service.IFooService"
-                />
+            """
+            <serviceType id="Foo"
+                         interface="
+               zope.app.component.tests.service.IFooService"
+               />
             <service
-                serviceType="Foo"
-                factory="zope.app.component.tests.service.FooService"
-                />
-            '''
+              serviceType="Foo"
+              factory="
+              zope.app.component.tests.service.FooService"
+              />
+            """
             )))
 
         service = getService("Foo")
@@ -135,17 +140,18 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertRaises(ComponentLookupError, getService, "Foo")
 
         xmlconfig(StringIO(template % (
-            '''
-            <serviceType
-                id="Foo"
-                interface="zope.app.component.tests.service.IFooService"
-                />
+            """
+            <serviceType id="Foo"
+                         interface="
+               zope.app.component.tests.service.IFooService"
+               />
             <service
-                serviceType="Foo"
-                component="zope.app.component.tests.service.fooService"
-                permission="zope.Public"
-                />
-            '''
+              serviceType="Foo"
+              component="
+              zope.app.component.tests.service.fooService"
+              permission="zope.Public"
+              />
+            """
             )))
 
         service = getService("Foo")
@@ -158,22 +164,29 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertRaises(ComponentLookupError, getService, "Foo")
 
         xmlconfig(StringIO(template % (
-            '''
-            <include package="zope.app.security" file="meta.zcml" />
+            """
+            <directives namespace="http://namespaces.zope.org/zope">
+              <directive name="permission"
+                 attributes="id title description"
+                 handler="
+              zope.app.security.metaconfigure.definePermission" />
+            </directives>
 
             <permission id="zope.TestPermission" title="Test permission" />
 
-            <serviceType
-                id="Foo"
-                interface="zope.app.component.tests.service.IFooService"
-                />
+            <serviceType id="Foo"
+                         interface="
+               zope.app.component.tests.service.IFooService"
+               />
             <service
-                serviceType="Foo"
-                component="zope.app.component.tests.service.fooService"
-                permission="zope.TestPermission"
-                />
-            '''
+              serviceType="Foo"
+              component="
+              zope.app.component.tests.service.fooService"
+              permission="zope.TestPermission"
+              />
+            """
             )))
+
 
         # Need to "log someone in" to turn on checks
         from zope.security.management import newInteraction, endInteraction

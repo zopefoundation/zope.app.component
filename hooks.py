@@ -15,7 +15,6 @@
 
 $Id$
 """
-import zope.component
 from zope.component import getService
 from zope.component.interfaces import IServiceService
 from zope.app.site.interfaces import ISite
@@ -87,18 +86,11 @@ def getServices_hook(context=None):
     except ComponentLookupError:
         return serviceManager
 
-# Hook up a new implementation of looking up services.
-zope.component.getServices.sethook(getServices_hook)
-
 def adapter_hook(interface, object, name='', default=None):
     try:
         return siteinfo.adapter_hook(interface, object, name, default)
     except ComponentLookupError:
         return default
-
-# Hook up a new implementation of looking up adapters.
-zope.component.adapter_hook.sethook(adapter_hook)
-
     
 def queryView(object, name, request, default=None,
               providing=Interface, context=None):
@@ -109,6 +101,3 @@ def queryView(object, name, request, default=None,
         locate(view, object, name)
 
     return view
-
-# Hook up a new implementation of looking up views.
-zope.component.queryView.sethook(queryView)
