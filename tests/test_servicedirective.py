@@ -187,7 +187,7 @@ class Test(PlacelessSetup, unittest.TestCase):
 
 
         # Need to "log someone in" to turn on checks
-        from zope.security.securitymanagement import newSecurityManager
+        from zope.security.management import newSecurityManager
         newSecurityManager('someuser')
 
         service = getService(None, "Foo")
