@@ -22,6 +22,7 @@ import zope.interface
 import zope.schema
 
 import zope.app.security.fields
+import zope.app.component.fields
 
 class IBasicComponentInformation(zope.interface.Interface):
 
@@ -65,7 +66,7 @@ class IBasicViewInformation(zope.interface.Interface):
         required=False
         )
 
-    layer = zope.schema.TextLine(
+    layer = zope.app.component.fields.LayerField(
         title=u"The layer the view is in.",
         description=u"""
         A skin is composed of layers. It is common to put skin
@@ -322,7 +323,7 @@ class IResourceDirective(IBasicComponentInformation,
                          IBasicResourceInformation):
     """Register a resource"""
     
-    layer = zope.schema.TextLine(
+    layer = zope.app.component.fields.LayerField(
         title=u"The layer the resource is in.",
         required=False
         )
