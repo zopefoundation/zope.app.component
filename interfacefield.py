@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: interfacefield.py,v 1.5 2003/01/06 18:39:32 stevea Exp $
+$Id: interfacefield.py,v 1.6 2003/01/17 16:30:17 stevea Exp $
 """
 
 from zope.schema import ValueSet, Tuple
@@ -42,13 +42,13 @@ class InterfaceField(ValueSet):
     def _validate(self, value):
         super(InterfaceField, self)._validate(value)
         basetype = self.basetype
-        
+
         if value is None and basetype is None:
             return
 
         if basetype is None:
             basetype = Interface
-            
+
         if not IInterface.isImplementedBy(value):
             raise ValidationError("Not an interface", value)
 
@@ -84,7 +84,7 @@ class InterfacesField(Tuple):
         for item in value:
             if item is None and none_ok:
                 continue
-                
+
             if not IInterface.isImplementedBy(item):
                 raise ValidationError("Not an interface", item)
 
