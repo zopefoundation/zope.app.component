@@ -31,6 +31,9 @@ from zope.app.event import objectevent
 from zope.app.location import inside
 from zope.app.traversing.interfaces import TraversalError
 
+# BBB: First introduced in 3.1; should go away in 3.3 
+import bbb
+
 class RegistrationEvent(objectevent.ObjectEvent):
     """An event that is created when a registration-related activity occured."""
     implements(interfaces.IRegistrationEvent)
@@ -167,7 +170,7 @@ def RegisterableMoveSubscriber(registerable, event):
                 "Can't move a registered component from its container.")
 
 
-class Registered(object):
+class Registered(bbb.registration.BBBRegistered, object):
     """An adapter from IRegisterable to IRegistered.
 
     This class is the only place that knows how 'Registered'

@@ -19,13 +19,6 @@ __docformat__ = "reStructuredText"
 import zope.component
 from zope.app import zapi
 
-##############################################################################
-# BBB: Goes away in 3.3
-import bbb
-bbb.install()
-del bbb
-##############################################################################
-
 
 _marker = object()
 

@@ -27,6 +27,8 @@ from zope.app.container.constraints import contains, containers
 from zope.app.event.interfaces import IObjectEvent
 from zope.app.i18n import ZopeMessageIDFactory as _
 
+from zope.app.component import bbb
+
 InactiveStatus = _('Inactive')
 ActiveStatus = _('Active')
 
@@ -230,7 +232,7 @@ class IRegisterableContainerContaining(IContainer):
     contains(IRegisterable, IRegisterableContainer)
     
 
-class IRegistered(Interface):
+class IRegistered(Interface, bbb.interfaces.IBBBRegistered):
     """An object that can track down its registrations.
 
     The object need not implement this functionality itself, but must at

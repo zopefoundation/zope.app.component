@@ -1,8 +1,8 @@
 
 
-def install():
+import sys
+import localservice
+import interfaces
+import registration
 
-    import sys
-    import localservice
-
-    sys.modules['zope.app.component.localservice'] = localservice
+sys.modules['zope.app.component.localservice'] = localservice
