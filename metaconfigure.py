@@ -218,7 +218,7 @@ def _checker(_context, permission, allowed_interface, allowed_attributes):
             for name in i.names(all=True):
                 require[name] = permission
 
-    checker = Checker(require.get)
+    checker = Checker(require)
     return checker
 
 def resource(_context, factory, type, name, layer='default',
