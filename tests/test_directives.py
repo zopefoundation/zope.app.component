@@ -285,6 +285,37 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertEqual(v.__class__,
                          V1)
 
+    def testUnnamedViewThatProvidesAnInterface(self):
+
+        ob = Ob()
+        self.assertEqual(queryView(ob, '', Request(IV), None), None)
+
+        xmlconfig(StringIO(template %
+            """
+            <view factory="zope.app.component.tests.views.V1"
+                  for="zope.app.component.tests.views.IC"
+                  type="zope.app.component.tests.views.IR"
+                  />
+            """
+            ))
+
+        v = queryView(ob, '', Request(IR), None, providing=IV)
+        self.assertEqual(v, None)
+
+        xmlconfig(StringIO(template %
+            """
+            <view factory="zope.app.component.tests.views.V1"
+                  for="zope.app.component.tests.views.IC"
+                  type="zope.app.component.tests.views.IR"
+                  provides="zope.app.component.tests.views.IV"
+                  />
+            """
+            ))
+
+        v = queryView(ob, '', Request(IR), None, providing=IV)
+
+        self.assertEqual(v.__class__, V1)
+
     def testInterfaceProtectedView(self):
         xmlconfig(StringIO(template %
             """
@@ -495,6 +526,37 @@ class Test(PlacelessSetup, unittest.TestCase):
             ))
 
         v = queryResource(ob, 'test', Request(IR), None, providing=IV)
+
+        self.assertEqual(v.__class__, R1)
+
+    def testUnnamedResourceThatProvidesAnInterface(self):
+
+        ob = Ob()
+        self.assertEqual(queryResource(ob, '', Request(IV), None), None)
+
+        xmlconfig(StringIO(template %
+            """
+            <resource
+                factory="zope.app.component.tests.views.R1"
+                type="zope.app.component.tests.views.IR"
+                />
+            """
+            ))
+
+        v = queryResource(ob, '', Request(IR), None, providing=IV)
+        self.assertEqual(v, None)
+
+        xmlconfig(StringIO(template %
+            """
+            <resource
+                factory="zope.app.component.tests.views.R1"
+                type="zope.app.component.tests.views.IR"
+                provides="zope.app.component.tests.views.IV"
+                />
+            """
+            ))
+
+        v = queryResource(ob, '', Request(IR), None, providing=IV)
 
         self.assertEqual(v.__class__, R1)
 
