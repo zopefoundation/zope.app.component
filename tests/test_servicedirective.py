@@ -18,6 +18,7 @@ from cStringIO import StringIO
 from zope.exceptions import Forbidden, Unauthorized
 
 from zope.configuration.xmlconfig import testxmlconfig as xmlconfig, XMLConfig
+from zope.configuration.config import ConfigurationConflictError
 from zope.security.proxy import ProxyFactory
 from zope.component.exceptions import ComponentLookupError
 
@@ -39,7 +40,6 @@ class Test(PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
         PlacelessSetup.setUp(self)
-        XMLConfig('metameta.zcml', zope.configuration)()
         XMLConfig('meta.zcml', zope.app.component)()
 
     def testServiceConfigNoType(self):
@@ -59,10 +59,8 @@ class Test(PlacelessSetup, unittest.TestCase):
             )))
 
     def testDuplicateServiceConfig(self):
-        from zope.configuration.xmlconfig \
-             import ZopeConflictingConfigurationError
         self.assertRaises(
-            ZopeConflictingConfigurationError,
+            ConfigurationConflictError,
             xmlconfig,
             StringIO(template % (
             """
