@@ -84,15 +84,7 @@ class Test(CleanUp, TestCase):
         self.assertEqual(r, [I2, I3])
 
 def test_suite():
-    return TestSuite((makeSuite(Test),))
-
-if __name__=='__main__':
-    main(defaultTest='test_suite')
-    self.assertEqual(list(service.searchInterface('two')), [I3])
-
-
-def test_suite():
-    return TestSuite((makeSuite(Test),))
+    return makeSuite(Test)
 
 if __name__=='__main__':
     main(defaultTest='test_suite')
