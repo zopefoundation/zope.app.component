@@ -159,7 +159,7 @@ def _checker(_context, permission, allowed_interface, allowed_attributes):
     for name in (allowed_attributes or '').split():
         require[name] = permission
     if allowed_interface:
-        for name in _context.resolve(allowed_interface).names(1):
+        for name in _context.resolve(allowed_interface).names(all=True):
             require[name] = permission
 
     checker = Checker(require.get)
