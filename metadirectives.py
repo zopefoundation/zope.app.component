@@ -26,6 +26,12 @@ import zope.app.component.fields
 
 from zope.app.i18n import ZopeMessageIDFactory as _
 
+class IDefaultViewName(zope.interface.Interface):
+    """A string that contains the default view name
+
+    A default view name is used to select a view when a user hasn't
+    specified one.
+    """
 
 class IBasicComponentInformation(zope.interface.Interface):
 

@@ -22,23 +22,30 @@ from cStringIO import StringIO
 
 from zope.interface import Interface, implements
 from zope.testing.doctestunit import DocTestSuite
-from zope.app.component.metaconfigure import interface
-from zope.app.content.interfaces import IContentType
+from zope.component.tests.request import Request
+from zope.component import createObject
 
 from zope.configuration.xmlconfig import xmlconfig, XMLConfig
 from zope.configuration.exceptions import ConfigurationError
+from zope.configuration.xmlconfig import ZopeXMLConfigurationError
 
 from zope.security.proxy import removeSecurityProxy
 from zope.security.proxy import getTestProxyItems
+from zope.security.checker import ProxyFactory
+from zope.security.checker import selectChecker
 
 import zope.app.component
 from zope.component.exceptions import ComponentLookupError
 
 from zope.app import zapi
 from zope.app.tests.placelesssetup import PlacelessSetup
+from zope.app.component.metaconfigure import interface
 from zope.app.component.tests.views import IV, IC, V1, VZMI, R1, RZMI, IR
-from zope.component.tests.request import Request
-from zope.security.checker import ProxyFactory
+from zope.app.content.interfaces import IContentType
+from zope.app.component.interface import queryInterface
+
+from zope.app.component.tests import module, exampleclass
+from zope.app.component.interface import queryInterface
 
 # TODO: tests for other directives needed
 
@@ -961,7 +968,7 @@ def configfile(s):
 
 class TestFactoryDirective(PlacelessSetup, unittest.TestCase):
     def setUp(self):
-        super(Test, self).setUp()
+        super(TestFactoryDirective, self).setUp()
         XMLConfig('meta.zcml', zope.app.component)()
         XMLConfig('meta.zcml', zope.app.security)()
 
@@ -977,7 +984,7 @@ class TestFactoryDirective(PlacelessSetup, unittest.TestCase):
 </content>''')
         xmlconfig(f)
         obj = createObject(None, 'test.Example')
-        self.failUnless(zapi.isinstance(obj, ExampleClass))
+        self.failUnless(zapi.isinstance(obj, exampleclass.ExampleClass))
 
 
 
@@ -1001,7 +1008,7 @@ P2 = "zope.Paltry"
 class TestRequireDirective(PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
-        super(Test, self).setUp()
+        super(TestRequireDirective, self).setUp()
         defineDirectives()
 
         class B(object):

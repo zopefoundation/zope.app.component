@@ -32,7 +32,7 @@ from zope.app.location.interfaces import ILocation
 from zope.app.security.protectclass import protectLikeUnto, protectName
 from zope.app.security.protectclass import protectSetAttribute
 
-from metaconfigure import factory
+from metaconfigure import factory, handler
 
 PublicPermission = 'zope.Public'
 
@@ -45,10 +45,6 @@ class ProtectionDeclarationException(Exception):
     """Security-protection-specific exceptions."""
     pass
 
-def handler(serviceName, methodName, *args, **kwargs):
-    method=getattr(zapi.getGlobalService(serviceName), methodName)
-    method(*args, **kwargs)
-
 class ContentDirective(object):
 
     def __init__(self, _context, class_):
@@ -56,9 +52,6 @@ class ContentDirective(object):
         self.__class = class_
         if isinstance(self.__class, ModuleType):
             raise ConfigurationError('Content class attribute must be a class')
-        # not used yet
-        #self.__name = class_
-        #self.__normalized_name = _context.getNormalizedName(class_)
         self.__context = _context
 
     def implements(self, _context, interface):
@@ -176,9 +169,9 @@ class ContentDirective(object):
         id = id or self.__id
         factoryObj = Factory(self.__class, title, description)
 
-        # note factories are all in one pile, services and content,
+        # note factories are all in one pile, utilities and content,
         # so addable names must also act as if they were all in the
-        # same namespace, despite the service/content division
+        # same namespace, despite the utilities/content division
         factory(_context, factoryObj, id, title, description)
 
 

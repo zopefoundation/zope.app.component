@@ -118,7 +118,7 @@
     <meta:complexDirective
         name="localUtility"
         schema=".metadirectives.IClassDirective"
-        handler=".metaconfigure.LocalUtilityDirective"
+        handler=".contentdirective.LocalUtilityDirective"
         >
 
       <meta:subdirective

@@ -30,7 +30,6 @@ from zope.app import zapi
 from zope.app.component.interface import queryInterface
 from zope.app.security.adapter import TrustedAdapterFactory
 
-
 PublicPermission = 'zope.Public'
 
 def handler(methodName, *args, **kwargs):
@@ -44,7 +43,7 @@ def interface(_context, interface, type=None):
         callable = provideInterface,
         args = ('', interface, type)
         )
-
+    
 
 def proxify(ob, checker):
     """Try to get the object proxied with the `checker`, but not too soon
