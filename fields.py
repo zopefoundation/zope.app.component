@@ -17,102 +17,15 @@ $Id$
 """
 __docformat__ = 'restructuredtext'
 
-import zope.schema
-from zope.component.exceptions import ComponentLookupError
-from zope.configuration.exceptions import ConfigurationError
-from zope.configuration.fields import GlobalObject
-from zope.interface.interfaces import IInterface
-from zope.publisher.interfaces.browser import ILayer
+# BBB this module can be deleted in 3.3
+import sys
+# hack to let apidoc dynamically load all modules without complaining
+if 'apidoc' not in sys._getframe(10).f_code.co_filename:
+    import warnings
+    warnings.warn(
+        "The class zope.app.component.fields.LayerField is deprecated and will "
+        "away in ZopeX3 3.3. Use zope.app.publisher.browser.fields.LayerField "
+        "instead.",
+        DeprecationWarning)
 
-from zope.app import zapi
-
-
-class LayerField(GlobalObject):
-    r"""This fields represents a layer.
-
-    Besides being able to look up the layer by importing it, we also try
-    to look up the name in the utility service.
-
-    >>> from zope.interface import directlyProvides
-    >>> from zope.interface.interface import InterfaceClass
-
-    >>> layer1 = InterfaceClass('layer1', (),
-    ...                         __doc__='Layer: layer1',
-    ...                         __module__='zope.app.layers')
-    >>> directlyProvides(layer1, ILayer)
-
-    >>> layers = None
-    >>> class Resolver(object):
-    ...     def resolve(self, path):
-    ...         if '..' in path:
-    ...             raise ValueError('Empty module name')
-    ...         if (path.startswith('zope.app.layers') and
-    ...             hasattr(layers, 'layer1') or
-    ...             path == 'zope.app.component.fields.layer1' or
-    ...             path == '.fields.layer1'):
-    ...             return layer1
-    ...         raise ConfigurationError, 'layer1'
-
-    >>> field = LayerField()
-    >>> field = field.bind(Resolver())
-
-    Test 1: Import the layer
-    ------------------------
-
-    >>> field.fromUnicode('zope.app.component.fields.layer1') is layer1
-    True
-
-    Test 2: We have a shortcut name. Import the layer from `zope.app.layers`.
-    -------------------------------------------------------------------------
-
-    >>> from types import ModuleType as module
-    >>> import sys
-    >>> layers = module('layers')
-    >>> old = sys.modules.get('zope.app.layers', None)
-    >>> sys.modules['zope.app.layers'] = layers
-    >>> setattr(layers, 'layer1', layer1)
-
-    >>> field.fromUnicode('layer1') is layer1
-    True
-
-    >>> if old is not None:
-    ...     sys.modules['zope.app.layers'] = old
-
-    Test 3: Get the layer from the utility service
-    ----------------------------------------------
-
-    >>> from zope.app.tests import ztapi
-    >>> ztapi.provideUtility(ILayer, layer1, 'layer1')
-
-    >>> field.fromUnicode('layer1') is layer1
-    True
-
-    Test 4: Import the layer by using a short name
-    ----------------------------------------------
-
-    >>> field.fromUnicode('.fields.layer1') is layer1
-    True
-    """
-
-    def fromUnicode(self, u):
-        name = str(u.strip())
-
-        try:
-            value = zapi.queryUtility(ILayer, name)
-        except ComponentLookupError:
-            # The component architecture is not up and running.
-            pass
-        else:
-            if value is not None:
-                return value
-
-        try:
-            value = self.context.resolve('zope.app.layers.'+name)
-        except (ConfigurationError, ValueError), v:
-            try:
-                value = self.context.resolve(name)
-            except ConfigurationError, v:
-                raise zope.schema.ValidationError(v)
-
-        self.validate(value)
-        return value
+from zope.app.publisher.browser.fields import LayerField

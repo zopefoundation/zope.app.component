@@ -22,7 +22,9 @@ import zope.interface
 import zope.schema
 
 import zope.app.security.fields
-import zope.app.component.fields
+
+# BBB goes away in 3.3
+from zope.app.publisher.browser.fields import LayerField
 
 from zope.app.i18n import ZopeMessageIDFactory as _
 
@@ -79,7 +81,8 @@ class IBasicViewInformation(zope.interface.Interface):
         required=False,
         )
 
-    layer = zope.app.component.fields.LayerField(
+    # BBB remove this field in 3.3
+    layer = LayerField(
         title=_("The layer the view is in."),
         description=_("""
         A skin is composed of layers. It is common to put skin
@@ -338,7 +341,8 @@ class IResourceDirective(IBasicComponentInformation,
                          IBasicResourceInformation):
     """Register a resource"""
     
-    layer = zope.app.component.fields.LayerField(
+    # BBB remove this field in 3.3
+    layer = LayerField(
         title=_("The layer the resource is in."),
         required=False,
         )

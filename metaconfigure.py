@@ -30,6 +30,9 @@ from zope.app import zapi
 from zope.app.component.interface import queryInterface
 from zope.app.security.adapter import TrustedAdapterFactory
 
+import warnings
+
+
 PublicPermission = 'zope.Public'
 
 # I prefer the indirection (using getService and getServices vs.
@@ -232,10 +235,19 @@ def _checker(_context, permission, allowed_interface, allowed_attributes):
     checker = Checker(require)
     return checker
 
+# BBB layer should be removed from args in 3.3
 def resource(_context, factory, type, name, layer=None,
              permission=None,
              allowed_interface=None, allowed_attributes=None,
              provides=Interface):
+
+    # BBB This can go away in 3.3
+    if layer is not None:
+        warnings.warn(
+            "The layer attribute is deprecated for the zope:view "
+            "directive and will go away in ZopeX3 3.3. Use browser:view "
+            "instead.",
+            DeprecationWarning)
 
     if ((allowed_attributes or allowed_interface)
         and (not permission)):
@@ -254,9 +266,11 @@ def resource(_context, factory, type, name, layer=None,
 
         factory = proxyResource
 
+    # BBB can go away in 3.3
     if layer is None:
         layer = type
 
+    # BBB 'layer' should be changed to 'type' in 3.3
     _context.action(
         discriminator = ('resource', name, layer, provides),
         callable = handler,
@@ -274,9 +288,18 @@ def resource(_context, factory, type, name, layer=None,
         args = (provides.__module__ + '.' + provides.__name__, type)
                )
 
+# BBB layer should be removed from args in 3.3
 def view(_context, factory, type, name, for_, layer=None,
          permission=None, allowed_interface=None, allowed_attributes=None,
          provides=Interface):
+
+    # BBB This can go away in 3.3
+    if layer is not None:
+        warnings.warn(
+            "The layer attribute is deprecated for the zope:view "
+            "directive and will go away in ZopeX3 3.3. Use browser:view "
+            "instead.",
+            DeprecationWarning)
 
     if ((allowed_attributes or allowed_interface)
         and (not permission)):
@@ -328,6 +351,7 @@ def view(_context, factory, type, name, for_, layer=None,
     if layer is None:
         for_ = for_ + (type,)
     else:
+        # BBB can go away in 3.3 -- always use type as required interface
         for_ = for_ + (layer,)
 
     _context.action(
