@@ -17,7 +17,6 @@ $Id$
 """
 import warnings
 
-from zope.interface import implements
 from zope.security.proxy import removeSecurityProxy
 
 from zope.app import zapi
@@ -25,7 +24,6 @@ from zope.app.container.browser.adding import Adding
 from zope.app.container.interfaces import INameChooser
 from zope.app.form.browser.widget import SimpleInputWidget
 from zope.app.i18n import ZopeMessageIDFactory as _
-from zope.app.pagetemplate.viewpagetemplatefile import ViewPageTemplateFile
 from zope.app.publisher.browser import BrowserView
 from zope.app.component import interfaces
 from zope.app.component.interfaces.registration import ActiveStatus

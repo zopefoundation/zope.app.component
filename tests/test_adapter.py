@@ -25,7 +25,6 @@ import zope.interface
 from zope.interface.adapter import AdapterRegistry
 from zope.testing import doctest
 
-from zope.app import zapi
 from zope.app.component import interfaces
 from zope.app.component.adapter import LocalAdapterRegistry, AdapterRegistration
 from zope.app.testing import setup

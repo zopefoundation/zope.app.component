@@ -24,7 +24,6 @@ A local site manager has a number of roles:
 
 $Id$
 """
-import sys
 
 import zope.event
 import zope.interface
@@ -38,9 +37,7 @@ from zope.app.component import interfaces
 from zope.app.component import registration
 from zope.app.component.hooks import setSite
 from zope.app.container.btree import BTreeContainer
-from zope.app.container.constraints import ItemTypePrecondition
 from zope.app.container.contained import Contained
-from zope.app.container.interfaces import IContainer
 from zope.app.event import objectevent
 from zope.app.filerepresentation.interfaces import IDirectoryFactory
 from zope.app.traversing.interfaces import IContainmentRoot

@@ -17,7 +17,6 @@ $Id$
 """
 import zope.interface
 import zope.event
-from zope.component.interfaces import IFactory
 
 from zope.app import zapi
 from zope.app.component import site, interfaces

@@ -21,7 +21,6 @@ import zope.schema
 from zope.component.exceptions import ComponentLookupError
 from zope.configuration.exceptions import ConfigurationError
 from zope.configuration.fields import GlobalObject
-from zope.interface.interfaces import IInterface
 from zope.publisher.interfaces.browser import ILayer
 
 from zope.app import zapi

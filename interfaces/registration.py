@@ -17,10 +17,9 @@ $Id$
 """
 import zope.component.interfaces
 from zope.interface import Interface, Attribute, implements
-from zope.schema import TextLine, Field, Choice, Dict
-from zope.schema.interfaces import ITextLine, IField
+from zope.schema import Field, Choice
+from zope.schema.interfaces import IField
 
-from zope.app.annotation.interfaces import IAnnotatable
 from zope.app.annotation.interfaces import IAttributeAnnotatable
 from zope.app.container.interfaces import IContainerNamesContainer
 from zope.app.container.interfaces import IContained, IContainer

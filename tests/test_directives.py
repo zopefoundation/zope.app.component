@@ -41,7 +41,7 @@ from zope.component.exceptions import ComponentLookupError
 from zope.app import zapi
 from zope.app.testing.placelesssetup import PlacelessSetup
 from zope.app.component.metaconfigure import interface
-from zope.app.component.tests.views import IV, IC, V1, VZMI, R1, RZMI, IR
+from zope.app.component.tests.views import IV, IC, V1, R1, IR
 from zope.app.content.interfaces import IContentType
 from zope.app.component.interface import queryInterface
 

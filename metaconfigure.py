@@ -24,10 +24,9 @@ from zope.interface.interfaces import IInterface
 
 from zope.security.checker import InterfaceChecker, CheckerPublic
 from zope.security.checker import Checker, NamesChecker
-from zope.security.proxy import Proxy, ProxyFactory
+from zope.security.proxy import Proxy
 
 from zope.app import zapi
-from zope.app.component.interface import queryInterface
 from zope.app.security.adapter import TrustedAdapterFactory
 
 PublicPermission = 'zope.Public'

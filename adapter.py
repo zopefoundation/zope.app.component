@@ -18,16 +18,11 @@ $Id$
 __docformat__ = 'restructuredtext' 
 import persistent
 
-import zope.component.adapter
 import zope.interface
-import zope.schema
 from zope.security.proxy import removeSecurityProxy
 
-import zope.app.container.contained
-from zope.app import zapi
 from zope.app.component import registration
 from zope.app.component import interfaces
-from zope.app.i18n import ZopeMessageIDFactory as _
 
 
 class LocalSurrogate(zope.interface.adapter.Surrogate):

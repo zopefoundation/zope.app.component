@@ -24,7 +24,6 @@ from zope.interface import classImplements
 from zope.schema.interfaces import IField
 from zope.configuration.exceptions import ConfigurationError
 
-from zope.app import zapi
 from zope.app.annotation.interfaces import IAttributeAnnotatable
 from zope.app.component.interface import provideInterface
 from zope.app.component.interfaces import ILocalUtility
@@ -32,7 +31,7 @@ from zope.app.location.interfaces import ILocation
 from zope.app.security.protectclass import protectLikeUnto, protectName
 from zope.app.security.protectclass import protectSetAttribute
 
-from metaconfigure import factory, handler
+from metaconfigure import factory
 
 PublicPermission = 'zope.Public'
 

@@ -22,7 +22,7 @@ from zope.app import zapi
 ##############################################################################
 # BBB: Backward Compatiblity 12/23/2004
 
-import sys
+#import sys
 import zope.app
 #from zope.app.component.bbb import registration as bbb_registration
 #sys.modules['zope.app.registration'] = bbb_registration
