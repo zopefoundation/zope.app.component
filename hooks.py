@@ -87,18 +87,11 @@ def getServices_hook(context=None):
     except ComponentLookupError:
         return serviceManager
 
-# Hook up a new implementation of looking up services.
-zope.component.getServices.sethook(getServices_hook)
-
 def adapter_hook(interface, object, name='', default=None):
     try:
         return siteinfo.adapter_hook(interface, object, name, default)
     except ComponentLookupError:
         return default
-
-# Hook up a new implementation of looking up adapters.
-zope.component.adapter_hook.sethook(adapter_hook)
-
     
 def queryView(object, name, request, default=None,
               providing=Interface, context=None):
@@ -110,5 +103,16 @@ def queryView(object, name, request, default=None,
 
     return view
 
-# Hook up a new implementation of looking up views.
-zope.component.queryView.sethook(queryView)
+
+def setHooks():
+    # Hook up a new implementation of looking up views.
+    zope.component.getServices.sethook(getServices_hook)
+    zope.component.adapter_hook.sethook(adapter_hook)
+    zope.component.queryView.sethook(queryView)
+
+def resetHooks():
+    # Reset hookable functions to original implementation.
+    zope.component.getServices.reset()
+    zope.component.adapter_hook.reset()
+    zope.component.queryView.reset()
+    
