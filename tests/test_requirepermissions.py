@@ -33,16 +33,16 @@ PREFIX = module.__name__ + '.'
 def defineDirectives():
     XMLConfig('meta.zcml', zope.app.component)()
     XMLConfig('meta.zcml', zope.app.security)()
-    xmlconfig(StringIO("""<zopeConfigure
+    xmlconfig(StringIO("""<configure
         xmlns='http://namespaces.zope.org/zope' >
-       <permission id="zope.extravagant" title="extravagant" />
-       <permission id="zope.paltry" title="paltry" />
-    </zopeConfigure>"""))
+       <permission id="zope.Extravagant" title="extravagant" />
+       <permission id="zope.Paltry" title="paltry" />
+    </configure>"""))
 
 NOTSET = []
 
-P1 = "zope.extravagant"
-P2 = "zope.paltry"
+P1 = "zope.Extravagant"
+P2 = "zope.Paltry"
 
 class Test(PlacelessSetup, unittest.TestCase):
 

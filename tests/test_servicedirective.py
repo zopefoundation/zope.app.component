@@ -26,13 +26,11 @@ import zope.app.component
 from zope.component import getService
 from zope.app.tests.placelesssetup import PlacelessSetup
 
-
-template = """<zopeConfigure
+template = """<configure
    xmlns='http://namespaces.zope.org/zope'
    xmlns:test='http://www.zope.org/NS/Zope3/test'>
    %s
-   </zopeConfigure>"""
-
+   </configure>"""
 
 class Test(PlacelessSetup, unittest.TestCase):
 
@@ -161,7 +159,7 @@ class Test(PlacelessSetup, unittest.TestCase):
               zope.app.security.registries.metaconfigure.definePermission" />
             </directives>
 
-            <permission id="XXX" title="xxx" />
+            <permission id="zope.TestPermission" title="Test permission" />
 
             <serviceType id="Foo"
                          interface="
@@ -171,7 +169,7 @@ class Test(PlacelessSetup, unittest.TestCase):
               serviceType="Foo"
               component="
               zope.app.component.tests.service.fooService"
-              permission="XXX"
+              permission="zope.TestPermission"
               />
             """
             )))

@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: test_contentdirective.py,v 1.4 2003/08/02 09:11:18 anthony Exp $
+$Id: test_contentdirective.py,v 1.5 2003/08/03 02:13:13 philikon Exp $
 """
 
 import unittest
@@ -162,7 +162,7 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
 <content class="zope.app.component.tests.exampleclass.ExampleClass">
     <factory
       id="Example"
-      permission="UndefinedPermission"
+      permission="zope.UndefinedPermission"
       title="Example content"
       description="Example description"
     />

@@ -132,7 +132,7 @@ class Test(PlacelessSetup, unittest.TestCase):
               factory="zope.component.tests.components.Comp"
               provides="zope.component.tests.components.IApp"
               for="zope.component.tests.components.IContent"
-              permission="UndefinedPermission"
+              permission="zope.UndefinedPermission"
               />
             """
             ))
@@ -224,7 +224,7 @@ class Test(PlacelessSetup, unittest.TestCase):
              <utility
               component="zope.component.tests.components.comp"
               provides="zope.component.tests.components.IApp"
-              permission="UndefinedPermission"
+              permission="zope.UndefinedPermission"
               />
             """
             ))
@@ -341,7 +341,7 @@ class Test(PlacelessSetup, unittest.TestCase):
                   factory="zope.component.tests.views.V1"
                   for="zope.component.tests.views.IC"
                   type="zope.component.tests.views.IV"
-                  permission="UndefinedPermission"
+                  permission="zope.UndefinedPermission"
                   allowed_attributes="action index"
               allowed_interface="zope.component.tests.views.IV"
                   />
@@ -436,7 +436,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             <resource name="test"
                   factory="zope.component.tests.views.R1"
                   type="zope.component.tests.views.IV"
-                  permission="UndefinedPermission"/>
+                  permission="zope.UndefinedPermission"/>
             """
             ))
         self.assertRaises(UndefinedPermissionError, xmlconfig, config,
@@ -479,18 +479,11 @@ class Test(PlacelessSetup, unittest.TestCase):
                id="foo"
                component="zope.component.tests.factory.f"
                />
-            <factory
-               component="zope.component.tests.factory.f"
-               />
             """
             )))
 
         from zope.component.tests.factory import X
         self.assertEqual(createObject(None, 'foo').__class__, X)
-        self.assertEqual(createObject(
-            None,
-            'zope.component.tests.factory.f').__class__, X)
-
 
 def test_suite():
     return unittest.makeSuite(Test)
