@@ -13,15 +13,18 @@
 ##############################################################################
 
 from zope.configuration.exceptions import ConfigurationError
-from zope.security.proxy import Proxy
+from zope.security.proxy import Proxy, ProxyFactory
 from zope.component import getService, getServiceManager
 from zope.app.services.servicenames import Adapters, Interfaces, Skins
 from zope.app.services.servicenames import Views, Resources, Factories
 from zope.app.component.globalinterfaceservice import interfaceService
 from zope.configuration.action import Action
-from zope.security.checker import InterfaceChecker, CheckerPublic, Checker
+from zope.security.checker import InterfaceChecker, CheckerPublic, \
+     Checker, NamesChecker
 from zope.app.security.registries.permissionregistry import permissionRegistry
 from zope.component.service import UndefinedService
+
+PublicPermission = 'zope.Public'
 
 # I prefer the indirection (using getService and getServiceManager vs.
 # directly importing the various services)  not only because it makes
@@ -76,7 +79,7 @@ def adapter(_context, factory, provides, for_, permission=None, name=''):
     factory = map(_context.resolve, factory.split())
 
     if permission is not None:
-        if permission == 'zope.Public':
+        if permission == PublicPermission:
             permission = CheckerPublic
         checker = InterfaceChecker(provides, permission)
         factory.append(lambda c: Proxy(c, checker))
@@ -119,7 +122,7 @@ def utility(_context, provides, component=None, factory=None,
         component = _context.resolve(component)
 
     if permission is not None:
-        if permission == 'zope.Public':
+        if permission == PublicPermission:
             permission = CheckerPublic
         checker = InterfaceChecker(provides, permission)
 
@@ -141,7 +144,7 @@ def utility(_context, provides, component=None, factory=None,
         ]
 
 
-def factory(_context, component, id=None):
+def factory(_context, component, id=None, permission=None):
     if id is None:
         id = component
 
@@ -150,16 +153,33 @@ def factory(_context, component, id=None):
     return [
         Action(
             discriminator = ('factory', id),
-            callable = handler,
-            args = (Factories, 'provideFactory', id, component),
+            callable = provideFactory,
+            args = (id, component, permission),
             )
         ]
+
+def provideFactory(name, factory, permission):
+    # make sure the permission is defined
+    if permission is not None:
+        permissionRegistry.ensurePermissionDefined(permission)
+
+    if permission == PublicPermission:
+        permission = CheckerPublic
+
+    if permission:
+        # XXX should getInterfaces be public, as below?
+        factory = ProxyFactory(factory,
+                               NamesChecker(('getInterfaces',),
+                                            __call__=permission))
+
+    getService(None, Factories).provideFactory(name, factory)
+
 
 def _checker(_context, permission, allowed_interface, allowed_attributes):
     if (not allowed_attributes) and (not allowed_interface):
         allowed_attributes = "__call__"
 
-    if permission == 'zope.Public':
+    if permission == PublicPermission:
         permission = CheckerPublic
 
     require={}
@@ -344,7 +364,7 @@ def provideService(serviceType, component, permission):
         else:
             raise UndefinedService(serviceType)
 
-        if permission == 'zope.Public':
+        if permission == PublicPermission:
             permission = CheckerPublic
 
         checker = InterfaceChecker(interface, permission)

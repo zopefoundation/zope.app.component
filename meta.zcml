@@ -11,7 +11,7 @@
     <directive name="utility" attributes="component provides permission name"
        handler="zope.app.component.metaconfigure.utility" />
 
-    <directive name="factory" attributes="component id"
+    <directive name="factory" attributes="component id permission"
        handler="zope.app.component.metaconfigure.factory" />
 
     <directive 
