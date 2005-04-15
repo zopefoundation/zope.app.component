@@ -177,13 +177,12 @@ def adapter(_context, factory, provides=None, for_=None, permission=None,
         checker = InterfaceChecker(provides, permission)
         factory = _protectedFactory(factory, checker)
 
-        if trusted:
-            factory = TrustedAdapterFactory(factory)
-        elif permission != PublicPermission:
+        # handle untrusted adapter that requires dedicated permissions
+        if permission != PublicPermission:
             factory = UntrustedAdapterFactory(factory)
-    else:
-        if trusted:
-            factory = TrustedAdapterFactory(factory)
+            
+    if trusted:
+        factory = TrustedAdapterFactory(factory)
 
     _context.action(
         discriminator = ('adapter', for_, provides, name),
