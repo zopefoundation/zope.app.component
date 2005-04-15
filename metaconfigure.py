@@ -178,7 +178,7 @@ def adapter(_context, factory, provides=None, for_=None, permission=None,
         factory = _protectedFactory(factory, checker)
 
         # handle untrusted adapter that requires dedicated permissions
-        if permission != PublicPermission:
+        if permission != PublicPermission and not trusted:
             factory = UntrustedAdapterFactory(factory)
             
     if trusted:
