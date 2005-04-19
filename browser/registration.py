@@ -165,7 +165,7 @@ class ComponentPathWidget(SimpleInputWidget):
             "registration code now uses the component directly instead "
             "of using the component's path.",
             DeprecationWarning, stacklevel=2,
-            )        
+            )
         super(ComponentPathWidget, self).__init__(*args, **kw)
 
     def __call__(self):
@@ -323,9 +323,10 @@ class EditRegistration(BrowserView):
         return ''
 
     def remove_objects(self, key_list):
-        """Remove the directives from the container."""
+        """Unregister and remove the directives from the container."""
         container = self.context
         for name in key_list:
+            container[name].status = InactiveStatus
             del container[name]
 
     def registrationInfo(self):
