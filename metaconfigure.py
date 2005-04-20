@@ -179,17 +179,14 @@ def adapter(_context, factory, provides=None, for_=None, permission=None,
         factory = _protectedFactory(factory, checker)
 
     # invoke custom adapter factories
-    if permission is None or permission is CheckerPublic:
-        if trusted:
-            # trusted adapters that requires no permission
-            factory = TrustedAdapterFactory(factory)
-    else:
-        if trusted:
-            # trusted adapters that requires any dedicated permission
-            factory = LocatingTrustedAdapterFactory(factory)
-        else:
-            # untrusted adapters that requires any dedicated permission
-            factory = LocatingUntrustedAdapterFactory(factory)
+    if trusted:
+        # trusted adapters that requires dedicated permission all the time
+        factory = LocatingTrustedAdapterFactory(factory)
+
+    elif permission is not None and permission is not CheckerPublic:
+        # untrusted adapters that requires any dedicated permission
+        factory = LocatingUntrustedAdapterFactory(factory)  
+
 
     _context.action(
         discriminator = ('adapter', for_, provides, name),
