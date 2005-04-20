@@ -184,8 +184,7 @@ class Test(PlacelessSetup, unittest.TestCase):
               />
             '''
             )))
-        # The adapter is location-proxied
-        # With an unproxied object
+        # With an unproxied object, business as usual
         content = Content()
         a1 = A1()
         subscribers = zapi.subscribers((content, a1), IS)
@@ -193,7 +192,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         a3 = subscribers[0]
 
         self.assertEqual(a3.__class__, A3)
-        self.assertEqual(type(a3).__name__, 'LocationProxy')
+        self.assertEqual(type(a3).__name__, 'A3')
         self.assertEqual(a3.context, (content, a1))
 
         # Now with a proxied object:
@@ -345,11 +344,9 @@ class Test(PlacelessSetup, unittest.TestCase):
             '''
             )))
 
-        # With an unproxied object, a location proxied adapter is returned
+        # With an unproxied object, business as usual
         ob = Content()
-        self.assertEqual(type(I1(ob)).__name__, 'LocationProxy')
-        from zope.proxy import removeAllProxies
-        self.assertEqual(type(removeAllProxies(I1(ob))).__name__, 'A1')
+        self.assertEqual(type(I1(ob)).__name__, 'A1')
 
         # Now with a proxied object:
         from zope.security.checker import ProxyFactory
