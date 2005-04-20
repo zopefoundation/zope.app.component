@@ -31,7 +31,6 @@ from zope.security.proxy import Proxy
 from zope.app import zapi
 from zope.app.security.adapter import LocatingTrustedAdapterFactory
 from zope.app.security.adapter import LocatingUntrustedAdapterFactory
-from zope.app.security.adapter import TrustedAdapterFactory
 
 PublicPermission = 'zope.Public'
 
@@ -113,8 +112,14 @@ def subscriber(_context, for_=None, factory=None, handler=None, provides=None,
                 ob = f(ob)
             return ob
 
+    # invoke custom adapter factories
     if trusted:
-        factory = TrustedAdapterFactory(factory)
+        # trusted adapters that requires dedicated permission all the time
+        factory = LocatingTrustedAdapterFactory(factory)
+
+    elif permission is not None and permission is not CheckerPublic:
+        # untrusted adapters that requires any dedicated permission
+        factory = LocatingUntrustedAdapterFactory(factory) 
 
     _context.action(
         discriminator = None,
