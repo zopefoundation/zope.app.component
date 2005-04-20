@@ -343,15 +343,9 @@ class Test(PlacelessSetup, unittest.TestCase):
             '''
             )))
 
-        # With an unproxied none-locatable object we get a location-proxied
-        # object back
+        # With an unproxied object, business as usual
         ob = Content()
-        from zope.app.location import LocationProxy
-        self.assertEqual(type(I1(ob)), LocationProxy)
-
-        # if we remove the location proxy the content object appears
-        from zope.proxy import removeAllProxies
-        self.assertEqual(type(removeAllProxies(I1(ob))), type(A1()))
+        self.assertEqual(type(I1(ob)), type(A1()))
 
         # Now with a proxied object:
         from zope.security.checker import ProxyFactory
@@ -470,15 +464,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         content = Content()
         a1 = A1()
         a2 = A2()
-        from zope.app.location import LocationProxy
-        self.assertEqual(type(zapi.queryMultiAdapter((content, a1, a2), I3)), LocationProxy)
-
-        # TODO: I do not understand that test
-        # a3 = ProxyFactory(zapi.queryMultiAdapter((content, a1, a2), I3))
-        # workaround start
-        from zope.proxy import removeAllProxies
-        a3 = ProxyFactory(removeAllProxies(zapi.queryMultiAdapter((content, a1, a2), I3)))
-        # workaround end
+        a3 = ProxyFactory(zapi.queryMultiAdapter((content, a1, a2), I3))
         self.assertEqual(a3.__class__, A3)
         items = [item[0] for item in getTestProxyItems(a3)]
         self.assertEqual(items, ['f1', 'f2', 'f3'])
@@ -506,6 +492,7 @@ class Test(PlacelessSetup, unittest.TestCase):
               factory="zope.app.component.tests.adapter.A3"
               provides="zope.app.component.tests.adapter.I3"
               for=""
+              trusted="True"
               />
             '''
             )))
@@ -582,15 +569,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             '''
             )))
 
-        from zope.app.location import LocationProxy
-        self.assertEqual(type(IApp(Content())), LocationProxy)
-
-        # TODO: I do not understand that test
-        #adapter = ProxyFactory(IApp(Content()))
-        # workaround start
-        from zope.proxy import removeAllProxies
-        adapter = ProxyFactory(removeAllProxies(IApp(Content())))
-        # workaround end
+        adapter = ProxyFactory(IApp(Content()))
         items = [item[0] for item in getTestProxyItems(adapter)]
         self.assertEqual(items, ['a', 'f'])
         self.assertEqual(removeSecurityProxy(adapter).__class__, Comp)
@@ -606,15 +585,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             '''
             )))
 
-        from zope.app.location import LocationProxy
-        self.assertEqual(type(IApp(Content())), LocationProxy)
-
-        # TODO: I do not understand that test
-        #adapter = ProxyFactory(IApp(Content()))
-        # workaround start
-        from zope.proxy import removeAllProxies
-        adapter = ProxyFactory(removeAllProxies(IApp(Content())))
-        # workaround end
+        adapter = ProxyFactory(IApp(Content()))
         items = [item[0] for item in getTestProxyItems(adapter)]
         self.assertEqual(items, ['a', 'f'])
         self.assertEqual(removeSecurityProxy(adapter).__class__, Comp)
