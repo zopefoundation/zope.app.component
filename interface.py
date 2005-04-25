@@ -18,7 +18,7 @@ $Id$
 __docformat__ = 'restructuredtext'
 from types import ClassType
 from zope.component.exceptions import ComponentLookupError
-from zope.interface import directlyProvides
+from zope.interface import directlyProvides, directlyProvidedBy
 from zope.interface.interfaces import IInterface
 from zope.app import zapi
 
@@ -42,6 +42,8 @@ def provideInterface(id, interface, iface_type=None, info=''):
     >>> interfaces = gsm.getUtilitiesFor(IContentType)
     >>> list(interfaces)
     []
+
+    # provide first interface type
     >>> provideInterface('', I, IContentType)
     >>> IContentType.providedBy(I)
     True
@@ -50,6 +52,23 @@ def provideInterface(id, interface, iface_type=None, info=''):
     [u'zope.app.component.interface.I']
     >>> [iface.__name__ for (name, iface) in interfaces]
     ['I']
+
+    # provide second interface type
+    >>> class IOtherType(IInterface):
+    ...     pass
+    >>> provideInterface('', I, IOtherType)
+
+    >>> IContentType.providedBy(I)
+    True
+    >>> IOtherType.providedBy(I)
+    True
+    >>> interfaces = list(gsm.getUtilitiesFor(IContentType))
+    >>> [name for (name, iface) in interfaces]
+    [u'zope.app.component.interface.I']
+    >>> interfaces = list(gsm.getUtilitiesFor(IOtherType))
+    >>> [name for (name, iface) in interfaces]
+    [u'zope.app.component.interface.I']
+
     >>> class I1(Interface):
     ...     pass
     >>> provideInterface('', I1)
@@ -75,7 +94,7 @@ def provideInterface(id, interface, iface_type=None, info=''):
     if iface_type is not None:
         if not iface_type.extends(IInterface):
             raise TypeError(iface_type, "is not an interface type")
-        directlyProvides(interface, iface_type)
+        directlyProvides(interface, iface_type, directlyProvidedBy(interface))
     else:
         iface_type = IInterface
         
