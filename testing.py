@@ -44,19 +44,34 @@ class Place(object):
 class PlacefulSetup(PlacelessSetup):
 
     # Places :)
-    rootFolder  = Place('')
+    rootFolder  = Place(u'')
 
-    folder1     = Place('folder1')
-    folder1_1   = Place('folder1/folder1_1')
-    folder1_1_1 = Place('folder1/folder1_1/folder1_1_1')
-    folder1_1_2 = Place('folder1/folder1_2/folder1_1_2')
-    folder1_2   = Place('folder1/folder1_2')
-    folder1_2_1 = Place('folder1/folder1_2/folder1_2_1')
+    folder1     = Place(u'folder1')
+    folder1_1   = Place(u'folder1/folder1_1')
+    folder1_1_1 = Place(u'folder1/folder1_1/folder1_1_1')
+    folder1_1_2 = Place(u'folder1/folder1_2/folder1_1_2')
+    folder1_2   = Place(u'folder1/folder1_2')
+    folder1_2_1 = Place(u'folder1/folder1_2/folder1_2_1')
 
-    folder2     = Place('folder2')
-    folder2_1   = Place('folder2/folder2_1')
-    folder2_1_1 = Place('folder2/folder2_1/folder2_1_1')
+    folder2     = Place(u'folder2')
+    folder2_1   = Place(u'folder2/folder2_1')
+    folder2_1_1 = Place(u'folder2/folder2_1/folder2_1_1')
 
+    folder3     = Place(u"\N{CYRILLIC SMALL LETTER PE}"
+                        u"\N{CYRILLIC SMALL LETTER A}"
+                        u"\N{CYRILLIC SMALL LETTER PE}"
+                        u"\N{CYRILLIC SMALL LETTER KA}"
+                        u"\N{CYRILLIC SMALL LETTER A}3")
+    folder3_1   = Place(u"\N{CYRILLIC SMALL LETTER PE}"
+                        u"\N{CYRILLIC SMALL LETTER A}"
+                        u"\N{CYRILLIC SMALL LETTER PE}"
+                        u"\N{CYRILLIC SMALL LETTER KA}"
+                        u"\N{CYRILLIC SMALL LETTER A}3/"
+                        u"\N{CYRILLIC SMALL LETTER PE}"
+                        u"\N{CYRILLIC SMALL LETTER A}"
+                        u"\N{CYRILLIC SMALL LETTER PE}"
+                        u"\N{CYRILLIC SMALL LETTER KA}"
+                        u"\N{CYRILLIC SMALL LETTER A}3_1")
 
     def setUp(self, folders=False, site=False):
         setup.placefulSetUp()
