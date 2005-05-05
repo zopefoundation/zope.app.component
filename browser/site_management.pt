@@ -10,7 +10,7 @@
   <div class="message"
        tal:define="message view/update"
        tal:condition="message"
-       tal:content="message"  i18n:translate="">
+       tal:content="message">
     Status Message
   </div>
 
