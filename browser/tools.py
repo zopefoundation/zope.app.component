@@ -20,8 +20,9 @@ import zope.event
 
 from zope.app import zapi
 from zope.app.component import site, interfaces, browser
-from zope.app.container.browser import adding
 from zope.app.event import objectevent
+
+from zope.app.i18n import ZopeMessageIDFactory as _
 
 
 class IToolType(zope.interface.interfaces.IInterface):
@@ -76,10 +77,10 @@ class SiteManagementView(browser.ComponentAdding):
         msg = u''
         if "INSTALL-SUBMIT" in self.request:
             self.install()
-            msg = u'Tools successufully installed.'
+            msg = _(u'Tools successufully installed.')
         if "UNINSTALL-SUBMIT" in self.request:
             self.uninstall()
-            msg = u'Tools successufully uninstalled.'
+            msg = _(u'Tools successufully uninstalled.')
         if "ADD-TOOL-SUBMIT" in self.request:
             self.action(self.request['type_name'], self.request['id'])
         elif "CANCEL-ADD-TOOL-SUBMIT" in self.request:
@@ -87,10 +88,10 @@ class SiteManagementView(browser.ComponentAdding):
             self.activeTool = None
         elif "ACTIVATE-SUBMIT" in self.request:
             self.changeStatus(interfaces.registration.ActiveStatus)
-            msg = u'Tools successfully activated.'
+            msg = _(u'Tools successfully activated.')
         elif "DEACTIVATE-SUBMIT" in self.request:
             self.changeStatus(interfaces.registration.InactiveStatus)
-            msg = u'Tools successfully deactivated.'
+            msg = _(u'Tools successfully deactivated.')
         elif "ADD-SUBMIT" in self.request:
             self.addTool = True
         elif "DELETE-SUBMIT" in self.request:
@@ -100,7 +101,7 @@ class SiteManagementView(browser.ComponentAdding):
                 self.renameList = self.request['selected']
             if 'new_names' in self.request:
                 self.rename()
-                msg = u'Tools successullfy renamed.'
+                msg = _(u'Tools successullfy renamed.')
         elif "RENAME-CANCEL-SUBMIT" in self.request:
             self.activeTool = None
         return msg
@@ -111,7 +112,7 @@ class SiteManagementView(browser.ComponentAdding):
         if not tool.folder in sm:
             folder = site.SiteManagementFolder()
             zope.event.notify(objectevent.ObjectCreatedEvent(folder))
-            sm[tool.folder] = folder            
+            sm[tool.folder] = folder
         return sm[tool.folder]
 
     def toolExists(self, interface, name=''):
@@ -183,10 +184,8 @@ class SiteManagementView(browser.ComponentAdding):
         tool = self.activeTool
         regManager = self.context[tool.folder].registrationManager
         names = self.request.form['selected']
-        print names
         for reg in regManager.values():
             if reg.provided.isOrExtends(tool.interface) and reg.name in names:
-                print reg.name
                 reg.status = status
 
     def delete(self):
@@ -229,7 +228,7 @@ class SiteManagementView(browser.ComponentAdding):
 
         self.context = sm
         return util
-        
+
     def nextURL(self):
         """See zope.app.container.interfaces.IAdding"""
         return (zapi.absoluteURL(self.context, self.request)
