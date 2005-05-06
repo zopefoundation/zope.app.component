@@ -23,7 +23,7 @@
   <br/>
   <form action="." method="post">
     <div tal:repeat="tool view/getUniqueTools">
-      <input type="checkbox" name="selected:list" value="" 
+      <input type="checkbox" name="selected:list" value=""
              tal:attributes="value tool/name" />
       <span 
           tal:content="tool/title"
@@ -59,22 +59,22 @@
     <div tal:define="instances tool/instances">
       <div tal:repeat="instance instances"
            tal:condition="instances">
-        <input type="checkbox" name="selected:list" value="" 
+        <input type="checkbox" name="selected:list" value=""
                tal:attributes="value instance/name" />
 
         <span tal:condition="not:instance/rename">
-          <span tal:condition="instance/active">
+          <span tal:condition="instance/active" i18n:translate="">
             <a href="" style="color: green"
                tal:attributes="href string:${instance/url}/@@SelectedManagementView.html"
-               tal:content="instance/name">
+               tal:content="instance/name" i18n:name="name">
               sql-queries
             </a>
             (Active)
           </span>
-          <span tal:condition="not:instance/active">
+          <span tal:condition="not:instance/active" i18n:translate="">
             <a href="" style="color: red"
                tal:attributes="href string:${instance/url}/@@SelectedManagementView.html"
-               tal:content="instance/name">
+               tal:content="instance/name" i18n:name="name">
               sql-queries
             </a>
             (Inactive)
