@@ -101,7 +101,7 @@ class SiteManagementView(browser.ComponentAdding):
                 self.renameList = self.request['selected']
             if 'new_names' in self.request:
                 self.rename()
-                msg = _(u'Tools successullfy renamed.')
+                msg = _(u'Tools successfully renamed.')
         elif "RENAME-CANCEL-SUBMIT" in self.request:
             self.activeTool = None
         return msg
