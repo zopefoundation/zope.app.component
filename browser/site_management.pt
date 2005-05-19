@@ -10,7 +10,7 @@
   <div class="message"
        tal:define="message view/update"
        tal:condition="message"
-       tal:content="message">
+       tal:content="message" i18n:translate="">
     Status Message
   </div>
 
@@ -27,12 +27,12 @@
              tal:attributes="value tool/name" />
       <span 
           tal:content="tool/title"
-          tal:condition="not:tool/exists">
+          tal:condition="not:tool/exists" i18n:translate="">
         Authentication
       </span>
-      <a href="" style="color: green" 
+      <a href="" style="color: green"
           tal:content="tool/title"
-          tal:condition="tool/exists">
+          tal:condition="tool/exists" i18n:translate="">
         Authentication
       </a>
     </div>
@@ -43,16 +43,16 @@
      i18n:attributes="value UNINSTALL-SUBMIT">
   </form>
 
-  <form action="." method="post" 
+  <form action="." method="post"
       tal:repeat="tool view/getTools"
       tal:attributes="action string:#${tool/name}">
     <a name="" tal:attributes="name tool/name" />
     <input type="hidden" name="activeTool" value=""
            tal:attributes="value tool/name" />
     <h3>
-      <b tal:content="tool/title">Caches</b>
+      <b tal:content="tool/title" i18n:translate="">Caches</b>
     </h3>
-    <div tal:content="tool/description">
+    <div tal:content="tool/description" i18n:translate="">
       Description of the tool
     </div>
     <br/>
@@ -99,7 +99,7 @@
         <select name="type_name">
           <option tal:repeat="entry info"
                   tal:attributes="value entry/action"
-                  tal:content="entry/title">RAM Cache</option>
+                  tal:content="entry/title" i18n:translate="">RAM Cache</option>
         </select>
         &nbsp;
         <input type="submit" name="ADD-TOOL-SUBMIT" value="Add"
