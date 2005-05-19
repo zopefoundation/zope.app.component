@@ -31,6 +31,7 @@ from zope.security.proxy import Proxy
 from zope.app import zapi
 from zope.app.security.adapter import LocatingTrustedAdapterFactory
 from zope.app.security.adapter import LocatingUntrustedAdapterFactory
+from zope.app.security.adapter import TrustedAdapterFactory
 
 PublicPermission = 'zope.Public'
 
@@ -62,7 +63,7 @@ def proxify(ob, checker):
 
 _handler=handler
 def subscriber(_context, for_=None, factory=None, handler=None, provides=None,
-               permission=None, trusted=False):
+               permission=None, trusted=False, locate=False):
 
 
     if factory is None:
@@ -113,13 +114,14 @@ def subscriber(_context, for_=None, factory=None, handler=None, provides=None,
             return ob
 
     # invoke custom adapter factories
-    if trusted:
-        # trusted adapters that requires dedicated permission all the time
-        factory = LocatingTrustedAdapterFactory(factory)
-
-    elif permission is not None and permission is not CheckerPublic:
-        # untrusted adapters that requires any dedicated permission
-        factory = LocatingUntrustedAdapterFactory(factory) 
+    if locate or (permission is not None and permission is not CheckerPublic):
+        if trusted:
+            factory = LocatingTrustedAdapterFactory(factory)
+        else:
+            factory = LocatingUntrustedAdapterFactory(factory) 
+    else:
+        if trusted:
+            factory = TrustedAdapterFactory(factory) 
 
     _context.action(
         discriminator = None,
@@ -145,7 +147,7 @@ def subscriber(_context, for_=None, factory=None, handler=None, provides=None,
                 )
 
 def adapter(_context, factory, provides=None, for_=None, permission=None,
-            name='', trusted=False):
+            name='', trusted=False, locate=False):
 
     if for_ is None:
         if len(factory) == 1:
@@ -184,14 +186,14 @@ def adapter(_context, factory, provides=None, for_=None, permission=None,
         factory = _protectedFactory(factory, checker)
 
     # invoke custom adapter factories
-    if trusted:
-        # trusted adapters that requires dedicated permission all the time
-        factory = LocatingTrustedAdapterFactory(factory)
-
-    elif permission is not None and permission is not CheckerPublic:
-        # untrusted adapters that requires any dedicated permission
-        factory = LocatingUntrustedAdapterFactory(factory)  
-
+    if locate or (permission is not None and permission is not CheckerPublic):
+        if trusted:
+            factory = LocatingTrustedAdapterFactory(factory)
+        else:
+            factory = LocatingUntrustedAdapterFactory(factory) 
+    else:
+        if trusted:
+            factory = TrustedAdapterFactory(factory) 
 
     _context.action(
         discriminator = ('adapter', for_, provides, name),
