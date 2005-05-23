@@ -219,6 +219,17 @@ class IAdapterDirective(zope.interface.Interface):
         default=False,
         )
 
+    locate = zope.configuration.fields.Bool(
+        title=_("Locate"),
+        description=_("""Make the adapter a locatable adapter
+
+        Located adapter should be used if a non-public permission
+        is used.
+        """),
+        required=False,
+        default=False,
+        )
+
 class ISubscriberDirective(zope.interface.Interface):
     """
     Register a subscriber
@@ -268,6 +279,17 @@ class ISubscriberDirective(zope.interface.Interface):
         rather than getting an unproxied subscriber of security-proxied
         objects, you get a security-proxied subscriber of unproxied
         objects.
+        """),
+        required=False,
+        default=False,
+        )
+
+    locate = zope.configuration.fields.Bool(
+        title=_("Locate"),
+        description=_("""Make the adapter a locatable adapter
+
+        Located adapter should be used if a non-public permission
+        is used.
         """),
         required=False,
         default=False,

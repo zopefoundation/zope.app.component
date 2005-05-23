@@ -184,7 +184,6 @@ class Test(PlacelessSetup, unittest.TestCase):
               />
             '''
             )))
-
         # With an unproxied object, business as usual
         content = Content()
         a1 = A1()
@@ -193,6 +192,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         a3 = subscribers[0]
 
         self.assertEqual(a3.__class__, A3)
+        self.assertEqual(type(a3).__name__, 'A3')
         self.assertEqual(a3.context, (content, a1))
 
         # Now with a proxied object:
@@ -205,9 +205,49 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertEqual(type(a3), Proxy)
 
 
-        # around an unproxied object:
+        # behind the security proxy is no locatin proxy:
         from zope.security.proxy import removeSecurityProxy
         self.assert_(removeSecurityProxy(a3).context[0] is content)
+        self.assertEqual(type(removeSecurityProxy(a3)).__name__, 'A3')
+
+
+    def testLocatableTrustedSubscriber(self):
+        xmlconfig(StringIO(template % (
+            '''
+            <subscriber
+              provides="zope.app.component.tests.adapter.IS"
+              factory="zope.app.component.tests.adapter.A3"
+              for="zope.app.component.tests.components.IContent
+                   zope.app.component.tests.adapter.I1"
+              trusted="yes"
+              locate="yes"
+              />
+            '''
+            )))
+        # With an unproxied object, business as usual
+        content = Content()
+        a1 = A1()
+        subscribers = zapi.subscribers((content, a1), IS)
+
+        a3 = subscribers[0]
+
+        self.assertEqual(a3.__class__, A3)
+        self.assertEqual(type(a3).__name__, 'A3')
+        self.assertEqual(a3.context, (content, a1))
+
+        # Now with a proxied object:
+        from zope.security.checker import ProxyFactory
+        p = ProxyFactory(content)
+
+        # we get a proxied subscriber:
+        a3 = zapi.subscribers((p, a1), IS)[0]
+        from zope.security.proxy import Proxy
+        self.assertEqual(type(a3), Proxy)
+
+        # behind the security proxy is a locatio proxy:
+        from zope.security.proxy import removeSecurityProxy
+        self.assert_(removeSecurityProxy(a3).context[0] is content)
+        self.assertEqual(type(removeSecurityProxy(a3)).__name__, 'LocationProxy')
 
     def testSubscriber_w_no_provides(self):
         xmlconfig(StringIO(template % (
@@ -290,6 +330,29 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         self.assertEqual(IApp(Content()).__class__, Comp)
 
+    def testAdapterWithPermission(self):
+        # Full import is critical!
+        self.assertEqual(IV(Content(), None), None)
+
+        xmlconfig(StringIO(template % (
+            '''
+            <permission
+                id="y.x"
+                title="XY"
+                description="Allow XY." />
+
+            <adapter
+              factory="zope.app.component.tests.components.Comp"
+              provides="zope.app.component.tests.components.IApp"
+              for="zope.app.component.tests.components.IContent"
+              permission="y.x"
+              />
+            '''
+            )))
+
+        self.assertEqual(IApp(Content()).__class__, Comp)
+        self.assertEqual(type(IApp(Content())).__name__, 'LocationProxy')
+
     def testAdapter_wo_provides_or_for(self):
         # Full import is critical!
         self.assertEqual(IV(Content(), None), None)
@@ -345,7 +408,7 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         # With an unproxied object, business as usual
         ob = Content()
-        self.assertEqual(type(I1(ob)), type(A1()))
+        self.assertEqual(type(I1(ob)).__name__, 'A1')
 
         # Now with a proxied object:
         from zope.security.checker import ProxyFactory
@@ -359,9 +422,116 @@ class Test(PlacelessSetup, unittest.TestCase):
         # around an unproxied object:
         from zope.security.proxy import removeSecurityProxy
         a = removeSecurityProxy(a)
+        self.assertEqual(type(a).__name__, 'A1')
         self.assert_(a.context[0] is ob)
-        
-        
+
+
+    def testTrustedAdapterWithPermission(self):
+        # Full import is critical!
+        xmlconfig(StringIO(template % (
+            '''
+            <permission
+                id="y.x"
+                title="XY"
+                description="Allow XY." />
+
+            <adapter
+              factory="zope.app.component.tests.adapter.A1"
+              provides="zope.app.component.tests.adapter.I1"
+              for="zope.app.component.tests.components.IContent"
+              permission="y.x"
+              trusted="yes"
+              />
+            '''
+            )))
+
+        # With an unproxied object, business as usual
+        ob = Content()
+        self.assertEqual(type(I1(ob)).__name__, 'A1')
+
+        # Now with a proxied object:
+        from zope.security.checker import ProxyFactory
+        p = ProxyFactory(ob)
+
+        # we get a proxied adapter:
+        a = I1(p)
+        from zope.security.proxy import Proxy
+        self.assertEqual(type(a), Proxy)
+
+        # behind the security proxy is location proxy
+        # if non-public permission is used
+        from zope.security.proxy import removeSecurityProxy
+        a = removeSecurityProxy(a)
+        self.assertEqual(type(a).__name__, 'LocationProxy')
+        self.assert_(a.context[0] is ob)
+
+
+    def testTrustedAdapterWithPublicPermission(self):
+        # Full import is critical!
+        xmlconfig(StringIO(template % (
+            '''
+            <adapter
+              factory="zope.app.component.tests.adapter.A1"
+              provides="zope.app.component.tests.adapter.I1"
+              for="zope.app.component.tests.components.IContent"
+              permission="zope.Public"
+              trusted="yes"
+              />
+            '''
+            )))
+
+        # With an unproxied object, business as usual
+        ob = Content()
+        self.assertEqual(type(I1(ob)).__name__, 'A1')
+
+        # Now with a proxied object:
+        from zope.security.checker import ProxyFactory
+        p = ProxyFactory(ob)
+
+        # we get a proxied adapter:
+        a = I1(p)
+        from zope.security.proxy import Proxy
+        self.assertEqual(type(a), Proxy)
+
+        # behind the security proxy is no location proxy
+        from zope.security.proxy import removeSecurityProxy
+        a = removeSecurityProxy(a)
+        self.assertEqual(type(a).__name__, 'A1')
+        self.assert_(a.context[0] is ob)
+
+
+    def testLocatableTrustedAdapter(self):
+        # Full import is critical!
+        xmlconfig(StringIO(template % (
+            '''
+            <adapter
+              factory="zope.app.component.tests.adapter.A1"
+              provides="zope.app.component.tests.adapter.I1"
+              for="zope.app.component.tests.components.IContent"
+              trusted="yes"
+              locate="yes"
+              />
+            '''
+            )))
+
+        # With an unproxied object, business as usual
+        ob = Content()
+        self.assertEqual(type(I1(ob)).__name__, 'A1')
+
+        # Now with a proxied object:
+        from zope.security.checker import ProxyFactory
+        p = ProxyFactory(ob)
+
+        # we get a proxied adapter:
+        a = I1(p)
+        from zope.security.proxy import Proxy
+        self.assertEqual(type(a), Proxy)
+
+        # behind the security proxy is always location proxy:
+        from zope.security.proxy import removeSecurityProxy
+        a = removeSecurityProxy(a)
+        self.assertEqual(type(a).__name__, 'LocationProxy')
+        self.assert_(a.context[0] is ob) 
 
     def testAdapter_w_multiple_factories(self):
         xmlconfig(StringIO(template % (
