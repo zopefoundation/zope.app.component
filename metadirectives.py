@@ -286,9 +286,9 @@ class ISubscriberDirective(zope.interface.Interface):
 
     locate = zope.configuration.fields.Bool(
         title=_("Locate"),
-        description=_("""Make the adapter a locatable adapter
+        description=_("""Make the subscriber a locatable subscriber
 
-        Located adapter should be used if a non-public permission
+        Located subscribers should be used if a non-public permission
         is used.
         """),
         required=False,
