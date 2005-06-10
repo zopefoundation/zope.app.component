@@ -275,13 +275,12 @@ class UtilityRegistration(bbb.site.BBBUtilityRegistration,
         return zapi.getSiteManager(self)
 
 
-def threadSiteSubscriber(event):
+def threadSiteSubscriber(ob, event):
     """A subscriber to BeforeTraverseEvent
 
     Sets the 'site' thread global if the object traversed is a site.
     """
-    if interfaces.ISite.providedBy(event.object):
-        setSite(event.object)
+    setSite(ob)
 
 
 def clearThreadSiteSubscriber(event):
@@ -312,24 +311,6 @@ def SiteManagerAdapter(ob):
             # It is not a location or has no parent, so we return the global
             # site manager
             return zapi.getGlobalSiteManager()
-
-
-def threadSiteSubscriber(event):
-    """A subscriber to BeforeTraverseEvent
-
-    Sets the 'site' thread global if the object traversed is a site.
-    """
-    if interfaces.ISite.providedBy(event.object):
-        setSite(event.object)
-
-
-def clearThreadSiteSubscriber(event):
-    """A subscriber to EndRequestEvent
-
-    Cleans up the site thread global after the request is processed.
-    """
-    clearSite()
-
 
 def changeSiteConfigurationAfterMove(site, event):
     """After a site is moved, its site manager links have to be updated."""

@@ -92,7 +92,7 @@ During traversal,
   >>> from zope.app import publication
   >>> request = object()
   >>> ev = publication.interfaces.BeforeTraverseEvent(myfolder, request)
-  >>> site.threadSiteSubscriber(ev)
+  >>> site.threadSiteSubscriber(myfolder, ev)
 
 the nearest site is also recorded in a thread-global variable:
 

@@ -136,7 +136,8 @@
       />
 
   <subscriber
-      for="zope.app.publication.interfaces.IBeforeTraverseEvent"
+      for=".interfaces.ISite
+           zope.app.publication.interfaces.IBeforeTraverseEvent"
       handler=".site.threadSiteSubscriber"
       />
 

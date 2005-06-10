@@ -87,20 +87,12 @@ def test_setThreadSite_clearThreadSite():
       >>> hooks.getSite() is None
       True
 
-    If a non-site is traversed, 
 
-      >>> ob = object()
       >>> request = object()
 
       >>> from zope.app import publication
-      >>> ev = publication.interfaces.BeforeTraverseEvent(ob, request)
       >>> from zope.app.component import site
-      >>> site.threadSiteSubscriber(ev)
 
-    still no site is set:
-
-      >>> hooks.getSite() is None
-      True
       
     On the other hand, if a site is traversed, 
 
@@ -109,7 +101,7 @@ def test_setThreadSite_clearThreadSite():
       >>> mysite.setSiteManager(sm)
 
       >>> ev = publication.interfaces.BeforeTraverseEvent(mysite, request)
-      >>> site.threadSiteSubscriber(ev)
+      >>> site.threadSiteSubscriber(mysite, ev)
 
       >>> hooks.getSite()
       <CustomFolder mysite>
