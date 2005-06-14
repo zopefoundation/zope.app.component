@@ -42,6 +42,29 @@ from zope.app.event import objectevent
 from zope.app.filerepresentation.interfaces import IDirectoryFactory
 from zope.app.traversing.interfaces import IContainmentRoot
 
+##############################################################################
+# from zope.app.module import resolve
+
+# Break the dependency on zope.app.module.  In the long run,
+# we need to handle this better.  Perhaps througha utility.
+
+## def findModule(name, context=None):
+##     """Find the module matching the provided name."""
+##     module = ZopeModuleRegistry.findModule(name)
+##     return module or sys.modules.get(name)
+
+import sys
+
+def resolve(name, context=None):
+    """Resolve a dotted name to a Python object."""
+    pos = name.rfind('.')
+    mod = sys.modules.get(name[:pos])
+##    mod = findModule(name[:pos], context)
+    return getattr(mod, name[pos+1:], None)
+
+# from zope.app.module import resolve
+##############################################################################
+
 # Goes away in 3.3.
 import bbb.site
 
@@ -240,9 +263,10 @@ class AdapterRegistration(registration.ComponentRegistration):
         self.permission = permission
 
     def component(self):
-        # Import here, so that we only have a soft dependence on
-        # zope.app.module
-        from zope.app.module import resolve
+# Didn't work ... tests failed
+##         # Import here, so that we only have a soft dependence on
+##         # zope.app.module
+##         from zope.app.module import resolve
         factory = resolve(self.factoryName, self)
         return factory
     component = property(component)
