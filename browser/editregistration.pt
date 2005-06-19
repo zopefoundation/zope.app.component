@@ -30,8 +30,8 @@
                    tal:attributes="value reg/name" />
           </td>
           <td>
-            <a href="." tal:attributes="href reg/name">
-              Config item <span tal:content="reg/name" />
+            <a href="." tal:attributes="href reg/name" i18n:translate="">
+              Config item <span tal:content="reg/name" i18n:name="name"/>
             </a>
             <span tal:condition="not:reg/active"
                 i18n:translate="">(disabled)</span>
@@ -45,9 +45,9 @@
     </table>
 
     <div class="row">
-      <input type="submit" name="refresh_submit" value="Refresh" 
+      <input type="submit" name="refresh_submit" value="Refresh"
              i18n:attributes="value refresh-button" />
-      <input type="submit" name="remove_submit" value="Remove" 
+      <input type="submit" name="remove_submit" value="Remove"
              i18n:attributes="value remove-button" />
     </div>
   </form>
