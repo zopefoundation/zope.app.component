@@ -78,9 +78,11 @@ def subscriber(_context, for_=None, factory=None, handler=None, provides=None,
         if provides is None:
             import warnings
             warnings.warn(
+                "\n  %s\n"
                 "Use of factory without provides to indicate a handler "
                 "is deprecated and will change it's meaning in Zope X3.3. "
-                "Use the handler attribute instead.",
+                "Use the handler attribute instead."
+                % _context.info,
                 DeprecationWarning)
 
     if for_ is None:
