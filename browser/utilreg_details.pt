@@ -5,13 +5,13 @@
   </li>
   <li>
     <i i18n:translate="">name:</i>
-    <span tal:content="view/name">myutility</span>
+    <span tal:content="view/name" i18n:translate="">myutility</span>
   </li>
   <li tal:define="component view/component">
     <i i18n:translate="">component:</i>
     <a href=""
        tal:attributes="href
          string:${component/url}/@@SelectedManagementView.html"
-       tal:content="component/name">myutility</a>
+       tal:content="component/name" i18n:translate="">myutility</a>
   </li>
 </ul>
