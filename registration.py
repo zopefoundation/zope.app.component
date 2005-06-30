@@ -31,9 +31,11 @@ from zope.app.dependable.interfaces import IDependable, DependencyError
 from zope.app.event import objectevent
 from zope.app.location import inside
 from zope.app.traversing.interfaces import TraversalError
+from zope.app.i18n import ZopeMessageIDFactory as _
 
 # BBB: First introduced in 3.1; should go away in 3.3 
 import bbb
+
 
 class RegistrationEvent(objectevent.ObjectEvent):
     """An event that is created when a registration-related activity occured."""
@@ -58,7 +60,7 @@ class RegistrationStatusProperty(object):
         registry = registration.getRegistry()
         if registry and registry.registered(registration):
             return interfaces.ActiveStatus
-        
+
         return interfaces.InactiveStatus
 
     def __set__(self, inst, value):
@@ -90,8 +92,8 @@ class SimpleRegistration(Persistent, Contained):
 
     def getRegistry(self):
         """See interfaces.IRegistration"""
-        raise NotImplementedError, \
-              'This method must be implemented by each specific regstration.' 
+        raise NotImplementedError(
+              'This method must be implemented by each specific regstration.')
 
 
 class ComponentRegistration(bbb.registration.BBBComponentRegistration,
@@ -106,7 +108,7 @@ class ComponentRegistration(bbb.registration.BBBComponentRegistration,
     def __init__(self, component, permission=None):
         # BBB: Will go away in 3.3.
         super(ComponentRegistration, self).__init__(component, permission)
-        # self.component = component        
+        # self.component = component
         if permission == 'zope.Public':
             permission = CheckerPublic
         self.permission = permission
@@ -145,8 +147,9 @@ def SimpleRegistrationRemoveSubscriber(registration, event):
             objectpath = zapi.getPath(registration)
         except: # XXX
             objectpath = str(registration)
-        raise DependencyError("Can't delete active registration (%s)"
-                              % objectpath)
+        msg = _("Can't delete active registration (${path})")
+        msg.mapping["path"] = objectpath
+        raise DependencyError(msg)
 
 
 def ComponentRegistrationRemoveSubscriber(componentRegistration, event):
@@ -184,7 +187,7 @@ def RegisterableMoveSubscriber(registerable, event):
     if event.oldParent is not None and event.newParent is not None:
         if event.oldParent is not event.newParent:
             raise DependencyError(
-                "Can't move a registered component from its container.")
+                _("Can't move a registered component from its container."))
 
 
 class Registered(bbb.registration.BBBRegistered, object):
@@ -260,9 +263,8 @@ class RegistrationManagerNamespace(object):
 
     def __init__(self, ob, request=None):
         self.context = ob.registrationManager
-        
+
     def traverse(self, name, ignore):
         if name == '':
             return self.context
         raise TraversalError(self.context, name)
-        
