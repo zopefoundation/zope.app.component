@@ -89,7 +89,7 @@
                    zope.app.container.interfaces.IWriteContainer" />
   </content>
 
-  <!-- XXX: We allow these attributes to be changed. We need some subscriber
+  <!-- TODO: We allow these attributes to be changed. We need some subscriber
        that updated the registries once attributes change. -->
   <content class=".site.AdapterRegistration">
     <require

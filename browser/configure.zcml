@@ -8,7 +8,7 @@
 <!-- Registration Managemenet -->
 
   <!-- BBB: Gone with 3.3 -->
-  <!-- XXX
+  <!--
   <zope:view
       for="zope.app.component.interfaces.registration.IComponentPath"
       type="zope.publisher.interfaces.browser.IBrowserRequest"
@@ -256,7 +256,7 @@
 
 <!-- Adapter Registration -->
 
-  <!--XXX: addform
+  <!-- addform
       label="New Adapter Registration"
       schema="zope.app.component.interfaces.IAdapterRegistration"
       name="addRegistration.html"
@@ -268,7 +268,7 @@
       menu="add_registration" title="Adapter Registration"
       /-->
 
-  <!-- XXX: addMenuItem
+  <!-- addMenuItem
       view="addAdapterRegistration.html"
       class="zope.app.component.site.AdapterRegistration"
       permission="zope.ManageSite"

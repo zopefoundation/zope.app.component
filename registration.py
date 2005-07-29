@@ -145,7 +145,7 @@ def SimpleRegistrationRemoveSubscriber(registration, event):
     if objectstatus == interfaces.ActiveStatus:
         try:
             objectpath = zapi.getPath(registration)
-        except: # XXX
+        except: # TODO decide if this is really the best fall-back plan
             objectpath = str(registration)
         msg = _("Can't delete active registration (${path})")
         msg.mapping["path"] = objectpath
