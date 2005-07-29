@@ -21,8 +21,10 @@ from zope import component
 from zope.component.interfaces import IDefaultViewName, IFactory
 from zope.configuration.exceptions import ConfigurationError
 import zope.interface
-from zope.interface import Interface
+from zope.interface import Interface, providedBy
 from zope.interface.interfaces import IInterface
+
+from zope.proxy import ProxyBase, getProxiedObject
 
 from zope.security.checker import InterfaceChecker, CheckerPublic
 from zope.security.checker import Checker, NamesChecker
@@ -46,7 +48,15 @@ def interface(_context, interface, type=None):
         callable = provideInterface,
         args = ('', interface, type)
         )
-    
+
+
+class PermissionProxy(ProxyBase):
+
+    __slots__ = ('__Security_checker__', )
+
+    def __providedBy__(self):
+        return providedBy(getProxiedObject(self))
+    __providedBy__ = property(__providedBy__)
 
 def proxify(ob, checker):
     """Try to get the object proxied with the `checker`, but not too soon
@@ -54,11 +64,8 @@ def proxify(ob, checker):
     We really don't want to proxy the object unless we need to.
     """
 
-    try:
-        ob.__Security_checker__ = checker
-    except AttributeError:
-        ob = Proxy(ob, checker)
-
+    ob = PermissionProxy(ob)
+    ob.__Security_checker__ = checker
     return ob
 
 _handler=handler

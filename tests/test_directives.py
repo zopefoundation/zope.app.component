@@ -877,20 +877,35 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertEqual(zapi.getUtility(IApp).__class__, Comp)
 
     def testProtectedUtility(self):
+        """Test that we can protect a utility.
+
+        Also:
+        Check that multiple configurations for the same utility and
+        don't interfere.
+        """
         self.assertEqual(zapi.queryUtility(IV), None)
         xmlconfig(StringIO(template % (
             '''
+            <permission id="tell.everyone" title="Yay" />
             <utility
               component="zope.app.component.tests.components.comp"
               provides="zope.app.component.tests.components.IApp"
-              permission="zope.Public"
+              permission="tell.everyone"
+              />
+            <permission id="top.secret" title="shhhh" />
+            <utility
+              component="zope.app.component.tests.components.comp"
+              provides="zope.app.component.tests.components.IAppb"
+              permission="top.secret"
               />
             '''
             )))
 
         utility = ProxyFactory(zapi.getUtility(IApp))
-        items = [item[0] for item in getTestProxyItems(utility)]
-        self.assertEqual(items, ['a', 'f'])
+        items = getTestProxyItems(utility)
+        self.assertEqual(items, [('a', 'tell.everyone'),
+                                 ('f', 'tell.everyone')
+                                 ])
         self.assertEqual(removeSecurityProxy(utility), comp)
 
     def testUtilityUndefinedPermission(self):

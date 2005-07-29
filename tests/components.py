@@ -18,9 +18,12 @@ $Id$
 from zope.interface import Interface, Attribute, implements
 from zope.component import adapts
 
-class IApp(Interface):
+class IAppb(Interface):
     a = Attribute('test attribute')
     def f(): "test func"
+
+class IApp(IAppb):
+    pass
 
 class IContent(Interface): pass
 
