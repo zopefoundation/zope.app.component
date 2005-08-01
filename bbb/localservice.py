@@ -19,3 +19,13 @@ zope.deprecation.deprecated(
     ('queryNextService', 'getNextService'),
     'The concept of services has been removed. Use utilities instead. '
     'The reference will be gone in X3.3.')
+
+
+def setSite(site=None):
+    from zope.app.component import hooks
+    return hooks.setSite(site)
+
+zope.deprecation.deprecated(
+    'setSite',
+    "`setSite()`'s official location is in `zope.app.component.site`."
+    "The reference will be gone in X3.3.")

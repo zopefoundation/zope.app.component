@@ -18,6 +18,7 @@ $Id$
 __docformat__ = 'restructuredtext'
 
 import zope.component
+import zope.deprecation
 import zope.thread
 import zope.security
 
@@ -100,6 +101,11 @@ def adapter_hook(interface, object, name='', default=None):
 def setHooks():
     zope.component.adapter_hook.sethook(adapter_hook)
     zope.component.getSiteManager.sethook(getSiteManager)
+    # Goes away in 3.3.
+    zope.deprecation.__show__.off()
+    from bbb import hooks
+    zope.component.getServices.sethook(hooks.getServices_hook)
+    zope.deprecation.__show__.on()
 
 def resetHooks():
     # Reset hookable functions to original implementation.
