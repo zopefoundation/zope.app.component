@@ -77,10 +77,10 @@ class SiteManagementView(browser.ComponentAdding):
         msg = u''
         if "INSTALL-SUBMIT" in self.request:
             self.install()
-            msg = _(u'Tools successufully installed.')
+            msg = _(u'Tools successfully installed.')
         if "UNINSTALL-SUBMIT" in self.request:
             self.uninstall()
-            msg = _(u'Tools successufully uninstalled.')
+            msg = _(u'Tools successfully uninstalled.')
         if "ADD-TOOL-SUBMIT" in self.request:
             self.action(self.request['type_name'], self.request['id'])
         elif "CANCEL-ADD-TOOL-SUBMIT" in self.request:
