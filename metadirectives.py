@@ -176,7 +176,7 @@ class IAdapterDirective(zope.interface.Interface):
 
     provides = zope.configuration.fields.GlobalInterface(
         title=_("Interface the component provides"),
-        description=_("This attribute specifes the interface the adapter"
+        description=_("This attribute specifies the interface the adapter"
                       " instance must provide."),
         required=False,
         )
@@ -249,7 +249,7 @@ class ISubscriberDirective(zope.interface.Interface):
 
     provides = zope.configuration.fields.GlobalInterface(
         title=_("Interface the component provides"),
-        description=_("This attribute specifes the interface the adapter"
+        description=_("This attribute specifies the interface the adapter"
                       " instance must provide."),
         required=False,
         )
@@ -462,7 +462,7 @@ class IRequireSubdirective(zope.interface.Interface):
         description=_("""
         This argument says that this content class should be configured in the
         same way the specified class' security is. If this argument is
-        specifed, no other argument can be used."""),
+        specified, no other argument can be used."""),
         required=False,
         )
     
