@@ -30,8 +30,8 @@ def getNextSiteManager(context):
     """Get the next site manager."""
     sm = queryNextSiteManager(context, _marker)
     if sm is _marker:
-        raise zope.component.interfaces.ComponentLookupError, \
-              "No more site managers have been found."
+        raise zope.component.interfaces.ComponentLookupError(
+              "No more site managers have been found.")
     return sm
 
 
@@ -56,9 +56,9 @@ def getNextUtility(context, interface, name=''):
     """
     util = queryNextUtility(context, interface, name, _marker)
     if util is _marker:
-        raise zope.component.interfaces.ComponentLookupError, \
-              "No more utilities for %s, '%s' have been found." %(interface,
-                                                                  name)
+        raise zope.component.interfaces.ComponentLookupError(
+              "No more utilities for %s, '%s' have been found." % (
+                  interface, name))
     return util
 
 

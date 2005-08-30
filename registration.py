@@ -67,7 +67,7 @@ class RegistrationStatusProperty(object):
         registration = inst
         registry = registration.getRegistry()
         if registry is None:
-            raise ValueError, 'No registry found.'
+            raise ValueError('No registry found.')
 
         if value == interfaces.ActiveStatus:
             if not registry.registered(registration):
@@ -79,7 +79,7 @@ class RegistrationStatusProperty(object):
                 registry.unregister(registration)
                 zope.event.notify(RegistrationDeactivatedEvent(registration))
         else:
-            raise ValueError, value
+            raise ValueError(value)
 
 
 class SimpleRegistration(Persistent, Contained):

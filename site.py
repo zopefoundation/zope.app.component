@@ -213,10 +213,10 @@ class LocalSiteManager(BTreeContainer,
             return self.utilities
         elif interfaces.IAdapterRegistration.providedBy(registration):
             return self.adapters
-        raise ValueError, \
-              ("Unable to detect registration type or registration "
-               "type is not supported. The registration object must provide "
-               "`IAdapterRegistration` or `IUtilityRegistration`.")
+        raise ValueError("Unable to detect registration type or registration "
+                         "type is not supported. The registration object must "
+                         "provide `IAdapterRegistration` or "
+                         "`IUtilityRegistration`.")
 
     def register(self, registration):
         """See zope.app.component.interfaces.registration.IRegistry"""

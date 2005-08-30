@@ -217,12 +217,12 @@ class LocalUtilityDirective(ContentDirective):
     def __init__(self, _context, class_):
         if not ILocation.implementedBy(class_) and \
                not hasattr(class_, '__parent__'):
-            raise ConfigurationError, \
-                  'Class `%s` does not implement `ILocation`.' %class_.__name__
+            raise ConfigurationError('Class `%s` does not implement '
+                                     '`ILocation`.' % class_.__name__)
 
         if not IPersistent.implementedBy(class_):
-            raise ConfigurationError, \
-                 'Class `%s` does not implement `IPersistent`.' %class_.__name__
+            raise ConfigurationError('Class `%s` does not implement '
+                                     '`IPersistent`.' % class_.__name__)
 
         classImplements(class_, IAttributeAnnotatable)
         classImplements(class_, ILocalUtility)

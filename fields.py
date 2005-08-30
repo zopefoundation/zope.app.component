@@ -50,7 +50,7 @@ class LayerField(GlobalObject):
     ...             path == 'zope.app.component.fields.layer1' or
     ...             path == '.fields.layer1'):
     ...             return layer1
-    ...         raise ConfigurationError, 'layer1'
+    ...         raise ConfigurationError('layer1')
 
     >>> field = LayerField()
     >>> field = field.bind(Resolver())

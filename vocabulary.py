@@ -195,14 +195,14 @@ class UtilityVocabulary(object):
             return [term for name, term in self._terms.items()
                     if term.value == value][0]
         except IndexError:
-            raise LookupError, value
+            raise LookupError(value)
 
     def getTermByToken(self, token):
         """See zope.schema.interfaces.IVocabularyTokenized"""
         try:
             return self._terms[token]
         except KeyError:
-            raise LookupError, token
+            raise LookupError(token)
 
     def __iter__(self):
         """See zope.schema.interfaces.IIterableVocabulary"""
