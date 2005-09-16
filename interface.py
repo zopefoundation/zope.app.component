@@ -230,7 +230,7 @@ def searchInterfaceIds(context, search_string=None, base=None):
 
 
 def searchInterfaceUtilities(context, search_string=None, base=None):
-    gsm = zapi.getGlobalSiteManager()   
+    gsm = zapi.getGlobalSiteManager()
     iface_utilities = gsm.getUtilitiesFor(IInterface)
 
     if search_string:
@@ -272,7 +272,7 @@ def interfaceToName(context, interface):
     ids = [('%s.%s' %(iface.__module__, iface.__name__))
            for iface in items
            if iface == interface]
-    
+
     if not ids:
         # Do not fail badly, instead resort to the standard
         # way of getting the interface name, cause not all interfaces
