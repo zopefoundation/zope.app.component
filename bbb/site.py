@@ -57,7 +57,7 @@ class BBBSiteManager(object):
         'The site manager does not handle registrations directly anymore. '
         'The utility and adapter registry are available via the `utilities` '
         'and `adapters` attributes, respectively. '
-        'The method will be gone in X3.3.')
+        'The method will be gone in Zope 3.3.')
 
     def queryRegistrations(self, name, default=None):
         """See INameRegistry"""
@@ -67,14 +67,14 @@ class BBBSiteManager(object):
         'The site manager does not handle registrations directly anymore. '
         'The utility and adapter registry are available via the `utilities` '
         'and `adapters` attributes, respectively. '
-        'The method will be gone in X3.3.')
+        'The method will be gone in Zope 3.3.')
 
     def addSubsite(self, sub):
         return self.addSub(sub)
     addSubsite = zope.deprecation.deprecated(
         addSubsite,
         'Use `addSub()` instead. '
-        'The reference will be gone in X3.3.')
+        'The reference will be gone in Zope 3.3.')
 
     def createRegistrationsFor(self, cfg):
         # Ignore
@@ -84,7 +84,7 @@ class BBBSiteManager(object):
         'The site manager does not handle registrations directly anymore. '
         'The utility and adapter registry are available via the `utilities` '
         'and `adapters` attributes, respectively. '
-        'The reference will be gone in X3.3.')
+        'The reference will be gone in Zope 3.3.')
 
     def createRegistrations(self, name):
         # Ignore
@@ -94,7 +94,7 @@ class BBBSiteManager(object):
         'The site manager does not handle registrations directly anymore. '
         'The utility and adapter registry are available via the `utilities` '
         'and `adapters` attributes, respectively. '
-        'The reference will be gone in X3.3.')
+        'The reference will be gone in Zope 3.3.')
 
     def listRegistrationNames(self):
         # Only used for services
@@ -107,7 +107,7 @@ class BBBSiteManager(object):
         'The site manager does not handle registrations directly anymore. '
         'The utility and adapter registry are available via the `utilities` '
         'and `adapters` attributes, respectively. '
-        'The method will be gone in X3.3.')
+        'The method will be gone in Zope 3.3.')
         
     def queryActiveComponent(self, name, default=None):
         return self.queryLocalService(name, default)
@@ -116,7 +116,7 @@ class BBBSiteManager(object):
         'The site manager does not handle registrations directly anymore. '
         'The utility and adapter registry are available via the `utilities` '
         'and `adapters` attributes, respectively. '
-        'The method will be gone in X3.3.')
+        'The method will be gone in Zope 3.3.')
 
     def getServiceDefinitions(self):
         gsm = zapi.getGlobalSiteManager()
@@ -124,14 +124,14 @@ class BBBSiteManager(object):
     getServiceDefinitions = zope.deprecation.deprecated(
         getServiceDefinitions,
         'The concept of services has been removed. Use utilities instead. '
-        'The method will be gone in X3.3.')
+        'The method will be gone in Zope 3.3.')
 
     def getService(self, name):
         return zapi.getUtility(IService, name, self)
     getService = zope.deprecation.deprecated(
         getService,
         'The concept of services has been removed. Use utilities instead. '
-        'The method will be gone in X3.3.')
+        'The method will be gone in Zope 3.3.')
 
     def queryLocalService(self, name, default=None):
         if name in _builtinServices:
@@ -145,7 +145,7 @@ class BBBSiteManager(object):
     queryLocalService = zope.deprecation.deprecated(
         queryLocalService,
         'The concept of services has been removed. Use utilities instead. '
-        'The method will be gone in X3.3.')
+        'The method will be gone in Zope 3.3.')
 
     def getInterfaceFor(self, service_type):
         iface = [iface
@@ -155,7 +155,7 @@ class BBBSiteManager(object):
     getInterfaceFor = zope.deprecation.deprecated(
         getInterfaceFor,
         'The concept of services has been removed. Use utilities instead. '
-        'The method will be gone in X3.3.')
+        'The method will be gone in Zope 3.3.')
 
     def queryComponent(self, type=None, filter=None, all=0):
         # Ignore, hoping that noone uses this horrible method
@@ -163,7 +163,7 @@ class BBBSiteManager(object):
     getInterfaceFor = zope.deprecation.deprecated(
         getInterfaceFor,
         'This method was pretty useless even before services were gone! '
-        'The method will be gone in X3.3.')
+        'The method will be gone in Zope 3.3.')
 
 _builtinServices = ('Utilities', 'Adapters')
 

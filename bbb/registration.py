@@ -109,7 +109,7 @@ class BBBComponentRegistration(object):
         return self.__BBB_getComponent()
     getComponent = zope.deprecation.deprecated(getComponent,
                               'Use component directly. '
-                              'The reference will be gone in X3.3.')
+                              'The reference will be gone in Zope 3.3.')
 
     def __BBB_getComponent(self):
         if self._component is NULL_COMPONENT:
@@ -170,7 +170,7 @@ class BBBComponentRegistration(object):
     componentPath = zope.deprecation.deprecated(
         componentPath,
         'Use component directly. '
-        'The reference will be gone in X3.3.')
+        'The reference will be gone in Zope 3.3.')
 
     def __setstate__(self, dict):
         super(BBBComponentRegistration, self).__setstate__(dict)
@@ -193,7 +193,7 @@ class BBBRegistry(object):
         'This method is not needed anymore, since registration stacks are '
         'gone. There is now always only one registration per configuration '
         'in the registry. '
-        'The reference will be gone in X3.3.')
+        'The reference will be gone in Zope 3.3.')
 
     def createRegistrationsFor(self, cfg):
         # Ignore
@@ -203,7 +203,7 @@ class BBBRegistry(object):
         'This method used to create a registration stack. These stacks are '
         'gone, so that this method is not required anymore. You can now '
         'directly activate and deactivate registrations with a registry. '
-        'The reference will be gone in X3.3.')
+        'The reference will be gone in Zope 3.3.')
     
 
 class BBBRegistrationManager(object):
@@ -230,7 +230,7 @@ class BBBRegisterableContainer(object):
         getRegistrationManager,
         'This method has been deprecated in favor of the '
         '`registrationManager` attribute. '
-        'The reference will be gone in X3.3.')
+        'The reference will be gone in Zope 3.3.')
 
     def findModule(self, name):
         from zope.app.module import findModule
@@ -239,7 +239,7 @@ class BBBRegisterableContainer(object):
         findModule,
         'This method has been deprecated and its functionality is now '
         'available via the `zope.app.module.findModule` function. '
-        'The reference will be gone in X3.3.')
+        'The reference will be gone in Zope 3.3.')
 
     def resolve(self, name):
         from zope.app.module import resolve
@@ -248,7 +248,7 @@ class BBBRegisterableContainer(object):
         findModule,
         'This method has been deprecated and its functionality is now '
         'available via the `zope.app.module.resolve` function. '
-        'The reference will be gone in X3.3.')
+        'The reference will be gone in Zope 3.3.')
         
 
 class BBBRegistered(object):
@@ -260,7 +260,7 @@ class BBBRegistered(object):
         addUsage,
         'The concept of usages has been deprecated. `Registered` is now a '
         'read-only adapter. '
-        'The reference will be gone in X3.3.')
+        'The reference will be gone in Zope 3.3.')
 
     def removeUsage(self, location):
         # Ignore in the hope that noone uses this
@@ -269,7 +269,7 @@ class BBBRegistered(object):
         removeUsage,
         'The concept of usages has been deprecated. `Registered` is now a '
         'read-only adapter. '
-        'The reference will be gone in X3.3.')
+        'The reference will be gone in Zope 3.3.')
 
     def usages(self):
         return [zapi.getPath(reg.component)
@@ -278,4 +278,4 @@ class BBBRegistered(object):
         usages,
         'The concept of usages has been deprecated. You can get the '
         'registrations for a component now via the `registrations` attribute. '
-        'The reference will be gone in X3.3.')
+        'The reference will be gone in Zope 3.3.')

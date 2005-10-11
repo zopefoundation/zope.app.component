@@ -87,7 +87,7 @@ def subscriber(_context, for_=None, factory=None, handler=None, provides=None,
             warnings.warn(
                 "\n  %s\n"
                 "Use of factory without provides to indicate a handler "
-                "is deprecated and will change it's meaning in Zope X3.3. "
+                "is deprecated and will change it's meaning in Zope 3.3. "
                 "Use the handler attribute instead."
                 % _context.info,
                 DeprecationWarning)
@@ -470,7 +470,7 @@ from zope.deprecation import deprecated
 deprecated('defaultView',
            'The zope:defaultView directive has been deprecated in favor of '
            'the browser:defaultView directive. '
-           'Will be gone in X3.3.')
+           'Will be gone in Zope 3.3.')
 ############################################################################
 
 def defaultLayer(_context, type, layer):
