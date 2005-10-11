@@ -15,7 +15,7 @@
 
 A local site manager has a number of roles:
 
-  - A local site manager, that provides a local adapter and utility registry. 
+  - A local site manager, that provides a local adapter and utility registry.
 
   - A place to do TTW development and/or to manage database-based code.
 
@@ -226,7 +226,7 @@ class LocalSiteManager(BTreeContainer,
     def unregister(self, registration):
         """See zope.app.component.interfaces.registration.IRegistry"""
         registry = self.__getRegistry(registration)
-        registry.unregister(registration)        
+        registry.unregister(registration)
 
     def registered(self, registration):
         """See zope.app.component.interfaces.registration.IRegistry"""
@@ -342,4 +342,3 @@ def changeSiteConfigurationAfterMove(site, event):
     if event.newParent is not None:
         next = _findNextSiteManager(site)
     site.getSiteManager().setNext(next)
-        
