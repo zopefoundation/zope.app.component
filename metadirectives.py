@@ -24,7 +24,7 @@ import zope.schema
 import zope.app.security.fields
 import zope.app.component.fields
 
-from zope.app.i18n import ZopeMessageIDFactory as _
+from zope.app.i18n import ZopeMessageFactory as _
 
 class IDefaultViewName(zope.interface.Interface):
     """A string that contains the default view name

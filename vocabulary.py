@@ -24,7 +24,7 @@ from zope.schema.interfaces import IVocabulary, IVocabularyTokenized
 from zope.schema.interfaces import ITokenizedTerm
 
 from zope.app import zapi
-from zope.app.i18n import ZopeMessageIDFactory as _
+from zope.app.i18n import ZopeMessageFactory as _
 from zope.app.interface.vocabulary import ObjectInterfacesVocabulary
 
 from interfaces import IUtilityRegistration

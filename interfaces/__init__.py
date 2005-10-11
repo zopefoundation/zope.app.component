@@ -21,7 +21,7 @@ import zope.component
 from zope.app.container.interfaces import IContainer
 from zope.app.container.constraints import ContainerTypesConstraint
 from zope.app.container.constraints import ItemTypePrecondition
-from zope.app.i18n import ZopeMessageIDFactory as _
+from zope.app.i18n import ZopeMessageFactory as _
 import registration
 
 class ILocalAdapterRegistry(registration.IRegistry,

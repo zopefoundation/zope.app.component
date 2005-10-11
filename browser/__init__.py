@@ -19,7 +19,7 @@ from zope.component.interfaces import ISiteManager
 from zope.security.proxy import removeSecurityProxy
 from zope.app import zapi
 from zope.app.container.browser.adding import Adding
-from zope.app.i18n import ZopeMessageIDFactory as _
+from zope.app.i18n import ZopeMessageFactory as _
 from zope.app.container.interfaces import INameChooser
 from zope.app.component.interfaces.registration import ActiveStatus
 from zope.app.component.interfaces.registration import InactiveStatus

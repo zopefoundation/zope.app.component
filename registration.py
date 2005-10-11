@@ -31,7 +31,7 @@ from zope.app.dependable.interfaces import IDependable, DependencyError
 from zope.app.event import objectevent
 from zope.app.location import inside
 from zope.app.traversing.interfaces import TraversalError
-from zope.app.i18n import ZopeMessageIDFactory as _
+from zope.app.i18n import ZopeMessageFactory as _
 
 # BBB: First introduced in 3.1; should go away in 3.3 
 import bbb
@@ -147,8 +147,8 @@ def SimpleRegistrationRemoveSubscriber(registration, event):
             objectpath = zapi.getPath(registration)
         except: # TODO decide if this is really the best fall-back plan
             objectpath = str(registration)
-        msg = _("Can't delete active registration (${path})")
-        msg.mapping["path"] = objectpath
+        msg = _("Can't delete active registration (${path})",
+                mapping={u'path': objectpath})
         raise DependencyError(msg)
 
 

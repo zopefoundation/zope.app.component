@@ -22,7 +22,7 @@ from zope.app import zapi
 from zope.app.component import site, interfaces, browser
 from zope.app.event import objectevent
 
-from zope.app.i18n import ZopeMessageIDFactory as _
+from zope.app.i18n import ZopeMessageFactory as _
 
 
 class IToolType(zope.interface.interfaces.IInterface):

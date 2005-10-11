@@ -19,7 +19,7 @@ $Id$
 __docformat__ = "reStructuredText"
 
 from zope.app import zapi
-from zope.app.i18n import ZopeMessageIDFactory as _
+from zope.app.i18n import ZopeMessageFactory as _
 
 
 class UtilityRegistrationDetails(object):

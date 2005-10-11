@@ -25,7 +25,7 @@ from zope.app.container.interfaces import IContainerNamesContainer
 from zope.app.container.interfaces import IContained, IContainer
 from zope.app.container.constraints import contains, containers
 from zope.app.event.interfaces import IObjectEvent
-from zope.app.i18n import ZopeMessageIDFactory as _
+from zope.app.i18n import ZopeMessageFactory as _
 
 from zope.app.component import bbb
 

@@ -23,7 +23,7 @@ from zope.app import zapi
 from zope.app.container.browser.adding import Adding
 from zope.app.container.interfaces import INameChooser
 from zope.app.form.browser.widget import SimpleInputWidget
-from zope.app.i18n import ZopeMessageIDFactory as _
+from zope.app.i18n import ZopeMessageFactory as _
 from zope.app.publisher.browser import BrowserView
 from zope.app.component import interfaces
 from zope.app.component.interfaces.registration import ActiveStatus
