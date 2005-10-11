@@ -40,7 +40,7 @@ class SiteInfo(zope.thread.local):
         adapter_hook = self.sm.adapters.adapter_hook
         self.adapter_hook = adapter_hook
         return adapter_hook
-    
+
     adapter_hook = read_property(adapter_hook)
 
 siteinfo = SiteInfo()
@@ -56,7 +56,7 @@ def setSite(site=None):
         # We should really look look at this again though, especially
         # once site managers do less.  There's probably no good reason why
         # they can't be proxied.  Well, except maybe for performance.
-        
+
         site = zope.security.proxy.removeSecurityProxy(site)
         sm = site.getSiteManager()
 
@@ -66,7 +66,7 @@ def setSite(site=None):
         del siteinfo.adapter_hook
     except AttributeError:
         pass
-    
+
 def getSite():
     return siteinfo.site
 
@@ -113,3 +113,8 @@ def resetHooks():
     zope.component.getSiteManager.reset()
     # BBB: Goes away in 3.3.
     zope.component.getServices.reset()
+
+# Clear the site thread global
+clearSite = setSite
+from zope.testing.cleanup import addCleanUp
+addCleanUp(resetHooks)
