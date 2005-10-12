@@ -62,7 +62,7 @@ class IBasicComponentInformation(zope.interface.Interface):
 
 class IBasicViewInformation(zope.interface.Interface):
     """This is the basic information for all views."""
-    
+
     for_ = zope.configuration.fields.Tokens(
         title=_("Specifications of the objects to be viewed"),
         description=_("""This should be a list of interfaces or classes
@@ -150,7 +150,7 @@ class IInterfaceDirective(zope.interface.Interface):
     """
     Define an interface
     """
-    
+
     interface = zope.configuration.fields.GlobalInterface(
         title=_("Interface"),
         required=True,
@@ -318,7 +318,7 @@ class IFactoryDirective(zope.interface.Interface):
         title=_("Component to be used"),
         required=True,
         )
-    
+
     id = zope.schema.Id(
         title=_("ID"),
         required=False,
@@ -373,7 +373,7 @@ class IDefaultViewDirective(IBasicResourceInformation):
 class IResourceDirective(IBasicComponentInformation,
                          IBasicResourceInformation):
     """Register a resource"""
-    
+
     layer = zope.app.component.fields.LayerField(
         title=_("The layer the resource is in."),
         required=False,
@@ -432,7 +432,7 @@ class IRequireSubdirective(zope.interface.Interface):
         required=False,
         value_type=zope.configuration.fields.PythonIdentifier(),
         )
-        
+
     set_attributes = zope.configuration.fields.Tokens(
         title=_("Attributes that can be set"),
         description=_("This is a list of attributes that can be"
@@ -465,7 +465,7 @@ class IRequireSubdirective(zope.interface.Interface):
         specified, no other argument can be used."""),
         required=False,
         )
-    
+
 class IAllowSubdirective(zope.interface.Interface):
     """
     Declare a part of the class to be publicly viewable (that is,
@@ -518,7 +518,7 @@ class IDefaultLayerDirective(zope.interface.Interface):
         title=_("Request type"),
         required=True
         )
-    
+
     layer = zope.configuration.fields.GlobalObject(
         title=_("Layer"),
         required=True
