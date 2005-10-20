@@ -341,7 +341,7 @@ Now the next site manager for `myfolder11`'s site manager should have changed:
 Finally, we make a copy of `myfolder21` and add it as `myfolder11` to
 `myfolder`:
 
-  # Make sure that our interfaces and classes are pickable.
+  # Make sure that our interfaces and classes are picklable.
 
   >>> sys.modules['zope.app.component.tests'].IMyUtility = IMyUtility
   >>> IMyUtility.__module__ = 'zope.app.component.tests'
