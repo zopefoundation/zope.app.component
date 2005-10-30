@@ -17,6 +17,8 @@ This vocabulary provides terms for all utilities providing a given interface.
 
 $Id$
 """
+__docformat__ = "reStructuredText"
+
 from zope.interface import implements, Interface
 from zope.interface.interfaces import IInterface
 from zope.interface.verify import verifyObject
@@ -124,8 +126,8 @@ class UtilityVocabulary(object):
 
     Next we are looking at some of the more vocabulary-characteristic API
     methods.
-    
-    One can get a term for a given value using getTerm():
+
+    One can get a term for a given value using ``getTerm()``:
 
     >>> vocab.getTerm(object1)
     <UtiltiyTerm object1, instance of Object>
@@ -146,7 +148,7 @@ class UtilityVocabulary(object):
 
     That's it. It is all pretty straight forward, but it allows us to easily
     create a vocabulary for any utility. In fact, to make it easy to register
-    such a vocabulary via ZCML, the 'interface' argument to the constructor
+    such a vocabulary via ZCML, the `interface` argument to the constructor
     can be a string that is resolved via the utility registry. The ZCML looks
     like this:
 
@@ -164,7 +166,7 @@ class UtilityVocabulary(object):
      (u'object3', <UtiltiyTerm object3, instance of Object>)]
 
     Sometimes it is desirable to only select the name of a utility. For
-    this purpose a 'nameOnly' argument was added to the constructor, in which
+    this purpose a `nameOnly` argument was added to the constructor, in which
     case the UtilityTerm's value is not the utility itself but the name of the
     utility.
 
@@ -322,7 +324,6 @@ class UtilityNames:
     u''
 
     >>> placelesssetup.tearDown()
-
     """
 
     implements(IVocabularyTokenized)

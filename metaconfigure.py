@@ -97,7 +97,7 @@ def subscriber(_context, for_=None, factory=None, handler=None, provides=None,
         if for_ is None:
             raise TypeError("No for attribute was provided and can't "
                             "determine what the factory (or handler) adapts.")
-    
+
     factory = [factory]
 
     if permission is not None:
@@ -127,10 +127,10 @@ def subscriber(_context, for_=None, factory=None, handler=None, provides=None,
         if trusted:
             factory = LocatingTrustedAdapterFactory(factory)
         else:
-            factory = LocatingUntrustedAdapterFactory(factory) 
+            factory = LocatingUntrustedAdapterFactory(factory)
     else:
         if trusted:
-            factory = TrustedAdapterFactory(factory) 
+            factory = TrustedAdapterFactory(factory)
 
     _context.action(
         discriminator = None,
@@ -145,7 +145,7 @@ def subscriber(_context, for_=None, factory=None, handler=None, provides=None,
             callable = provideInterface,
             args = ('', provides)
             )
-    
+
     # For each interface, state that the adapter provides that interface.
     for iface in for_:
         if iface is not None:
@@ -161,7 +161,7 @@ def adapter(_context, factory, provides=None, for_=None, permission=None,
     if for_ is None:
         if len(factory) == 1:
             for_ = component.adaptedBy(factory[0])
-       
+
         if for_ is None:
             raise TypeError("No for attribute was provided and can't "
                             "determine what the factory adapts.")
@@ -175,7 +175,7 @@ def adapter(_context, factory, provides=None, for_=None, permission=None,
                 provides = p[0]
 
         if provides is None:
-            raise TypeError("Missing 'provides' attribute")            
+            raise TypeError("Missing 'provides' attribute")
 
     # Generate a single factory from multiple factories:
     factories = factory
@@ -199,10 +199,10 @@ def adapter(_context, factory, provides=None, for_=None, permission=None,
         if trusted:
             factory = LocatingTrustedAdapterFactory(factory)
         else:
-            factory = LocatingUntrustedAdapterFactory(factory) 
+            factory = LocatingUntrustedAdapterFactory(factory)
     else:
         if trusted:
-            factory = TrustedAdapterFactory(factory) 
+            factory = TrustedAdapterFactory(factory)
 
     _context.action(
         discriminator = ('adapter', for_, provides, name),
@@ -244,7 +244,7 @@ def _protectedFactory(original_factory, checker):
             ob.__Security_checker__ = checker
         except AttributeError:
             ob = Proxy(ob, checker)
-        
+
         return ob
     factory.factory = factory
     return factory
@@ -286,7 +286,7 @@ def utility(_context, provides=None, component=None, factory=None,
 def factory(_context, component, id, title=None, description=None):
     if title is not None:
         component.title = title
-        
+
     if description is not None:
         component.description = description
 
@@ -427,7 +427,7 @@ def view(_context, factory, type, name, for_, layer=None,
             callable = provideInterface,
             args = ('', type)
             )
-        
+
     _context.action(
         discriminator = None,
         callable = provideInterface,
@@ -453,7 +453,7 @@ def defaultView(_context, type, name, for_):
         args = ('provideAdapter',
                 (for_, type), IDefaultViewName, '', name, _context.info)
         )
-    
+
     _context.action(
         discriminator = None,
         callable = provideInterface,
