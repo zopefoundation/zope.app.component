@@ -246,7 +246,7 @@ def _protectedFactory(original_factory, checker):
             ob = Proxy(ob, checker)
 
         return ob
-    factory.factory = factory
+    factory.factory = original_factory
     return factory
 
 
