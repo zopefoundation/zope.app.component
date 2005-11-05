@@ -98,29 +98,13 @@ def subscriber(_context, for_=None, factory=None, handler=None, provides=None,
             raise TypeError("No for attribute was provided and can't "
                             "determine what the factory (or handler) adapts.")
 
-    factory = [factory]
-
     if permission is not None:
         if permission == PublicPermission:
             permission = CheckerPublic
         checker = InterfaceChecker(provides, permission)
-        factory.append(lambda c: proxify(c, checker))
+        factory = _protectedFactory(factory, checker)
 
     for_ = tuple(for_)
-
-    # Generate a single factory from multiple factories:
-    factories = factory
-    if len(factories) == 1:
-        factory = factories[0]
-    elif len(factories) < 1:
-        raise ValueError("No factory specified")
-    elif len(factories) > 1 and len(for_) != 1:
-        raise ValueError("Can't use multiple factories and multiple for")
-    else:
-        def factory(ob):
-            for f in factories:
-                ob = f(ob)
-            return ob
 
     # invoke custom adapter factories
     if locate or (permission is not None and permission is not CheckerPublic):

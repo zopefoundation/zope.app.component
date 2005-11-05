@@ -57,7 +57,7 @@ atre = re.compile(' at [0-9a-fA-Fx]+')
 
 class Context(object):
     actions = ()
-    
+
     def action(self, discriminator, callable, args):
         self.actions += ((discriminator, callable, args), )
 
@@ -132,6 +132,35 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertEqual(a3.__class__, A3)
         self.assertEqual(a3.context, (content, a1))
 
+
+    def testSubscriberWithPermission(self):
+        xmlconfig(StringIO(template % (
+            '''
+            <permission
+                id="y.x"
+                title="XY"
+                description="Allow XY." />
+
+            <subscriber
+              provides="zope.app.component.tests.adapter.IS"
+              factory="zope.app.component.tests.adapter.A3"
+              for="zope.app.component.tests.components.IContent
+                   zope.app.component.tests.adapter.I1"
+              permission="y.x"
+              />
+            '''
+            )))
+
+        content = Content()
+        a1 = A1()
+        subscribers = zapi.subscribers((content, a1), IS)
+
+        a3 = subscribers[0]
+
+        self.assertEqual(a3.__class__, A3)
+        self.assertEqual(a3.context, (content, a1))
+        self.assertEqual(type(a3).__name__, 'LocationProxy')
+
     def testSubscriber_wo_for(self):
         xmlconfig(StringIO(template % (
             '''
@@ -170,7 +199,7 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         self.assertEqual(a3.__class__, A3)
         self.assertEqual(a3.context, (content, a1, a2))
-        
+
 
     def testTrustedSubscriber(self):
         xmlconfig(StringIO(template % (
@@ -247,7 +276,8 @@ class Test(PlacelessSetup, unittest.TestCase):
         # behind the security proxy is a locatio proxy:
         from zope.security.proxy import removeSecurityProxy
         self.assert_(removeSecurityProxy(a3).context[0] is content)
-        self.assertEqual(type(removeSecurityProxy(a3)).__name__, 'LocationProxy')
+        self.assertEqual(type(removeSecurityProxy(a3)).__name__,
+                         'LocationProxy')
 
     def testSubscriber_w_no_provides(self):
         xmlconfig(StringIO(template % (
@@ -265,7 +295,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         list(zapi.subscribers((content, a1), None))
 
         self.assertEqual(content.args, ((a1,),))
-        
+
     def testSubscriberHavingARequiredClass(self):
         xmlconfig(StringIO(template % (
             '''
@@ -279,10 +309,10 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         subs = zapi.subscribers((Content(),), I1)
         self.assert_(isinstance(subs[0], A1))
-        
+
         class MyContent:
             implements(IContent)
-        
+
         self.assertEqual(zapi.subscribers((MyContent(),), I1), [])
 
     def testMultiSubscriber(self):
@@ -365,7 +395,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             '''
             )))
 
-        self.assertEqual(IApp(Content()).__class__, Comp)        
+        self.assertEqual(IApp(Content()).__class__, Comp)
 
     def testAdapter_wo_provides_and_no_implented_fails(self):
         try:
@@ -688,7 +718,7 @@ class Test(PlacelessSetup, unittest.TestCase):
                              '''
                              )),
                           )
-        
+
         self.assertRaises(ConfigurationError,
                           xmlconfig,
                           StringIO(template % (
@@ -703,7 +733,7 @@ class Test(PlacelessSetup, unittest.TestCase):
                              '''
                              )),
                           )
-        
+
 
     def testNamedAdapter(self):
         self.testAdapter()
@@ -1021,7 +1051,7 @@ class Test(PlacelessSetup, unittest.TestCase):
                                    ),
                           )
 
-        
+
     def testViewThatProvidesAnInterface(self):
         ob = Ob()
         self.assertEqual(
@@ -1529,7 +1559,7 @@ class TestRequireDirective(PlacelessSetup, unittest.TestCase):
 
         # Make sure we know about the interfaces
         self.assertEqual(queryInterface(PREFIX+"I"), module.I)
-        
+
 
     def testMultipleInterface(self):
 
