@@ -25,6 +25,7 @@ from zope.testing.doctestunit import DocTestSuite
 from zope.component.tests.request import Request
 from zope.component import createObject
 from zope.component.interfaces import IDefaultViewName
+from zope.component.site import SubscriptionRegistration
 
 from zope.configuration.xmlconfig import xmlconfig, XMLConfig
 from zope.configuration.exceptions import ConfigurationError
@@ -132,6 +133,26 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertEqual(a3.__class__, A3)
         self.assertEqual(a3.context, (content, a1))
 
+
+    def testSubscriberDocumentation(self):
+        xmlconfig(StringIO(template % (
+            '''
+            <subscriber
+              provides="zope.app.component.tests.adapter.IS"
+              factory="zope.app.component.tests.adapter.A3"
+              for="zope.app.component.tests.components.IContent
+                   zope.app.component.tests.adapter.I1"
+              />
+            '''
+            )))
+
+        gsm = zapi.getGlobalSiteManager()
+        doc = [reg.doc
+               for reg in gsm.registrations()
+               if (isinstance(reg, SubscriptionRegistration) and
+                   reg.provided is IS)][0]
+
+        self.assertEqual(`doc`, 'File "<string>", line 6.12-11.16')
 
     def testSubscriberWithPermission(self):
         xmlconfig(StringIO(template % (

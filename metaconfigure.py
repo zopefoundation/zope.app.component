@@ -120,7 +120,7 @@ def subscriber(_context, for_=None, factory=None, handler=None, provides=None,
         discriminator = None,
         callable = _handler,
         args = ('subscribe',
-                for_, provides, factory),
+                for_, provides, factory, _context.info),
         )
 
     if provides is not None:
