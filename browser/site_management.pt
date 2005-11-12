@@ -56,6 +56,13 @@
       Description of the tool
     </div>
     <br/>
+    <div class="message"
+         tal:define="message tool/message"
+         tal:condition="message"
+         tal:content="message" i18n:translate="">
+      Status Message
+    </div>
+    <br/>
     <div tal:define="instances tool/instances">
       <div tal:repeat="instance instances"
            tal:condition="instances">
@@ -84,7 +91,11 @@
           <input type="hidden" name="old_names:list" value=""
                  tal:attributes="value instance/name" />
           <input type="text" size="20" name="new_names:list" value=""
+                 tal:condition="not:instance/renameNew"
                  tal:attributes="value instance/name" />
+          <input type="text" size="20" name="new_names:list" value=""
+                 tal:condition="instance/renameNew"
+                 tal:attributes="value instance/renameNew" />
         </span>
 
       </div>
@@ -95,7 +106,9 @@
     </div>
     <div tal:condition="tool/add">
       <div tal:define="info view/addingInfo">
-        <input type="text" width="20" name="id" value="">
+        <input type="text" width="20" name="id" value=""
+          tal:attributes="value tool/addname"
+          />
         <select name="type_name">
           <option tal:repeat="entry info"
                   tal:attributes="value entry/action"
