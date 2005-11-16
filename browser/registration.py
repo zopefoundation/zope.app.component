@@ -85,68 +85,6 @@ class Registered(object):
             for reg in registered.registrations()]
 
 
-class ChangeRegistrations(BrowserView):
-
-    _prefix = 'registrations'
-    name = _prefix + ".active"
-    message = ''
-    configBase = ''
-
-    def setPrefix(self, prefix):
-        self._prefix = prefix
-        self.name = prefix + ".active"
-
-    def applyUpdates(self):
-        message = ''
-        if 'submit_update' in self.request.form:
-            id = self.request.form.get(self.name)
-            if id == "disable":
-                active = self.context.active()
-                if active is not None:
-                    self.context.activate(None)
-                    message = _("Disabled")
-            else:
-                for info in self.context.info():
-                    infoid = zapi.getPath(info['registration'])
-                    if infoid == id and not info['active']:
-                        self.context.activate(info['registration'])
-                        message = _("Updated")
-                        break
-
-        return message
-
-    def update(self):
-        message = self.applyUpdates()
-
-        self.configBase = zapi.absoluteURL(zapi.getSiteManager(), self.request)
-
-        registrations = self.context.info()
-
-        # This is OK because registrations is just a list of dicts
-        registrations = removeSecurityProxy(registrations)
-
-        inactive = 1
-        for info in registrations:
-            if info['active']:
-                inactive = None
-            else:
-                info['active'] = False
-
-            reg = info['registration']
-            info['summary'] = reg.implementationSummary()
-            info['id'] = zapi.getPath(reg)
-
-        # Add a dummy registration since the stack removes trailing None.
-        registrations.append({"active": False,
-                              "id": "disable",
-                              "summary": ""})
-
-        self.inactive = inactive
-        self.registrations = registrations
-
-        self.message = message
-
-
 #############################################################################
 # BBB: Only for backward compatibility. 12/07/2004
 class ComponentPathWidget(SimpleInputWidget):

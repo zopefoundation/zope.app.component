@@ -15,15 +15,20 @@
 
 $Id$
 """
+import unittest
+import zope.component
 from zope.interface import implements
 from zope.publisher.browser import TestRequest
-from zope.testing.doctestunit import DocTestSuite
+from zope.testing import doctest, doctestunit
+from zope.app.testing import setup
+from zope.app.traversing.interfaces import IContainmentRoot
 
-from zope.app.registration.interfaces import IRegistered
-from zope.app.registration.interfaces import RegisteredStatus
-from zope.app.registration.interfaces import ActiveStatus
+from zope.app.component.interfaces.registration import IRegistered
+from zope.app.component.interfaces.registration import InactiveStatus
+from zope.app.component.interfaces.registration import ActiveStatus
+from zope.app.component.browser.registration import RegistrationView
 
-from zope.app.registration.browser import RegistrationView
+pprint = doctestunit.pprint
 
 
 def test():
@@ -34,7 +39,7 @@ def test():
 
     >>> view = RegistrationView(FakeRegisterable([]), request)
     >>> view.registered()
-    0
+    False
 
     Returns for the active() and registration() methods are undefined
     for unregistred objects.
@@ -45,7 +50,7 @@ def test():
     >>> request.response.setStatus(200)
     >>> view.update()
     >>> view.registered()
-    0
+    False
     >>> request.response.getStatus()
     200
 
@@ -62,16 +67,18 @@ def test():
     to begin with:
 
     >>> request = TestRequest()
-    >>> reg = FakeRegistration(RegisteredStatus)
+    >>> reg = FakeRegistration(InactiveStatus)
+    >>> reg.name = 'my fake'
     >>> view = RegistrationView(FakeRegisterable([reg]), request)
     >>> view.active()
-    0
+    False
     >>> view.registered()
-    1
-    >>> view.registration() is reg
-    1
+    True
+    >>> pprint(view.registration())
+    {'details': 'my fake',
+     'url': 'http://127.0.0.1'}
 
-    Make sure calling update() without an action doesn't change the
+    Make sure calling `update()` without an action doesn't change the
     registration:
 
     >>> request.response.setStatus(200)
@@ -79,11 +86,12 @@ def test():
     >>> request.response.getStatus()
     200
     >>> view.active()
-    0
+    False
     >>> view.registered()
-    1
-    >>> view.registration() is reg
-    1
+    True
+    >>> pprint(view.registration())
+    {'details': 'my fake',
+     'url': 'http://127.0.0.1'}
 
     Now test activating the object:
 
@@ -93,13 +101,14 @@ def test():
     >>> request.response.getStatus()
     200
     >>> view.active()
-    1
+    True
     >>> view.registered()
-    1
-    >>> view.registration() is reg
-    1
+    True
+    >>> pprint(view.registration())
+    {'details': 'my fake',
+     'url': 'http://127.0.0.1'}
     >>> reg.status == ActiveStatus
-    1
+    True
 
     Now test deactivating an active object:
 
@@ -109,27 +118,31 @@ def test():
     >>> request.response.getStatus()
     200
     >>> view.active()
-    0
+    False
     >>> view.registered()
-    1
-    >>> view.registration() is reg
-    1
-    >>> reg.status == RegisteredStatus
-    1
+    True
+    >>> pprint(view.registration())
+    {'details': 'my fake',
+     'url': 'http://127.0.0.1'}
+    >>> reg.status == InactiveStatus
+    True
     """
 
 def test_multiple_registrations():
     """
     >>> request = TestRequest()
-    >>> reg1 = FakeRegistration(RegisteredStatus)
+    >>> reg1 = FakeRegistration(InactiveStatus)
+    >>> reg1.name = 'reg1'
     >>> reg2 = FakeRegistration(ActiveStatus)
+    >>> reg2.name = 'reg2'
     >>> view = RegistrationView(FakeRegisterable([reg1, reg2]), request)
     >>> view.active()
-    0
+    False
     >>> view.registered()
-    1
-    >>> view.registration() is reg1
-    1
+    True
+    >>> pprint(view.registration())
+    {'details': 'reg1',
+     'url': 'http://127.0.0.1'}
 
     Now make sure this view redirects us to the advanced registrations
     form since we have more than one registraion:
@@ -150,11 +163,28 @@ class FakeRegisterable(object):
     def registrations(self):
         return self._usages
 
+
 class FakeRegistration(object):
+    implements(IContainmentRoot)
 
     def __init__(self, status):
         self.status = status
 
 
+def setUp(test):
+    zope.component.testing.setUp(test)
+    setup.setUpTraversal()
+    zope.component.provideAdapter(
+        lambda x, y: x.name,
+        (FakeRegistration, TestRequest), zope.interface.Interface,
+        name='details')
+
 def test_suite():
-    return DocTestSuite()
+    return unittest.TestSuite((
+        doctest.DocTestSuite(
+        setUp=setUp, tearDown=zope.component.testing.tearDown,
+        optionflags=doctest.NORMALIZE_WHITESPACE),
+        ))
+
+if __name__ == '__main__':
+    unittest.main(default='test_suite')

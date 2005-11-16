@@ -34,32 +34,32 @@ class IDummyUtility(Interface):
 
 def test_toolDirective():
     r"""
-    >>> from zope.app.site.browser import metaconfigure
+    >>> from zope.app.component.browser import metaconfigure
     >>> context = FauxContext()
     >>> metaconfigure.tool(context, IDummyUtility, folder="dummy",
     ...                    title="dummy", description="the description")
 
     >>> iface = context.actions[0]
     >>> iface['discriminator']
+
     >>> iface['callable'].__module__
     'zope.app.component.interface'
+
     >>> iface['args'][1].getName()
     'IDummyUtility'
+
     >>> iface['args'][2].getName()
     'IToolType'
 
-    >>> view = context.actions[1]
-    >>> from pprint import pprint 
-    >>> pprint([n for n in view['discriminator']])
-    ['view',
-     (<InterfaceClass zope.app.site.interfaces.ISiteManager>,
-      <InterfaceClass zope.publisher.interfaces.browser.IBrowserRequest>),
-     'manageIDummyUtilityTool.html',
-     <InterfaceClass zope.interface.Interface>]
-    >>> view['callable'].__module__
+    >>> tool = context.actions[1]
+    >>> from pprint import pprint
+    >>> pprint([n for n in tool['discriminator']])
+    ['utility',
+     <InterfaceClass zope.app.component.browser.tools.IToolConfiguration>,
+     'IDummyUtility']
+
+    >>> tool['callable'].__module__
     'zope.app.component.metaconfigure'
-    >>> view['args'][4]
-    'manageIDummyUtilityTool.html'
     """
 
 def test_suite():

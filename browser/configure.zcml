@@ -44,7 +44,7 @@
       />
 
   <page
-      name="index.html" 
+      name="index.html"
       for="zope.app.component.interfaces.registration.IRegistrationManager"
       menu="zmi_views" title="Registration"
       permission="zope.ManageSite"
@@ -105,9 +105,9 @@
 
   <page
       for="zope.app.component.interfaces.ISiteManagementFolder"
-      permission="zope.ManageSite" 
+      permission="zope.ManageSite"
       class="zope.app.container.browser.contents.JustContents"
-      name="index.html" attribute="index" 
+      name="index.html" attribute="index"
       />
 
   <page
@@ -116,7 +116,7 @@
       menu="zmi_views" title="Contents"
       permission="zope.ManageSite"
       class="zope.app.container.browser.contents.Contents"
-      attribute="contents" 
+      attribute="contents"
       />
 
   <view
@@ -183,7 +183,7 @@
       menu="zmi_actions" title="Add Site Management Folder"
       for="zope.app.component.interfaces.ILocalSiteManager"
       permission="zope.ManageSite"
-      class="zope.app.container.browser.adding.Adding" 
+      class="zope.app.container.browser.adding.Adding"
       >
     <page name="index.html" attribute="index"/>
     <page name="action.html" attribute="action"/>
@@ -225,8 +225,8 @@
       arguments="name provided component"
       fields="name provided component status permission"
       >
-    <widget 
-        field="name" 
+    <widget
+        field="name"
         class="zope.app.form.browser.TextWidget"
         required="False"
         convert_missing_value="False"
@@ -264,7 +264,7 @@
       arguments="required provided factoryName"
       keyword_arguments="name permission"
       permission="zope.ManageServices"
-      fields="required provided name permission factoryName" 
+      fields="required provided name permission factoryName"
       menu="add_registration" title="Adapter Registration"
       /-->
 

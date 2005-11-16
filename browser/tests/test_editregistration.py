@@ -17,10 +17,10 @@ $Id$
 """
 from zope.app.testing import ztapi
 from unittest import TestCase, TestSuite, main, makeSuite
-from zope.app.registration.browser import EditRegistration
+from zope.app.component.browser.registration import EditRegistration
 from zope.app.container.interfaces import IContainer
 from zope.app.container.interfaces import IObjectRemovedEvent
-from zope.app.registration.interfaces import ActiveStatus
+from zope.app.component.interfaces.registration import ActiveStatus
 from zope.app.traversing.interfaces import IContainmentRoot
 from zope.app.site.tests.placefulsetup import PlacefulSetup
 from zope.interface import Interface, implements
@@ -50,7 +50,7 @@ class Test(PlacefulSetup, TestCase):
         view.remove_objects(['2', '7'])
         self.assertEqual(d, {'1': c1})
 
-    def test_configInfo(self):
+    def test_registrationInfo(self):
 
         class V(BrowserView):
             def setPrefix(self, p):
@@ -68,7 +68,7 @@ class Test(PlacefulSetup, TestCase):
 
         view = EditRegistration(d, TestRequest())
 
-        info = view.configInfo()
+        info = view.registrationInfo()
         self.assertEqual(len(info), 3)
         self.assertEqual(info[0]['name'], '1')
         self.assertEqual(info[1]['name'], '2')
