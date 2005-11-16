@@ -21,6 +21,7 @@ import zope.event
 from zope.app import zapi
 from zope.app.component import site, interfaces, browser
 from zope.app.event import objectevent
+from zope.app.exception.interfaces import UserError
 
 from zope.app.i18n import ZopeMessageIDFactory as _
 
@@ -59,7 +60,11 @@ class SiteManagementView(browser.ComponentAdding):
 
     activeTool = None
     addTool = False
+    addName = u''
+    renameTool = False
     renameList = []
+    newNames = []
+    msg = u''
 
     def __init__(self, context, request):
         super(SiteManagementView, self).__init__(context, request)
@@ -82,7 +87,12 @@ class SiteManagementView(browser.ComponentAdding):
             self.uninstall()
             msg = _(u'Tools successfully uninstalled.')
         if "ADD-TOOL-SUBMIT" in self.request:
-            self.action(self.request['type_name'], self.request['id'])
+            try:
+                self.action(self.request['type_name'], self.request['id'])
+            except UserError, err:
+                self.addTool = True
+                self.addName = self.contentName
+                msg=err
         elif "CANCEL-ADD-TOOL-SUBMIT" in self.request:
             self.request.response.expireCookie('SetActiveTool')
             self.activeTool = None
@@ -95,15 +105,26 @@ class SiteManagementView(browser.ComponentAdding):
         elif "ADD-SUBMIT" in self.request:
             self.addTool = True
         elif "DELETE-SUBMIT" in self.request:
-            self.delete()
+            if 'selected' in self.request:
+                self.delete()
+                msg = _(u'Tools successfully deleted.')
+            else:
+                msg = _(u'No tools selected.')
         elif "RENAME-SUBMIT" in self.request:
             if 'selected' in self.request:
                 self.renameList = self.request['selected']
             if 'new_names' in self.request:
-                self.rename()
-                msg = _(u'Tools successfully renamed.')
+                self.renameList = self.request['old_names']
+                self.newNames = self.request['new_names']
+                try:
+                    self.rename()
+                except UserError, err:
+                    msg=err
+                else:
+                    msg = _(u'Tools successfully renamed.')
         elif "RENAME-CANCEL-SUBMIT" in self.request:
             self.activeTool = None
+        self.msg=msg
         return msg
 
     def getSiteManagementFolder(self, tool):
@@ -143,7 +164,11 @@ class SiteManagementView(browser.ComponentAdding):
             {'name': reg.name,
              'url': zapi.absoluteURL(reg.component, self.request),
              'rename': tool is self.activeTool and reg.name in self.renameList,
-             'active': reg.status == u'Active'
+             'renameNew': tool is self.activeTool and \
+                          reg.name in self.renameList and \
+                          self.newNames and \
+                          self.newNames[self.renameList.index(reg.name)],
+             'active': reg.status == u'Active',
             }
             for reg in regManager.values()
             if (zapi.isinstance(reg, site.UtilityRegistration) and
@@ -156,7 +181,9 @@ class SiteManagementView(browser.ComponentAdding):
                     'description': tool.description,
                     'instances': self.getToolInstances(tool),
                     'add': tool is self.activeTool and self.addTool,
-                    'rename': tool is self.activeTool and self.renameList
+                    'addname': tool is self.activeTool and self.addTool and self.addName,
+                    'rename': tool is self.activeTool and self.renameList,
+                    'message': tool is self.activeTool and self.msg,
                     }
                    for name, tool in zapi.getUtilitiesFor(IToolConfiguration)
                    if not tool.unique]
@@ -192,7 +219,7 @@ class SiteManagementView(browser.ComponentAdding):
         tool = self.activeTool
         regManager = self.context[tool.folder].registrationManager
         names = self.request.form['selected']
-        for reg in regManager.values():
+        for reg in list(regManager.values()):
             if reg.provided.isOrExtends(tool.interface) and reg.name in names:
                 component = reg.component
                 reg.status = interfaces.registration.InactiveStatus
@@ -204,20 +231,43 @@ class SiteManagementView(browser.ComponentAdding):
         regManager = self.context[tool.folder].registrationManager
         new_names = self.request['new_names']
         old_names = self.request['old_names']
+        msg=''
         for reg in regManager.values():
             if reg.provided.isOrExtends(tool.interface) and \
                    reg.name in old_names:
-                orig_status = reg.status
-                reg.status = interfaces.registration.InactiveStatus
-                reg.name = new_names[old_names.index(reg.name)]
-                reg.status = orig_status
+                old_name=reg.name
+                new_name = new_names[old_names.index(old_name)]
+                if new_name!=reg.name:
+                    if self.toolExists(self.activeTool.interface,new_name):
+                        if not msg:
+                            msg=_(u'The given tool name is already being used.')
+                    else:
+                        orig_status = reg.status
+                        reg.status = interfaces.registration.InactiveStatus
+                        reg.name = new_names[old_names.index(old_name)]
+                        reg.status = orig_status
+                        self.renameList.remove(old_name)
+                        self.newNames.remove(new_name)
+                else:
+                    self.renameList.remove(old_name)
+                    self.newNames.remove(new_name)
+        if msg:
+            raise UserError(msg)
 
     def add(self, content):
         """See zope.app.container.interfaces.IAdding"""
+
+        name = self.contentName
+        if self.toolExists(self.activeTool.interface,name):
+            raise UserError(_(u'The given tool name is already being used.'))
+        
         sm = self.context
+
         self.context = self.getSiteManagementFolder(self.activeTool)
 
+        self.contentName = '' # always use a unique name
         util = super(SiteManagementView, self).add(content)
+        self.contentName = name
 
         # Add registration
         name = not self.activeTool.unique and self.contentName or u''
