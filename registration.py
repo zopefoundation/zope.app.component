@@ -38,7 +38,8 @@ import bbb
 
 
 class RegistrationEvent(objectevent.ObjectEvent):
-    """An event that is created when a registration-related activity occured."""
+    """An event that is created when a registration-related activity occurred.
+    """
     implements(interfaces.IRegistrationEvent)
 
 class RegistrationActivatedEvent(RegistrationEvent):
