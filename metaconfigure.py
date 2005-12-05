@@ -320,8 +320,6 @@ def resource(_context, factory, type, name, layer=None,
         factory = proxyResource
 
     if layer is None:
-        layer = zapi.queryAdapter(type, IInterface, 'defaultLayer')
-    if layer is None:
         layer = type
 
     _context.action(
@@ -392,8 +390,6 @@ def view(_context, factory, type, name, for_, layer=None,
             return factories[-1](ob, request)
 
     # if layer not specified, use default layer for type
-    if layer is None:
-        layer = zapi.queryAdapter(type, IInterface, 'defaultLayer')
     if layer is not None:
         for_ = for_ + (layer,)
     else:
@@ -458,10 +454,9 @@ deprecated('defaultView',
 ############################################################################
 
 def defaultLayer(_context, type, layer):
-    _context.action(
-        discriminator=('defaultLayer', type, layer),
-        callable=handler,
-        args = ('provideAdapter',
-               (type,), IInterface, 'defaultLayer',
-               lambda request: layer, _context.info)
-        )
+    import warnings
+    warnings.warn("""The defaultLayer directive is deprecated and will
+go away in Zope 3.4.  It doesn't actually do anything, and never did.
+
+(%s)
+""" % _context.info, DeprecationWarning)
