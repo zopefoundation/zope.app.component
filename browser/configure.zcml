@@ -51,8 +51,7 @@
       class=".registration.EditRegistration"
       template="editregistration.pt" />
 
-  <!-- For now, we'll allow CMs to be added, but we won't include them
-       in the add_component menu. -->
+  <!-- For now, we'll allow CMs to be added -->
 
   <view
       for="zope.app.component.interfaces.registration.IRegistrationManager"
@@ -265,7 +264,6 @@
       keyword_arguments="name permission"
       permission="zope.ManageServices"
       fields="required provided name permission factoryName"
-      menu="add_registration" title="Adapter Registration"
       /-->
 
   <!-- addMenuItem
