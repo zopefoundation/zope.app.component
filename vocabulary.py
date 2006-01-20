@@ -48,7 +48,7 @@ class UtilityTerm(object):
     'zope.schema.interfaces.IVocabulary'
 
     >>> term
-    <UtiltiyTerm zope.schema.interfaces.IVocabulary, instance of InterfaceClass>
+    <UtilityTerm zope.schema.interfaces.IVocabulary, instance of InterfaceClass>
     """
     implements(ITokenizedTerm)
 
@@ -58,7 +58,7 @@ class UtilityTerm(object):
         self.token = token
 
     def __repr__(self):
-        return '<UtiltiyTerm %s, instance of %s>' %(
+        return '<UtilityTerm %s, instance of %s>' %(
             self.token, self.value.__class__.__name__)
 
 
@@ -96,9 +96,9 @@ class UtilityVocabulary(object):
     >>> vocab = UtilityVocabulary(None, IObject)
     >>> import pprint
     >>> pprint.pprint(vocab._terms.items())
-    [(u'object1', <UtiltiyTerm object1, instance of Object>),
-     (u'object2', <UtiltiyTerm object2, instance of Object>),
-     (u'object3', <UtiltiyTerm object3, instance of Object>)]
+    [(u'object1', <UtilityTerm object1, instance of Object>),
+     (u'object2', <UtilityTerm object2, instance of Object>),
+     (u'object3', <UtilityTerm object3, instance of Object>)]
 
     Now let's see how the other methods behave in this context. First we can
     just use the 'in' opreator to test whether a value is available.
@@ -130,7 +130,7 @@ class UtilityVocabulary(object):
     One can get a term for a given value using ``getTerm()``:
 
     >>> vocab.getTerm(object1)
-    <UtiltiyTerm object1, instance of Object>
+    <UtilityTerm object1, instance of Object>
     >>> vocab.getTerm(object4)
     Traceback (most recent call last):
     ...
@@ -140,7 +140,7 @@ class UtilityVocabulary(object):
     that with:
 
     >>> vocab.getTermByToken('object1')
-    <UtiltiyTerm object1, instance of Object>
+    <UtilityTerm object1, instance of Object>
     >>> vocab.getTermByToken('object4')
     Traceback (most recent call last):
     ...
@@ -161,9 +161,9 @@ class UtilityVocabulary(object):
     ...                      'zope.app.utility.vocabulary.IObject')
     >>> vocab = UtilityVocabulary(None, 'zope.app.utility.vocabulary.IObject')
     >>> pprint.pprint(vocab._terms.items())
-    [(u'object1', <UtiltiyTerm object1, instance of Object>),
-     (u'object2', <UtiltiyTerm object2, instance of Object>),
-     (u'object3', <UtiltiyTerm object3, instance of Object>)]
+    [(u'object1', <UtilityTerm object1, instance of Object>),
+     (u'object2', <UtilityTerm object2, instance of Object>),
+     (u'object3', <UtilityTerm object3, instance of Object>)]
 
     Sometimes it is desirable to only select the name of a utility. For
     this purpose a `nameOnly` argument was added to the constructor, in which
