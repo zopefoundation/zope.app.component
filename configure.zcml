@@ -153,8 +153,13 @@
       />
 
 
+  <!-- the 'Interfaces' vocabulary below requires a registred IInterface -->
+  <interface
+      interface="zope.interface.interfaces.IInterface"
+      />
+
   <!-- Vocabularies -->
- 
+
   <vocabulary
       name="Interfaces"
       factory=".vocabulary.UtilityVocabulary"
