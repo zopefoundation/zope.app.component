@@ -516,6 +516,7 @@ class IFactorySubdirective(zope.interface.Interface):
         required=False,
         )
 
+# BBB: Deprecated. Will go away in 3.4.
 class IDefaultLayerDirective(zope.interface.Interface):
     """Associate a default layer with a request type."""
 
