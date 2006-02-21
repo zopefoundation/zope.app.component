@@ -85,6 +85,7 @@ class IBasicViewInformation(zope.interface.Interface):
         required=False,
         )
 
+    # BBB 2006/02/18, to be removed after 12 months
     layer = zope.app.component.fields.LayerField(
         title=_("The layer the view is in."),
         description=_("""
@@ -379,8 +380,11 @@ class IResourceDirective(IBasicComponentInformation,
                          IBasicResourceInformation):
     """Register a resource"""
 
+    # BBB 2006/02/18, to be removed after 12 months
     layer = zope.app.component.fields.LayerField(
-        title=_("The layer the resource is in."),
+        title=_("The layer the resource is in.  This argument has been "
+                "deprecated and will be removed in Zope 3.5.  Use the "
+                "'type' argument instead."),
         required=False,
         )
 
@@ -518,7 +522,9 @@ class IFactorySubdirective(zope.interface.Interface):
 
 # BBB: Deprecated. Will go away in 3.4.
 class IDefaultLayerDirective(zope.interface.Interface):
-    """Associate a default layer with a request type."""
+    """Associate a default layer with a request type.
+
+    This directive has been deprecated and will go away in Zope 3.4."""
 
     type = zope.configuration.fields.GlobalInterface(
         title=_("Request type"),
