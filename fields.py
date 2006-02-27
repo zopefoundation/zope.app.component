@@ -21,10 +21,14 @@ import zope.schema
 from zope.component.exceptions import ComponentLookupError
 from zope.configuration.exceptions import ConfigurationError
 from zope.configuration.fields import GlobalObject
-from zope.publisher.interfaces.browser import ILayer
 
 from zope.app import zapi
 
+# BBB 2006/02/18, to be removed after 12 months
+import zope.deprecation
+zope.deprecation.__show__.off()
+from zope.publisher.interfaces import ILayer
+zope.deprecation.__show__.on()
 
 class LayerField(GlobalObject):
     r"""This field represents a layer.

@@ -17,13 +17,13 @@ $Id$
 """
 __docformat__ = 'restructuredtext'
 
+import warnings
+import zope.interface
 from zope import component
 from zope.component.interfaces import IDefaultViewName, IFactory
 from zope.configuration.exceptions import ConfigurationError
-import zope.interface
 from zope.interface import Interface, providedBy
 from zope.interface.interfaces import IInterface
-
 from zope.proxy import ProxyBase, getProxiedObject
 
 from zope.security.checker import InterfaceChecker, CheckerPublic
@@ -42,11 +42,11 @@ def handler(methodName, *args, **kwargs):
     method(*args, **kwargs)
 
 from zope.app.component.interface import provideInterface
-def interface(_context, interface, type=None):
+def interface(_context, interface, type=None, name=''):
     _context.action(
         discriminator = None,
         callable = provideInterface,
-        args = ('', interface, type)
+        args = (name, interface, type)
         )
 
 
@@ -310,7 +310,6 @@ def resource(_context, factory, type, name, layer=None,
             )
 
     if permission:
-
         checker = _checker(_context, permission,
                            allowed_interface, allowed_attributes)
 
@@ -319,14 +318,18 @@ def resource(_context, factory, type, name, layer=None,
 
         factory = proxyResource
 
-    if layer is None:
-        layer = type
+    if layer is not None:
+        warnings.warn_explicit(
+            "The 'layer' argument of the 'resource' directive has been "
+            "deprecated.  Use the 'type' argument instead.",
+            DeprecationWarning, _context.info.file, _context.info.line)
+        type = layer
 
     _context.action(
-        discriminator = ('resource', name, layer, provides),
+        discriminator = ('resource', name, type, provides),
         callable = handler,
         args = ('provideAdapter',
-                (layer,), provides, name, factory, _context.info),
+                (type,), provides, name, factory, _context.info),
         )
     _context.action(
         discriminator = None,
@@ -389,9 +392,13 @@ def view(_context, factory, type, name, for_, layer=None,
                 ob = f(ob)
             return factories[-1](ob, request)
 
-    # if layer not specified, use default layer for type
+    # BBB 2006/02/18, to be removed after 12 months
     if layer is not None:
         for_ = for_ + (layer,)
+        warnings.warn_explicit(
+            "The 'layer' argument of the 'view' directive has been "
+            "deprecated.  Use the 'type' argument instead.",
+            DeprecationWarning, _context.info.file, _context.info.line)
     else:
         for_ = for_ + (type,)
 
@@ -453,6 +460,7 @@ deprecated('defaultView',
            'Will be gone in Zope 3.3.')
 ############################################################################
 
+# BBB: Deprecated. Will go away in 3.4.
 def defaultLayer(_context, type, layer):
     import warnings
     warnings.warn("""The defaultLayer directive is deprecated and will
