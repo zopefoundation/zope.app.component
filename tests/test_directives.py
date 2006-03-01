@@ -147,7 +147,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             )))
 
         gsm = zapi.getGlobalSiteManager()
-        doc = [reg.doc
+        doc = [reg.info
                for reg in gsm.registrations()
                if (isinstance(reg, SubscriptionRegistration) and
                    reg.provided is IS)][0]
