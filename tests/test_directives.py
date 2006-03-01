@@ -36,7 +36,7 @@ from zope.security.checker import ProxyFactory
 from zope.security.checker import selectChecker
 
 import zope.app.component
-from zope.component.exceptions import ComponentLookupError
+from zope.component.interfaces import ComponentLookupError
 
 from zope.app import zapi
 from zope.app.testing.placelesssetup import PlacelessSetup

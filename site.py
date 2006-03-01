@@ -28,7 +28,7 @@ $Id$
 import zope.event
 import zope.interface
 import zope.component.components
-from zope.component.exceptions import ComponentLookupError
+from zope.component.interfaces import ComponentLookupError
 from zope.security.proxy import removeSecurityProxy
 
 from zope.app import zapi
