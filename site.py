@@ -27,7 +27,7 @@ $Id$
 
 import zope.event
 import zope.interface
-import zope.component.components
+import zope.component.registry
 from zope.component.interfaces import ComponentLookupError
 from zope.security.proxy import removeSecurityProxy
 
@@ -181,7 +181,7 @@ class LocalUtilityRegistry(adapter.LocalAdapterRegistry):
 
 class LocalSiteManager(BTreeContainer,
                        bbb.site.BBBSiteManager,
-                       zope.component.components.Components):
+                       zope.component.registry.Components):
     """Local Site Manager implementation"""
     zope.interface.implements(
         interfaces.ILocalSiteManager,

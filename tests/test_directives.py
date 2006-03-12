@@ -24,7 +24,7 @@ from zope.interface import Interface, implements
 from zope.testing.doctestunit import DocTestSuite
 from zope.component import createObject
 from zope.component.interfaces import IDefaultViewName
-from zope.component.components import SubscriptionRegistration
+from zope.component.registry import SubscriptionRegistration
 
 from zope.configuration.xmlconfig import xmlconfig, XMLConfig
 from zope.configuration.exceptions import ConfigurationError
