@@ -1,4 +1,4 @@
-##############################################################################
+#############################################################################
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
@@ -17,6 +17,7 @@ $Id$
 """
 __docformat__ = 'restructuredtext'
 
+import warnings
 from types import ModuleType
 from persistent.interfaces import IPersistent
 from zope.component.interfaces import IFactory
@@ -45,7 +46,7 @@ class ProtectionDeclarationException(Exception):
     """Security-protection-specific exceptions."""
     pass
 
-class ContentDirective(object):
+class ClassDirective(object):
 
     def __init__(self, _context, class_):
         self.__id = dottedName(class_)
@@ -175,8 +176,17 @@ class ContentDirective(object):
         utility(_context, IFactory, factoryObj,
                 permission=PublicPermission, name=id)
 
+# BBB 2006/02/24, to be removed after 12 months
+class ContentDirective(ClassDirective):
 
-class LocalUtilityDirective(ContentDirective):
+    def __init__(self, _context, class_):
+        warnings.warn_explicit(
+            "The 'content' alias for the 'class' directive has been "
+            "deprecated and will be removed in Zope 3.5.\n",
+            DeprecationWarning, _context.info.file, _context.info.line)        
+        super(ContentDirective, self).__init__(_context, class_)
+
+class LocalUtilityDirective(ClassDirective):
     r"""localUtility directive handler.
 
     Examples:
