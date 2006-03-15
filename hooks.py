@@ -101,18 +101,11 @@ def adapter_hook(interface, object, name='', default=None):
 def setHooks():
     zope.component.adapter_hook.sethook(adapter_hook)
     zope.component.getSiteManager.sethook(getSiteManager)
-    # BBB: Goes away in 3.3.
-    zope.deprecation.__show__.off()
-    from bbb import hooks
-    zope.component.getServices.sethook(hooks.getServices_hook)
-    zope.deprecation.__show__.on()
 
 def resetHooks():
     # Reset hookable functions to original implementation.
     zope.component.adapter_hook.reset()
     zope.component.getSiteManager.reset()
-    # BBB: Goes away in 3.3.
-    zope.component.getServices.reset()
 
 # Clear the site thread global
 clearSite = setSite
