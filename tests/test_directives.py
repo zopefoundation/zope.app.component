@@ -1412,13 +1412,13 @@ class TestFactoryDirective(PlacelessSetup, unittest.TestCase):
     def testFactory(self):
         f = configfile('''
 <permission id="zope.Foo" title="Zope Foo Permission" />
-<content class="zope.app.component.tests.exampleclass.ExampleClass">
+<class class="zope.app.component.tests.exampleclass.ExampleClass">
     <factory
       id="test.Example"
       title="Example content"
       description="Example description"
        />
-</content>''')
+</class>''')
         xmlconfig(f)
         obj = createObject('test.Example')
         self.failUnless(zapi.isinstance(obj, exampleclass.ExampleClass))
@@ -1486,11 +1486,11 @@ class TestRequireDirective(PlacelessSetup, unittest.TestCase):
     # inherently sets the instances as well as the class attributes.
 
     def testSimpleMethodsPlural(self):
-        declaration = ('''<content class="%s">
+        declaration = ('''<class class="%s">
                             <require
                                 permission="%s"
                                 attributes="m1 m3"/>
-                          </content>'''
+                          </class>'''
                        % (PREFIX+"test_class", P1))
         self.assertDeclaration(declaration, m1P=P1, m3P=P1)
 
@@ -1508,11 +1508,11 @@ class TestRequireDirective(PlacelessSetup, unittest.TestCase):
         self.assertSetattrState(**state)
 
     def test_set_attributes(self):
-        declaration = ('''<content class="%s">
+        declaration = ('''<class class="%s">
                             <require
                                 permission="%s"
                                 set_attributes="m1 m3"/>
-                          </content>'''
+                          </class>'''
                        % (PREFIX+"test_class", P1))
         apply_declaration(module.template_bracket % declaration)
         checker = selectChecker(module.test_instance)
@@ -1524,11 +1524,11 @@ class TestRequireDirective(PlacelessSetup, unittest.TestCase):
 
         self.assertEqual(queryInterface(PREFIX+"S"), None)
 
-        declaration = ('''<content class="%s">
+        declaration = ('''<class class="%s">
                             <require
                                 permission="%s"
                                 set_schema="%s"/>
-                          </content>'''
+                          </class>'''
                        % (PREFIX+"test_class", P1, PREFIX+"S"))
         apply_declaration(module.template_bracket % declaration)
 
@@ -1548,11 +1548,11 @@ class TestRequireDirective(PlacelessSetup, unittest.TestCase):
         self.assertEqual(queryInterface(PREFIX+"S"), None)
         self.assertEqual(queryInterface(PREFIX+"S2"), None)
 
-        declaration = ('''<content class="%s">
+        declaration = ('''<class class="%s">
                             <require
                                 permission="%s"
                                 set_schema="%s %s"/>
-                          </content>'''
+                          </class>'''
                        % (PREFIX+"test_class", P1, PREFIX+"S", PREFIX+"S2"))
         apply_declaration(module.template_bracket % declaration)
 
@@ -1574,11 +1574,11 @@ class TestRequireDirective(PlacelessSetup, unittest.TestCase):
 
         self.assertEqual(queryInterface(PREFIX+"I"), None)
 
-        declaration = ('''<content class="%s">
+        declaration = ('''<class class="%s">
                             <require
                                 permission="%s"
                                 interface="%s"/>
-                          </content>'''
+                          </class>'''
                        % (PREFIX+"test_class", P1, PREFIX+"I"))
         # m1 and m2 are in the interface, so should be set, and m3 should not:
         self.assertDeclaration(declaration, m1P=P1, m2P=P1)
@@ -1592,12 +1592,12 @@ class TestRequireDirective(PlacelessSetup, unittest.TestCase):
         self.assertEqual(queryInterface(PREFIX+"I3"), None)
         self.assertEqual(queryInterface(PREFIX+"I4"), None)
 
-        declaration = ('''<content class="%s">
+        declaration = ('''<class class="%s">
                             <require
                                 permission="%s"
                                 interface="  %s
                                              %s  "/>
-                          </content>'''
+                          </class>'''
                        % (PREFIX+"test_class", P1, PREFIX+"I3", PREFIX+"I4"))
         self.assertDeclaration(declaration, m3P=P1, m2P=P1)
 
@@ -1611,10 +1611,10 @@ class TestRequireDirective(PlacelessSetup, unittest.TestCase):
 
     def testCompositeNoPerm(self):
         # Establish rejection of declarations lacking a permission spec.
-        declaration = ('''<content class="%s">
+        declaration = ('''<class class="%s">
                             <require
                                 attributes="m1"/>
-                          </content>'''
+                          </class>'''
                        % (PREFIX+"test_class"))
         self.assertRaises(ZopeXMLConfigurationError,
                           self.assertDeclaration,
@@ -1623,46 +1623,46 @@ class TestRequireDirective(PlacelessSetup, unittest.TestCase):
 
 
     def testCompositeMethodsPluralElementPerm(self):
-        declaration = ('''<content class="%s">
+        declaration = ('''<class class="%s">
                             <require
                                 permission="%s"
                                 attributes="m1 m3"/>
-                          </content>'''
+                          </class>'''
                        % (PREFIX+"test_class", P1))
         self.assertDeclaration(declaration,
                                m1P=P1, m3P=P1)
 
     def testCompositeInterfaceTopPerm(self):
-        declaration = ('''<content class="%s">
+        declaration = ('''<class class="%s">
                             <require
                                 permission="%s"
                                 interface="%s"/>
-                          </content>'''
+                          </class>'''
                        % (PREFIX+"test_class", P1, PREFIX+"I"))
         self.assertDeclaration(declaration,
                                m1P=P1, m2P=P1)
 
 
     def testSubInterfaces(self):
-        declaration = ('''<content class="%s">
+        declaration = ('''<class class="%s">
                             <require
                                 permission="%s"
                                 interface="%s"/>
-                          </content>'''
+                          </class>'''
                        % (PREFIX+"test_class", P1, PREFIX+"I2"))
         # m1 and m2 are in the interface, so should be set, and m3 should not:
         self.assertDeclaration(declaration, m1P=P1, m2P=P1)
 
 
     def testMimicOnly(self):
-        declaration = ('''<content class="%s">
+        declaration = ('''<class class="%s">
                             <require
                                 permission="%s"
                                 attributes="m1 m2"/>
-                          </content>
-                          <content class="%s">
+                          </class>
+                          <class class="%s">
                             <require like_class="%s" />
-                          </content>
+                          </class>
                           ''' % (PREFIX+"test_base", P1,
                 PREFIX+"test_class", PREFIX+"test_base"))
         # m1 and m2 are in the interface, so should be set, and m3 should not:
@@ -1671,17 +1671,17 @@ class TestRequireDirective(PlacelessSetup, unittest.TestCase):
 
 
     def testMimicAsDefault(self):
-        declaration = ('''<content class="%s">
+        declaration = ('''<class class="%s">
                             <require
                                 permission="%s"
                                 attributes="m1 m2"/>
-                          </content>
-                          <content class="%s">
+                          </class>
+                          <class class="%s">
                             <require like_class="%s" />
                             <require
                                 permission="%s"
                                 attributes="m2 m3"/>
-                          </content>
+                          </class>
                           ''' % (PREFIX+"test_base", P1,
                 PREFIX+"test_class", PREFIX+"test_base", P2))
 
