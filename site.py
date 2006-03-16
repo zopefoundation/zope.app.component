@@ -65,9 +65,6 @@ def resolve(name, context=None):
 # from zope.app.module import resolve
 ##############################################################################
 
-# Goes away in 3.3.
-import bbb.site
-
 class SiteManagementFolder(registration.RegisterableContainer,
                            BTreeContainer):
     zope.interface.implements(interfaces.ISiteManagementFolder)
@@ -83,7 +80,7 @@ class SMFolderFactory(object):
         return SiteManagementFolder()
 
 
-class SiteManagerContainer(bbb.site.BBBSiteManagerContainer, Contained):
+class SiteManagerContainer(Contained):
     """Implement access to the site manager (++etc++site).
 
     This is a mix-in that implements the IPossibleSite
@@ -91,8 +88,7 @@ class SiteManagerContainer(bbb.site.BBBSiteManagerContainer, Contained):
     """
     zope.interface.implements(interfaces.IPossibleSite)
 
-    # BBB: Deactive in 3.3 again. Now provided by BBBSiteManagerContainer
-    #_sm = None
+    _sm = None
 
     def getSiteManager(self):
         if self._sm is not None:
@@ -180,7 +176,6 @@ class LocalUtilityRegistry(adapter.LocalAdapterRegistry):
 
 
 class LocalSiteManager(BTreeContainer,
-                       bbb.site.BBBSiteManager,
                        zope.component.registry.Components):
     """Local Site Manager implementation"""
     zope.interface.implements(
@@ -306,8 +301,7 @@ class AdapterRegistration(registration.ComponentRegistration):
         return zapi.getSiteManager(self)
 
 
-class UtilityRegistration(bbb.site.BBBUtilityRegistration,
-                          registration.ComponentRegistration):
+class UtilityRegistration(registration.ComponentRegistration):
     """Utility component registration for persistent components
 
     This registration configures persistent components in packages to

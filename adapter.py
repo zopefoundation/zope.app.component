@@ -11,11 +11,15 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Local/Persistent Adapter Registry
+"""DEPRECATED"""
 
-$Id$
-"""
-__docformat__ = 'restructuredtext' 
+import warnings
+
+warnings.warn(
+    "This module is deprecated and will go away in Zope 3.5",
+    DeprecationWarning, 2)
+
+
 import persistent
 
 import zope.interface

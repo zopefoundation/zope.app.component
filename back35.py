@@ -16,6 +16,10 @@
 $Id$
 """
 
+from persistent import Persistent
+
+import zope.event
+
 from zope import interface, schema
 import zope.component.interfaces
 import zope.app.component.interfaces.registration
@@ -23,6 +27,18 @@ import zope.schema.vocabulary
 from zope.app.i18n import ZopeMessageFactory as _
 import zope.app.container.interfaces
 import zope.app.container.constraints
+from zope.interface import implements
+from zope.security.checker import InterfaceChecker, CheckerPublic
+from zope.security.proxy import Proxy, removeSecurityProxy
+from zope.app import zapi
+from zope.app.component.interfaces import registration as interfaces
+from zope.app.container.btree import BTreeContainer
+from zope.app.container.contained import Contained
+from zope.app.event import objectevent
+from zope.app.traversing.interfaces import TraversalError
+from zope.app.i18n import ZopeMessageFactory as _
+import zope.app.component.registration
+
 
 InactiveStatus = _('Inactive')
 ActiveStatus = _('Active')
@@ -313,3 +329,272 @@ class IUtilityRegistration(IAdapterRegistration):
         readonly=True,
         required=True,
         )
+
+
+
+class RegistrationStatusProperty(object):
+    """A descriptor used to implement `IRegistration`'s `status` property."""
+    def __get__(self, inst, klass):
+        registration = inst
+        if registration is None:
+            return self
+
+        registry = registration.getRegistry()
+        if registry and registry.registered(registration):
+            return interfaces.ActiveStatus
+
+        return interfaces.InactiveStatus
+
+    def __set__(self, inst, value):
+        registration = inst
+        registry = registration.getRegistry()
+        if registry is None:
+            raise ValueError('No registry found.')
+
+        if value == interfaces.ActiveStatus:
+            if not registry.registered(registration):
+                registry.register(registration)
+                zope.event.notify(
+                    zope.app.component.registration.RegistrationActivatedEvent(
+                        registration)
+                    )
+
+        elif value == interfaces.InactiveStatus:
+            if registry.registered(registration):
+                registry.unregister(registration)
+                zope.event.notify(
+                  zope.app.component.registration.RegistrationDeactivatedEvent(
+                    registration)
+                  )
+        else:
+            raise ValueError(value)
+
+
+class SimpleRegistration(Persistent, Contained):
+    """Registration objects that just contain registration data"""
+    implements(interfaces.IRegistration,
+               interfaces.IRegistrationManagerContained)
+
+    # See interfaces.IRegistration
+    status = RegistrationStatusProperty()
+
+    def getRegistry(self):
+        """See interfaces.IRegistration"""
+        raise NotImplementedError(
+              'This method must be implemented by each specific regstration.')
+
+
+
+
+# Note that I could get rid of the base class below, but why bother.
+# The thing that uses it is going away too.  I really have no way of
+# knowing that there aren't still registrations that use the older
+# data structures.  The better approach will be to just stop using
+# registrations.
+
+NULL_COMPONENT = object()
+
+class BBBComponentRegistration(object):
+
+    _BBB_componentPath = None
+
+    def __init__(self, component, permission=None):
+        # BBB: 12/05/2004
+        if isinstance(component, (str, unicode)):
+            self.componentPath = component
+        else:
+            # We always want to set the plain component. Untrusted code will
+            # get back a proxied component anyways.
+            self.component = removeSecurityProxy(component)
+        if permission == 'zope.Public':
+            permission = CheckerPublic
+        self.permission = permission
+
+    def getComponent(self):
+        return self.__BBB_getComponent()
+    getComponent = zope.deprecation.deprecated(getComponent,
+                              'Use component directly. '
+                              'The reference will be gone in Zope 3.3.')
+
+    def __BBB_getComponent(self):
+        if self._component is NULL_COMPONENT:
+            return self.__BBB_old_getComponent(self._BBB_componentPath)
+
+        # This condition should somehow make it in the final code, since it
+        # honors the permission.
+        if self.permission:
+            checker = InterfaceChecker(self.getInterface(), self.permission)
+            return Proxy(self._component, checker)
+
+        return self._component
+
+    def __BBB_old_getComponent(self, path):
+        service_manager = zapi.getSiteManager(self)
+
+        # Get the root and unproxy it
+        if path.startswith("/"):
+            # Absolute path
+            root = removeAllProxies(zapi.getRoot(service_manager))
+            component = zapi.traverse(root, path)
+        else:
+            # Relative path.
+            ancestor = self.__parent__.__parent__
+            component = zapi.traverse(ancestor, path)
+
+        if self.permission:
+            if type(component) is Proxy:
+                # There should be at most one security Proxy around an object.
+                # So, if we're going to add a new security proxy, we need to
+                # remove any existing one.
+                component = removeSecurityProxy(component)
+
+            interface = self.getInterface()
+
+            checker = InterfaceChecker(interface, self.permission)
+
+            component = Proxy(component, checker)
+
+        return component
+
+    def __BBB_setComponent(self, component):
+        self._BBB_componentPath = None
+        self._component = component
+
+    component = property(__BBB_getComponent, __BBB_setComponent)
+
+    def __BBB_getComponentPath(self):
+        if self._BBB_componentPath is not None:
+            return self._BBB_componentPath
+        return '/' + '/'.join(zapi.getPath(self.component))
+
+    def __BBB_setComponentPath(self, path):
+        self._component = NULL_COMPONENT
+        self._BBB_componentPath = path
+
+    componentPath = property(__BBB_getComponentPath, __BBB_setComponentPath)
+    componentPath = zope.deprecation.deprecated(
+        componentPath,
+        'Use component directly. '
+        'The reference will be gone in Zope 3.3.')
+
+    def __setstate__(self, dict):
+        super(BBBComponentRegistration, self).__setstate__(dict)
+        # For some reason the component path is not set correctly by the
+        # default __setstate__ mechanism.
+        if 'componentPath' in dict:
+            self._component = NULL_COMPONENT
+            self._BBB_componentPath = dict['componentPath']
+
+        if isinstance(self._BBB_componentPath, (str, unicode)):
+            self._component = NULL_COMPONENT
+
+
+class ComponentRegistration(BBBComponentRegistration,
+                            SimpleRegistration):
+    """Component registration.
+
+    Subclasses should define a getInterface() method returning the interface
+    of the component.
+    """
+    implements(interfaces.IComponentRegistration)
+
+    def __init__(self, component, permission=None):
+        super(ComponentRegistration, self).__init__(component, permission)
+        if permission == 'zope.Public':
+            permission = CheckerPublic
+        self.permission = permission
+
+    def _getComponent(self):
+        if self.permission and self.interface:
+            checker = InterfaceChecker(self.interface, self.permission)
+            return Proxy(self._component, checker)
+        return self._component
+
+    def _setComponent(self, component):
+        # We always want to set the plain component. Untrusted code will
+        # get back a proxied component anyways.
+        self._component = removeSecurityProxy(component)
+
+    # See zope.app.component.interfaces.registration.IComponentRegistration
+    component = property(_getComponent, _setComponent)
+
+    # See zope.app.component.interfaces.registration.IComponentRegistration
+    interface = None
+
+
+class Registered:
+    """An adapter from IRegisterable to IRegistered.
+
+    This class is the only place that knows how 'Registered'
+    data is represented.
+    """
+    implements(interfaces.IRegistered)
+    __used_for__ = interfaces.IRegisterable
+
+    def __init__(self, registerable):
+        self.registerable = registerable
+
+    def registrations(self):
+        rm = zapi.getParent(self.registerable).registrationManager
+        return [reg for reg in rm.values()
+                if (interfaces.IComponentRegistration.providedBy(reg) and
+                    reg.component is self.registerable)]
+
+
+class RegistrationManager(BTreeContainer):
+    """Registration manager
+
+    Manages registrations within a package.
+    """
+    implements(interfaces.IRegistrationManager)
+
+    def addRegistration(self, reg):
+        "See IWriteContainer"
+        key = self._chooseName('', reg)
+        self[key] = reg
+        return key
+
+    def _chooseName(self, name, reg):
+        """Choose a name for the registration."""
+        if not name:
+            name = reg.__class__.__name__
+
+        i = 1
+        chosenName = name
+        while chosenName in self:
+            i += 1
+            chosenName = name + str(i)
+
+        return chosenName
+
+class RegisterableContainer(object):
+    """Mix-in to implement `IRegisterableContainer`"""
+    implements(interfaces.IRegisterableContainer,
+               interfaces.IRegisterableContainerContaining)
+
+    def __init__(self):
+        super(RegisterableContainer, self).__init__()
+        self.__createRegistrationManager()
+
+    def __createRegistrationManager(self):
+        "Create a registration manager and store it as `registrationManager`"
+        # See interfaces.IRegisterableContainer
+        self.registrationManager = RegistrationManager()
+        self.registrationManager.__parent__ = self
+        self.registrationManager.__name__ = '++registrations++'
+        zope.event.notify(
+            objectevent.ObjectCreatedEvent(self.registrationManager))
+
+
+class RegistrationManagerNamespace:
+    """Used to traverse to a Registration Manager from a
+       Registerable Container."""
+    __used_for__ = interfaces.IRegisterableContainer
+
+    def __init__(self, ob, request=None):
+        self.context = ob.registrationManager
+
+    def traverse(self, name, ignore):
+        if name == '':
+            return self.context
+        raise TraversalError(self.context, name)
