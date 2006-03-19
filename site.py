@@ -28,6 +28,10 @@ $Id$
 import zope.event
 import zope.interface
 import zope.component.registry
+import zope.component.persistentregistry
+import zope.deprecation
+import zope.deferredimport
+
 from zope.component.interfaces import ComponentLookupError
 from zope.security.proxy import removeSecurityProxy
 
@@ -38,9 +42,11 @@ from zope.app.component import registration
 from zope.app.component.hooks import setSite
 from zope.app.container.btree import BTreeContainer
 from zope.app.container.contained import Contained
+import zope.app.location
 from zope.app.event import objectevent
 from zope.app.filerepresentation.interfaces import IDirectoryFactory
 from zope.app.traversing.interfaces import IContainmentRoot
+import zope.app.component.back35
 
 ##############################################################################
 # from zope.app.module import resolve
@@ -65,7 +71,7 @@ def resolve(name, context=None):
 # from zope.app.module import resolve
 ##############################################################################
 
-class SiteManagementFolder(registration.RegisterableContainer,
+class SiteManagementFolder(zope.app.component.back35.RegisterableContainer,
                            BTreeContainer):
     zope.interface.implements(interfaces.ISiteManagementFolder)
 
@@ -129,86 +135,64 @@ def _findNextSiteManager(site):
             return site.getSiteManager()
 
 
-class LocalUtilityRegistry(adapter.LocalAdapterRegistry):
-    """Custom local adapter registry for utilities, since utilities do not
-    just register themselves as null adapters, but also as subscribers."""
 
-
-    def register(self, registration):
-        """See zope.app.component.interfaces.registration.IRegistry"""
-        self._registrations += (registration,)
-
-        zope.interface.adapter.AdapterRegistry.register(
-            self,
-            (),
-            registration.provided, registration.name,
-            registration.component,
-            )
-
-        # XXX need test that this second part happens
-        zope.interface.adapter.AdapterRegistry.subscribe(
-            self,
-            (),
-            registration.provided,
-            registration.component,
-            )
-
-    def unregister(self, registration):
-        """See zope.app.component.interfaces.registration.IRegistry"""
-        self._registrations = tuple([reg for reg in self._registrations
-                                     if reg is not registration])
-
-        zope.interface.adapter.AdapterRegistry.unregister(
-            self,
-            (),
-            registration.provided, registration.name,
-            registration.component,
-            )
-
-
-        # XXX need test that this second part happens
-        zope.interface.adapter.AdapterRegistry.unsubscribe(
-            self,
-            (),
-            registration.provided,
-            registration.component,
-            )
-
+class _LocalAdapterRegistry(
+    zope.component.persistentregistry.PersistentAdapterRegistry,
+    zope.app.location.Location,
+    ):
+    pass
 
 class LocalSiteManager(BTreeContainer,
-                       zope.component.registry.Components):
+                       zope.component.persistentregistry.PersistentComponents):
     """Local Site Manager implementation"""
-    zope.interface.implements(
-        interfaces.ILocalSiteManager,
-        interfaces.registration.IRegisterableContainerContaining)
+    zope.interface.implements(interfaces.ILocalSiteManager)
 
-    # See interfaces.registration.ILocatedRegistry
-    next = None
     subs = ()
-    base = None
+
+    @property
+    @zope.deprecation.deprecate("Goes away in Zope 3.5.  Use __bases__[0]")
+    def next(self):
+        if self.__bases__:
+            return self.__bases__[0]
+
+    def _setBases(self, bases):
+
+        # Update base subs
+        for base in self.__bases__:
+            if ((base not in bases)
+                and interfaces.ILocalSiteManager.providedBy(base)
+                ):
+                base.removeSub(self)
+
+        for base in bases:
+            if ((base not in self.__bases__)
+                and interfaces.ILocalSiteManager.providedBy(base)
+                ):
+                base.addSub(self)
+
+        super(LocalSiteManager, self)._setBases(bases)
 
     def __init__(self, site):
         # Locate the site manager
         self.__parent__ = site
         self.__name__ = '++etc++site'
 
-        # Make sure everything is setup correctly
         BTreeContainer.__init__(self)
-
-        # Set up adapter registries
-        gsm = zapi.getGlobalSiteManager()
-        self.adapters = adapter.LocalAdapterRegistry(gsm.adapters)
-        self.utilities = LocalUtilityRegistry(gsm.utilities)
-
-        # Setup located registry attributes
+        zope.component.persistentregistry.PersistentComponents.__init__(self)
+        
         next = _findNextSiteManager(site)
-        self.setNext(next)
+        if next is None:
+            next = zapi.getGlobalSiteManager()
+        self.__bases__ = (next, )
 
         # Setup default site management folder
         folder = SiteManagementFolder()
         zope.event.notify(objectevent.ObjectCreatedEvent(folder))
         self['default'] = folder
 
+    def _init_registries(self):
+        self.adapters = _LocalAdapterRegistry()
+        self.utilities = _LocalAdapterRegistry()
 
     def addSub(self, sub):
         """See interfaces.registration.ILocatedRegistry"""
@@ -219,19 +203,9 @@ class LocalSiteManager(BTreeContainer,
         self.subs = tuple(
             [s for s in self.subs if s is not sub] )
 
+    @zope.deprecation.deprecate("Will go away in Zope 3.5")
     def setNext(self, next, base=None):
-        """See interfaces.registration.ILocatedRegistry"""
-        if self.next is not None:
-            self.next.removeSub(self)
-        if next is not None:
-            next.addSub(self)
-        self.next = next
-        if next is not None:
-            self.adapters.setNext(next.adapters)
-            self.utilities.setNext(next.utilities)
-        else:
-            self.adapters.setNext(None)
-            self.utilities.setNext(None)
+        self.__bases__ = tuple([b for b in (next, base) if b is not None])
 
     def __getRegistry(self, registration):
         """Determine the correct registry for the registration."""
@@ -244,78 +218,107 @@ class LocalSiteManager(BTreeContainer,
                          "provide `IAdapterRegistration` or "
                          "`IUtilityRegistration`.")
 
+    @zope.deprecation.deprecate(
+        "Local registration is now much simpler.  The old baroque APIs "
+        "will go away in Zope 3.5.  See the new component-registration APIs "
+        "defined in zope.component, especially IComponentRegistry.",
+        )
     def register(self, registration):
-        """See zope.app.component.interfaces.registration.IRegistry"""
-        registry = self.__getRegistry(registration)
-        registry.register(registration)
+        if interfaces.IUtilityRegistration.providedBy(registration):
+            self.registerUtility(
+                registration.component,
+                registration.provided,
+                registration.name,
+                )
+        elif interfaces.IAdapterRegistration.providedBy(registration):
+            self.registerAdapter(
+                registration.component,
+                (registration.required, ) + registration.with,
+                registration.provided,
+                registration.name,
+                )
 
+    @zope.deprecation.deprecate(
+        "Local registration is now much simpler.  The old baroque APIs "
+        "will go away in Zope 3.5.  See the new component-registration APIs "
+        "defined in zope.component, especially IComponentRegistry.",
+        )
     def unregister(self, registration):
-        """See zope.app.component.interfaces.registration.IRegistry"""
-        registry = self.__getRegistry(registration)
-        registry.unregister(registration)
+        if interfaces.IUtilityRegistration.providedBy(registration):
+            self.unregisterUtility(
+                registration.component,
+                registration.provided,
+                registration.name,
+                )
+        elif interfaces.IAdapterRegistration.providedBy(registration):
+            self.unregisterAdapter(
+                registration.component,
+                (registration.required, ) + registration.with,
+                registration.provided,
+                registration.name,
+                )
 
+    @zope.deprecation.deprecate(
+        "Local registration is now much simpler.  The old baroque APIs "
+        "will go away in Zope 3.5.  See the new component-registration APIs "
+        "defined in zope.component, especially IComponentRegistry.",
+        )
     def registered(self, registration):
-        """See zope.app.component.interfaces.registration.IRegistry"""
-        return self.adapters.registered(registration) or \
-               self.utilities.registered(registration)
+        if interfaces.IUtilityRegistration.providedBy(registration):
+            return bool([
+                r for r in self.registeredUtilities()
+                if (
+                   r.component == registration.component
+                   and
+                   r.provided == registration.provided
+                   and
+                   r.name == registration.name
+                )
+                ])
+        elif interfaces.IAdapterRegistration.providedBy(registration):
+            return bool([
+                r for r in self.registeredAdapters()
+                if (
+                   r.component == registration.component
+                   and
+                   r.provided == registration.provided
+                   and
+                   r.name == registration.name
+                   and
+                   r.required == ((registration.required, )
+                                  + registration.with)
+                )
+                ])
+        return False
 
     def registrations(self):
         """See zope.component.interfaces.IRegistry"""
-        for reg in self.adapters.registrations():
-            yield reg
-        for reg in self.utilities.registrations():
-            yield reg
+        for r in self.registeredUtilities():
+            yield r
+        for r in self.registeredAdapters():
+            yield r
+        for r in self.registeredHandlers():
+            yield r
+        for r in self.registeredSubscriptionAdapters():
+            yield r
 
 
-class AdapterRegistration(registration.ComponentRegistration):
-    """Adapter component registration for persistent components
+## zope.deferredimport.deprecatedFrom(
+##     "Local registration is now much simpler.  The old baroque APIs "
+##     "will go away in Zope 3.5.  See the new component-registration APIs "
+##     "defined in zope.component, especially IComponentRegistry.",
+##     'zope.app.component.back35',
+##     'AdapterRegistration',
+##     )
 
-    This registration configures persistent components in packages to
-    be adapters.
-    """
-    zope.interface.implements(interfaces.IAdapterRegistration)
+zope.deferredimport.deprecatedFrom(
+    "Local registration is now much simpler.  The old baroque APIs "
+    "will go away in Zope 3.5.  See the new component-registration APIs "
+    "defined in zope.component, especially IComponentRegistry.",
+    'zope.app.component.adapter',
+    'LocalAdapterRegistry', 'LocalUtilityRegistry', 'UtilityRegistration',
+    )
 
-    def __init__(self, required, provided, factoryName,
-                 name='', permission=None):
-        if not isinstance(required, (tuple, list)):
-            self.required = required
-            self.with = ()
-        else:
-            self.required = required[0]
-            self.with = tuple(required[1:])
-        self.provided = provided
-        self.name = name
-        self.factoryName = factoryName
-        self.permission = permission
-
-    def component(self):
-# Didn't work ... tests failed
-##         # Import here, so that we only have a soft dependence on
-##         # zope.app.module
-##         from zope.app.module import resolve
-        factory = resolve(self.factoryName, self)
-        return factory
-    component = property(component)
-
-    def getRegistry(self):
-        return zapi.getSiteManager(self)
-
-
-class UtilityRegistration(registration.ComponentRegistration):
-    """Utility component registration for persistent components
-
-    This registration configures persistent components in packages to
-    be utilities.
-    """
-    zope.interface.implements(interfaces.IUtilityRegistration)
-
-    def __init__(self, name, provided, component, permission=None):
-        super(UtilityRegistration, self).__init__(component, permission)
-        self.name = name
-        self.provided = provided
-
-    def getRegistry(self):
-        return zapi.getSiteManager(self)
 
 
 def threadSiteSubscriber(ob, event):

@@ -22,6 +22,7 @@ import zope.event
 
 from zope import interface, schema
 import zope.component.interfaces
+import zope.deprecation
 import zope.app.component.interfaces.registration
 import zope.schema.vocabulary
 from zope.app.i18n import ZopeMessageFactory as _
@@ -213,7 +214,7 @@ class IRegisterable(zope.app.container.interfaces.IContained):
 
     All registerable components need to implement this interface. 
     """
-    zope.app.container.constraints.containers(IRegisterableContainer)
+    #zope.app.container.constraints.containers(IRegisterableContainer)
 
 
 class IRegisterableContainerContaining(
@@ -548,6 +549,7 @@ class RegistrationManager(BTreeContainer):
     """
     implements(interfaces.IRegistrationManager)
 
+    zope.deprecation.deprecate("Will go away in Zope 3.5")
     def addRegistration(self, reg):
         "See IWriteContainer"
         key = self._chooseName('', reg)
@@ -569,8 +571,6 @@ class RegistrationManager(BTreeContainer):
 
 class RegisterableContainer(object):
     """Mix-in to implement `IRegisterableContainer`"""
-    implements(interfaces.IRegisterableContainer,
-               interfaces.IRegisterableContainerContaining)
 
     def __init__(self):
         super(RegisterableContainer, self).__init__()
@@ -598,3 +598,35 @@ class RegistrationManagerNamespace:
         if name == '':
             return self.context
         raise TraversalError(self.context, name)
+
+
+
+class AdapterRegistration(ComponentRegistration):
+    """Adapter component registration for persistent components
+
+    This registration configures persistent components in packages to
+    be adapters.
+    """
+    zope.interface.implements(IAdapterRegistration)
+
+    def __init__(self, required, provided, factoryName,
+                 name='', permission=None):
+        if not isinstance(required, (tuple, list)):
+            self.required = required
+            self.with = ()
+        else:
+            self.required = required[0]
+            self.with = tuple(required[1:])
+        self.provided = provided
+        self.name = name
+        self.factoryName = factoryName
+        self.permission = permission
+
+    def component(self):
+        factory = resolve(self.factoryName, self)
+        return factory
+    component = property(component)
+
+    def getRegistry(self):
+        return zapi.getSiteManager(self)
+

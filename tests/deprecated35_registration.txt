@@ -247,29 +247,6 @@ discussed.
                              ---------------
 
 
-The ++registrations++ traversal namespace
------------------------------------------
-
-To make the registration manager easier accessible via a traversal path, a
-special traversal namespace has been implemented. But first we have to
-register the traversal namespace:
-
-  >>> from zope.app.traversing.interfaces import ITraversable
-  >>> from zope.app.component.registration import RegistrationManagerNamespace
-  >>> from zope.app.testing import ztapi
-  >>> ztapi.provideAdapter(
-  ...     interfaces.registration.IRegisterableContainer,
-  ...     ITraversable,
-  ...     RegistrationManagerNamespace,
-  ...     'registrations')
-
-Now we can use the namespace during traversal:
-
-  >>> from zope.app.traversing.api import traverse
-  >>> traverse(registerables, '++registrations++') is regManager
-  True
-
-
 The Component Registration
 --------------------------
 

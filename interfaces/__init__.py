@@ -76,8 +76,34 @@ class ILocalSiteManager(zope.component.interfaces.IComponents):
     the global site manager which contains file based utilities and adapters.
     """
 
+    subs = zope.interface.Attribute(
+        "A collection of registries that describe the next level "
+        "of the registry tree. They are the children of this "
+        "registry node. This attribute should never be "
+        "manipulated manually. Use `addSub()` and `removeSub()` "
+        "instead.")
+
+    def addSub(sub):
+        """Add a new sub-registry to the node.
+
+        Important: This method should *not* be used manually. It is
+        automatically called by `setNext()`. To add a new registry to the
+        tree, use `sub.setNext(self, self.base)` instead!
+        """
+
+    def removeSub(sub):
+        """Remove a sub-registry to the node.
+
+        Important: This method should *not* be used manually. It is
+        automatically called by `setNext()`. To remove a registry from the
+        tree, use `sub.setNext(None)` instead!
+        """
+    
+
 class ISiteManagementFolder(zope.app.container.interfaces.IContainer):
     """Component and component registration containers."""
 
-    zope.app.container.constraints.containers(ILocalSiteManager)
+    # XXX we need to figure out how to constrain this or, alternatively,
+    # just use regular folders, which is probably the beter choice.
+    # zope.app.container.constraints.containers(ILocalSiteManager)
 

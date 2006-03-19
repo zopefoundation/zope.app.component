@@ -27,6 +27,7 @@ from zope.security.proxy import removeSecurityProxy
 
 from zope.app.component import registration
 from zope.app.component import interfaces
+from zope.app import zapi
 
 
 class LocalAdapterRegistry(zope.interface.adapter.AdapterRegistry,
@@ -135,3 +136,80 @@ class AdapterRegistration(registration.ComponentRegistration):
                 'component=%r, ' %self.component +
                 'permission=%r' %self.permission +
                 '>')
+
+class LocalUtilityRegistry(LocalAdapterRegistry):
+
+    zope.deprecation.deprecate(
+        "Will go away in Zope 3.5.  Use registerUtility instead."
+        )
+    def register(self, registration):
+        """See zope.app.component.interfaces.registration.IRegistry"""
+        self._registrations += (registration,)
+
+        zope.interface.adapter.AdapterRegistry.register(
+            self,
+            (),
+            registration.provided, registration.name,
+            registration.component,
+            )
+
+        # XXX need test that this second part happens
+        zope.interface.adapter.AdapterRegistry.subscribe(
+            self,
+            (),
+            registration.provided,
+            registration.component,
+            )
+
+    zope.deprecation.deprecate(
+        "Will go away in Zope 3.5.  Use unregisterUtility instead."
+        )
+    def unregister(self, registration):
+        """See zope.app.component.interfaces.registration.IRegistry"""
+        self._registrations = tuple([reg for reg in self._registrations
+                                     if reg is not registration])
+
+        zope.interface.adapter.AdapterRegistry.unregister(
+            self,
+            (),
+            registration.provided, registration.name,
+            registration.component,
+            )
+
+
+        # XXX need test that this second part happens
+        zope.interface.adapter.AdapterRegistry.unsubscribe(
+            self,
+            (),
+            registration.provided,
+            registration.component,
+            )
+
+    zope.deprecation.deprecate(
+        "Will go away in Zope 3.5.  "
+        "Use registeredUtilities on site manager instead."
+        )
+    @zope.deprecation.deprecate("Will go away in Zope 3.5")
+    def registered(self, registration):
+        raise TypeError("We never supported adapters")
+
+    @zope.deprecation.deprecate("Will go away in Zope 3.5")
+    def registrations(self):
+        raise TypeError("We never supported adapters")
+
+
+class UtilityRegistration(registration.ComponentRegistration):
+    """Utility component registration for persistent components
+
+    This registration configures persistent components in packages to
+    be utilities.
+    """
+    zope.interface.implements(interfaces.IUtilityRegistration)
+
+    def __init__(self, name, provided, component, permission=None):
+        super(UtilityRegistration, self).__init__(component, permission)
+        self.name = name
+        self.provided = provided
+
+    def getRegistry(self):
+        return zapi.getSiteManager(self)
