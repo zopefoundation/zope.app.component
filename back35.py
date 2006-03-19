@@ -549,7 +549,7 @@ class RegistrationManager(BTreeContainer):
     """
     implements(interfaces.IRegistrationManager)
 
-    zope.deprecation.deprecate("Will go away in Zope 3.5")
+    @zope.deprecation.deprecate("Will go away in Zope 3.5")
     def addRegistration(self, reg):
         "See IWriteContainer"
         key = self._chooseName('', reg)
