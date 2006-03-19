@@ -19,7 +19,7 @@ $Id$
 """
 __docformat__ = "reStructuredText"
 
-from zope.interface import implements, Interface
+from zope.interface import implements, classProvides, Interface
 from zope.interface.interfaces import IInterface
 from zope.interface.verify import verifyObject
 from zope.schema.interfaces import IVocabulary, IVocabularyTokenized
@@ -27,9 +27,10 @@ from zope.schema.interfaces import ITokenizedTerm
 
 from zope.app import zapi
 from zope.app.i18n import ZopeMessageFactory as _
+from zope.app.schema.interfaces import IVocabularyFactory
 from zope.app.interface.vocabulary import ObjectInterfacesVocabulary
 
-from interfaces import IUtilityRegistration
+from zope.app.component.interfaces import IUtilityRegistration
 
 
 class UtilityTerm(object):
@@ -93,7 +94,7 @@ class UtilityVocabulary(object):
     We are now ready to create a vocabulary that we can use; in our case
     everything is global, so the context is None.
 
-    >>> vocab = UtilityVocabulary(None, IObject)
+    >>> vocab = UtilityVocabulary(None, interface=IObject)
     >>> import pprint
     >>> pprint.pprint(vocab._terms.items())
     [(u'object1', <UtilityTerm object1, instance of Object>),
@@ -159,7 +160,8 @@ class UtilityVocabulary(object):
 
     >>> ztapi.provideUtility(IInterface, IObject,
     ...                      'zope.app.utility.vocabulary.IObject')
-    >>> vocab = UtilityVocabulary(None, 'zope.app.utility.vocabulary.IObject')
+    >>> vocab = UtilityVocabulary(
+    ...     None, interface='zope.app.utility.vocabulary.IObject')
     >>> pprint.pprint(vocab._terms.items())
     [(u'object1', <UtilityTerm object1, instance of Object>),
      (u'object2', <UtilityTerm object2, instance of Object>),
@@ -170,26 +172,36 @@ class UtilityVocabulary(object):
     case the UtilityTerm's value is not the utility itself but the name of the
     utility.
 
-    >>> vocab = UtilityVocabulary(None, IObject, nameOnly=True)
+    >>> vocab = UtilityVocabulary(None, interface=IObject, nameOnly=True)
     >>> pprint.pprint([term.value for term in vocab])
     [u'object1', u'object2', u'object3']
     """
-
     implements(IVocabularyTokenized)
+    classProvides(IVocabularyFactory)
 
-    def __init__(self, context, interface, nameOnly=False):
-        if nameOnly is not False:
-            nameOnly = True
-        if isinstance(interface, (str, unicode)):
-            interface = zapi.getUtility(IInterface, interface)
-        self.interface = interface
-        utils = zapi.getUtilitiesFor(interface, context)
-        self._terms = dict([(name, UtilityTerm(nameOnly and name or util, name))
-                            for name, util in utils])
+    # override these in subclasses
+    interface = Interface
+    nameOnly = False
+
+    def __init__(self, context, **kw):
+        if kw:
+            # BBB 2006/02/24, to be removed after 12 months
+            # the 'interface' and 'nameOnly' parameters are supposed to be
+            # set as class-level attributes in custom subclasses now.
+            self.nameOnly = bool(kw.get('nameOnly', False))
+            interface = kw.get('interface', Interface)
+            if isinstance(interface, (str, unicode)):
+                interface = zapi.getUtility(IInterface, interface)
+            self.interface = interface
+
+        utils = zapi.getUtilitiesFor(self.interface, context)
+        self._terms = dict(
+            (name, UtilityTerm(self.nameOnly and name or util, name))
+            for name, util in utils)
 
     def __contains__(self, value):
         """See zope.schema.interfaces.IBaseVocabulary"""
-        return value in [term.value for term in self._terms.values()]
+        return value in (term.value for term in self._terms.values())
 
     def getTerm(self, value):
         """See zope.schema.interfaces.IBaseVocabulary"""
@@ -217,8 +229,13 @@ class UtilityVocabulary(object):
         """See zope.schema.interfaces.IIterableVocabulary"""
         return len(self._terms)
 
+class InterfacesVocabulary(UtilityVocabulary):
+    classProvides(IVocabularyFactory)
+    interface = IInterface
+
 
 class UtilityComponentInterfacesVocabulary(ObjectInterfacesVocabulary):
+    classProvides(IVocabularyFactory)
 
     def __init__(self, context):
         if IUtilityRegistration.providedBy(context):

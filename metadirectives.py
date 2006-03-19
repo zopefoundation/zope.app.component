@@ -317,6 +317,7 @@ class IUtilityDirective(IBasicComponentInformation):
         required=False,
         )
 
+# BBB 2006/02/24, to be removed after 12 months
 class IFactoryDirective(zope.interface.Interface):
     """Define a factory"""
 

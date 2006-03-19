@@ -267,7 +267,22 @@ def utility(_context, provides=None, component=None, factory=None,
         args = (provides.__module__ + '.' + provides.getName(), provides)
                )
 
+# BBB 2006/02/24, to be removed after 12 months
 def factory(_context, component, id, title=None, description=None):
+    try:
+        dottedname = component.__module__ + "." + component.__name__
+    except AttributeError:
+        dottedname = '...'
+    warnings.warn_explicit(
+        "The 'factory' directive has been deprecated and will be "
+        "removed in Zope 3.5.  Use the 'utility' directive instead:\n"
+        '  <utility\n'
+        '      provides="zope.component.interfaces.IFactory"\n'
+        '      component="%s"\n'
+        '      name="%s"\n'
+        '      />' % (dottedname, id),
+        DeprecationWarning, _context.info.file, _context.info.line)
+    
     if title is not None:
         component.title = title
 

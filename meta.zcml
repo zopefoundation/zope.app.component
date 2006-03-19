@@ -29,6 +29,7 @@
         handler="zope.app.component.metaconfigure.utility"
         />
 
+    <!-- BBB 2006/02/24, to be removed after 12 months -->
     <meta:directive
         name="factory"
         schema=".metadirectives.IFactoryDirective"
@@ -63,7 +64,7 @@
     <meta:complexDirective
         name="class"
         schema=".metadirectives.IClassDirective"
-        handler=".contentdirective.ContentDirective"
+        handler=".contentdirective.ClassDirective"
         >
 
       <meta:subdirective
@@ -88,6 +89,7 @@
 
     </meta:complexDirective>
 
+    <!-- BBB 2006/02/24, to be removed after 12 months -->
     <meta:complexDirective
         name="content"
         schema=".metadirectives.IClassDirective"
