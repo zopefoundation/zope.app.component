@@ -29,11 +29,13 @@ def setUp(test):
     setup.setUpTraversal()
 
 def test_suite():
-    return unittest.TestSuite((
+    suite = unittest.TestSuite((
         doctest.DocFileSuite('deprecated35_statusproperty.txt'),
         doctest.DocFileSuite('deprecated35_registration.txt',
                              setUp=setUp, tearDown=placelesssetup.tearDown),
         ))
+    suite.level = 2
+    return suite
 
 if __name__ == "__main__":
     unittest.main(defaultTest='test_suite')
