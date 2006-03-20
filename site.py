@@ -106,12 +106,12 @@ class SiteManagerContainer(Contained):
         if interfaces.ISite.providedBy(self):
             raise TypeError("Already a site")
 
-        if zope.component.interfaces.ISiteManager.providedBy(sm):
+        if zope.component.interfaces.IComponentLookup.providedBy(sm):
             self._sm = sm
             sm.__name__ = '++etc++site'
             sm.__parent__ = self
         else:
-            raise ValueError('setSiteManager requires an ISiteManager')
+            raise ValueError('setSiteManager requires an IComponentLookup')
 
         zope.interface.directlyProvides(
             self, interfaces.ISite,
@@ -343,7 +343,7 @@ addCleanUp(clearSite)
 
 
 def SiteManagerAdapter(ob):
-    """An adapter from ILocation to ISiteManager.
+    """An adapter from ILocation to IComponentLookup.
 
     The ILocation is interpreted flexibly, we just check for
     ``__parent__``.

@@ -61,7 +61,7 @@
         interface="zope.app.container.interfaces.IReadContainer" />
     <require
         permission="zope.ManageSite"
-        interface="zope.component.interfaces.ISiteManager
+        interface="zope.component.interfaces.IComponentLookup
                    zope.app.container.interfaces.IWriteContainer" />
   </content>
 
@@ -89,7 +89,7 @@
   </content>
   
   <adapter 
-      for="zope.component.interfaces.ISiteManager"
+      for="zope.component.interfaces.IComponentLookup"
       provides="zope.app.filerepresentation.interfaces.IDirectoryFactory"
       factory=".site.SMFolderFactory"
       permission="zope.ManageContent"
@@ -97,7 +97,7 @@
 
   <adapter
       for="zope.interface.Interface" 
-      provides="zope.component.interfaces.ISiteManager"
+      provides="zope.component.interfaces.IComponentLookup"
       factory=".site.SiteManagerAdapter"
       />
 

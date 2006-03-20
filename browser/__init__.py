@@ -15,7 +15,6 @@
 
 $Id$
 """
-from zope.component.interfaces import ISiteManager
 from zope.security.proxy import removeSecurityProxy
 from zope.app import zapi
 from zope.app.container.browser.adding import Adding

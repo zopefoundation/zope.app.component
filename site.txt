@@ -64,7 +64,7 @@ If one tries to set a bogus site manager, a `ValueError` will be raised:
    >>> myfolder2.setSiteManager(object)
    Traceback (most recent call last):
    ...
-   ValueError: setSiteManager requires an ISiteManager
+   ValueError: setSiteManager requires an IComponentLookup
 
 Also, if the possible site has been changed to a site already, a `TypeError`
 is raised, when one attempts to add a new site manager:
@@ -79,12 +79,12 @@ location:
 
   >>> myfolder['mysubfolder'] = folder.Folder()
   >>> import zope.component
-  >>> zope.component.interfaces.ISiteManager(myfolder['mysubfolder']) is sm
+  >>> zope.component.interfaces.IComponentLookup(myfolder['mysubfolder']) is sm
   True
 
 If the location passed is a site, the site manager of that site is returned:
 
-  >>> zope.component.interfaces.ISiteManager(myfolder) is sm
+  >>> zope.component.interfaces.IComponentLookup(myfolder) is sm
   True
 
 During traversal, 
