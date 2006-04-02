@@ -108,12 +108,8 @@ First we rename a single utility :
   >>> view.update()
   u'Tools successfully renamed.'
   >>> current_tools = view.getTools()
-  >>> current_tools[0]['instances'][0]['name']
-  'JohnDoe'
-  >>> current_tools[0]['instances'][1]['name']
-  'foo2'
-  >>> current_tools[0]['instances'][2]['name']
-  u''
+  >>> sorted([i['name'] for i in current_tools[0]['instances']])
+  [u'', 'JohnDoe', 'foo2']
 
   >>> request.form['old_names']=['JohnDoe', 'foo2']
   >>> request.form['new_names']=['foo1', 'Tres']
@@ -121,12 +117,8 @@ First we rename a single utility :
   >>> view.update()
   u'Tools successfully renamed.'
   >>> current_tools = view.getTools()
-  >>> current_tools[0]['instances'][0]['name']
-  'foo1'
-  >>> current_tools[0]['instances'][1]['name']
-  'Tres'
-  >>> current_tools[0]['instances'][2]['name']
-  u''
+  >>> sorted([i['name'] for i in current_tools[0]['instances']])
+  [u'', 'Tres', 'foo1']
 
 Deleting utilities
 ------------------
