@@ -94,7 +94,7 @@ inserting it in our folder hiearchy:
   ...         return "%s('%s')" %(self.__class__.__name__, self.id)  
 
   >>> gutil = MyUtility('global') 
-  >>> gsm.provideUtility(IMyUtility, gutil, 'myutil')
+  >>> gsm.registerUtility(gutil, IMyUtility, 'myutil')
 
   >>> util1 = setup.addUtility(folder1_sm, 'myutil', IMyUtility, 
   ...                          MyUtility('one'))
