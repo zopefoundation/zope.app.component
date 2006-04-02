@@ -41,26 +41,24 @@ zope.deferredimport.deprecatedFrom(
     'IRegistered',
     )
 
-
-class IRegistrationEvent(zope.app.event.interfaces.IObjectEvent):
-    """An event that involves a registration"""
-
-class IRegistrationActivatedEvent(IRegistrationEvent):
-    """This event is fired, when a component's registration is activated."""
-
-class IRegistrationDeactivatedEvent(IRegistrationEvent):
-    """This event is fired, when a component's registration is deactivated."""
-
+zope.deferredimport.deprecated(
+    "Registration events are not defined in zope.component.interfaces. "
+    "Importing them from zope.app.component.registration will be disallowed "
+    "in Zope 3.5",
+    IRegistrationEvent = 'zope.component.interfaces:IRegistrationEvent',
+    IRegistrationActivatedEvent = 'zope.component.interfaces:IRegistered',
+    IRegistrationDeactivatedEvent = 'zope.component.interfaces:IUnregistered',
+    )
 
 class IComponent(zope.schema.interfaces.IField):
-    """A component path
+    """A component 
 
     This is just the interface for the ComponentPath field below.  We'll use
     this as the basis for looking up an appropriate widget.
     """
 
 class Component(schema.Field):
-    """A component path
+    """A component 
 
     Values of the field are absolute unicode path strings that can be
     traversed to get an object.
