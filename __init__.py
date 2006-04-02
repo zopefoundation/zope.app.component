@@ -17,6 +17,7 @@ $Id$
 """
 __docformat__ = "reStructuredText"
 import zope.component
+import zope.app.component.interfaces
 from zope.app import zapi
 
 # BBB: Will go away in 3.3.
@@ -42,11 +43,13 @@ def queryNextSiteManager(context, default=None):
     `default` is returned.
     """
     sm = zapi.getSiteManager(context)
-    if zope.component.globalregistry.IGlobalSiteManager.providedBy(sm):
+    if not zope.app.component.interfaces.ILocalSiteManager.providedBy(sm):
         return default
-    if sm.next is None:
+
+    bases = sm.__bases__
+    if not bases:
         return zapi.getGlobalSiteManager()
-    return sm.next
+    return bases[0]
 
 
 def getNextUtility(context, interface, name=''):
