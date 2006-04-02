@@ -37,22 +37,13 @@ zope.deferredimport.deprecatedFrom(
     'RegistrationManagerNamespace',
     )
 
-class RegistrationEvent(objectevent.ObjectEvent):
-    """An event that is created when a registration-related activity occurred.
-    """
-    implements(zope.app.component.interfaces.registration.IRegistrationEvent)
-
-class RegistrationActivatedEvent(RegistrationEvent):
-    """An event that is created when a registration is activated."""
-    implements(
-        zope.app.component.interfaces.registration.IRegistrationActivatedEvent,
-        )
-
-class RegistrationDeactivatedEvent(RegistrationEvent):
-    """An event that is created when a registration is deactivated."""
-    implements(
-      zope.app.component.interfaces.registration.IRegistrationDeactivatedEvent,
-      )
-
+zope.deferredimport.deprecated(
+    "Registration events are now defined in zope.component.interfaces. "
+    "Importing them from zope.app.component.registration will be disallowed "
+    "in Zope 3.5",
+    RegistrationEvent = 'zope.component.interfaces:RegistrationEvent',
+    RegistrationActivatedEvent = 'zope.component.interfaces:Registered',
+    RegistrationDeactivatedEvent = 'zope.component.interfaces:Unregistered',
+    )
 
 
