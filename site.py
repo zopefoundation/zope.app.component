@@ -314,11 +314,9 @@ zope.deferredimport.deprecatedFrom(
     "Local registration is now much simpler.  The old baroque APIs "
     "will go away in Zope 3.5.  See the new component-registration APIs "
     "defined in zope.component, especially IComponentRegistry.",
-    'zope.app.component.adapter',
+    'zope.app.component.back35',
     'LocalAdapterRegistry', 'LocalUtilityRegistry', 'UtilityRegistration',
     )
-
-
 
 def threadSiteSubscriber(ob, event):
     """A subscriber to BeforeTraverseEvent
