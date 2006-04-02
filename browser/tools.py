@@ -158,20 +158,23 @@ class SiteManagementView(browser.ComponentAdding):
 
     def getToolInstances(self, tool):
         """Find every registered utility for a given tool configuration."""
-        regManager = self.getSiteManagementFolder(tool).registrationManager
+        sm = zapi.getSiteManager(self.context)
         return [
             {'name': reg.name,
              'url': zapi.absoluteURL(reg.component, self.request),
              'rename': tool is self.activeTool and reg.name in self.renameList,
-             'renameNew': tool is self.activeTool and \
-                          reg.name in self.renameList and \
-                          self.newNames and \
-                          self.newNames[self.renameList.index(reg.name)],
-             'active': reg.status == u'Active',
+             'renameNew': (tool is self.activeTool
+                           and 
+                           reg.name in self.renameList
+                           and 
+                           self.newNames
+                           and 
+                           self.newNames[self.renameList.index(reg.name)]
+                           ),
             }
-            for reg in regManager.values()
-            if (zapi.isinstance(reg, site.UtilityRegistration) and
-                reg.provided.isOrExtends(tool.interface))]
+            for reg in sm.registeredUtilities()
+            if reg.provided.isOrExtends(tool.interface)
+            ]
 
     def getTools(self):
         """Return a list of all tools"""
@@ -180,7 +183,12 @@ class SiteManagementView(browser.ComponentAdding):
                     'description': tool.description,
                     'instances': self.getToolInstances(tool),
                     'add': tool is self.activeTool and self.addTool,
-                    'addname': tool is self.activeTool and self.addTool and self.addName,
+                    'addname': (tool is self.activeTool
+                                and
+                                self.addTool
+                                and
+                                self.addName
+                                ),
                     'rename': tool is self.activeTool and self.renameList,
                     'message': tool is self.activeTool and self.msg,
                     }
@@ -216,35 +224,46 @@ class SiteManagementView(browser.ComponentAdding):
 
     def delete(self):
         tool = self.activeTool
-        regManager = self.context[tool.folder].registrationManager
+        sm = self.context
         names = self.request.form['selected']
-        for reg in list(regManager.values()):
+        for reg in list(sm.registeredUtilities()):
             if reg.provided.isOrExtends(tool.interface) and reg.name in names:
+                sm.unregisterUtility(
+                    reg.component,
+                    reg.provided,
+                    reg.name,
+                    )
                 component = reg.component
-                reg.status = interfaces.registration.InactiveStatus
-                del regManager[zapi.name(reg)]
                 del zapi.getParent(component)[zapi.name(component)]
 
     def rename(self):
+        sm = self.context
         tool = self.activeTool
-        regManager = self.context[tool.folder].registrationManager
         new_names = self.request['new_names']
         old_names = self.request['old_names']
         msg=''
-        for reg in regManager.values():
-            if reg.provided.isOrExtends(tool.interface) and \
-                   reg.name in old_names:
+        for reg in list(sm.registeredUtilities()):
+            if (reg.provided.isOrExtends(tool.interface) and 
+                reg.name in old_names
+                ):
                 old_name=reg.name
                 new_name = new_names[old_names.index(old_name)]
-                if new_name!=reg.name:
+                if new_name != reg.name:
                     if self.toolExists(self.activeTool.interface,new_name):
                         if not msg:
-                            msg=_(u'The given tool name is already being used.')
+                            msg=_(
+                                u'The given tool name is already being used.')
                     else:
-                        orig_status = reg.status
-                        reg.status = interfaces.registration.InactiveStatus
-                        reg.name = new_names[old_names.index(old_name)]
-                        reg.status = orig_status
+                        sm.unregisterUtility(
+                            reg.component,
+                            reg.provided,
+                            reg.name,
+                            )
+                        sm.registerUtility(
+                            reg.component,
+                            reg.provided,
+                            new_name,
+                            )
                         self.renameList.remove(old_name)
                         self.newNames.remove(new_name)
                 else:
@@ -270,10 +289,8 @@ class SiteManagementView(browser.ComponentAdding):
 
         # Add registration
         name = not self.activeTool.unique and self.contentName or u''
-        registration = site.UtilityRegistration(
-            name, self.activeTool.interface, util)
-        self.context.registrationManager.addRegistration(registration)
-        registration.status = interfaces.registration.ActiveStatus
+
+        sm.registerUtility(util, self.activeTool.interface, name)
 
         self.context = sm
         return util
