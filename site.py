@@ -36,7 +36,6 @@ from zope.component.interfaces import ComponentLookupError
 from zope.security.proxy import removeSecurityProxy
 
 from zope.app import zapi
-from zope.app.component import adapter
 from zope.app.component import interfaces
 from zope.app.component import registration
 from zope.app.component.hooks import setSite
