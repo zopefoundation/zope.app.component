@@ -373,8 +373,7 @@ class RegistrationStatusProperty(object):
 
 class SimpleRegistration(Persistent, Contained):
     """Registration objects that just contain registration data"""
-    implements(interfaces.IRegistration,
-               interfaces.IRegistrationManagerContained)
+    implements(IRegistration, IRegistrationManagerContained)
 
     # See interfaces.IRegistration
     status = RegistrationStatusProperty()
@@ -497,7 +496,7 @@ class ComponentRegistration(BBBComponentRegistration,
     Subclasses should define a getInterface() method returning the interface
     of the component.
     """
-    implements(interfaces.IComponentRegistration)
+    implements(IComponentRegistration)
 
     def __init__(self, component, permission=None):
         super(ComponentRegistration, self).__init__(component, permission)
@@ -529,8 +528,8 @@ class Registered:
     This class is the only place that knows how 'Registered'
     data is represented.
     """
-    implements(interfaces.IRegistered)
-    __used_for__ = interfaces.IRegisterable
+    implements(IRegistered)
+    __used_for__ = IRegisterable
 
     def __init__(self, registerable):
         self.registerable = registerable
@@ -547,7 +546,7 @@ class RegistrationManager(BTreeContainer):
 
     Manages registrations within a package.
     """
-    implements(interfaces.IRegistrationManager)
+    implements(IRegistrationManager)
 
     @zope.deprecation.deprecate("Will go away in Zope 3.5")
     def addRegistration(self, reg):
@@ -589,7 +588,7 @@ class RegisterableContainer(object):
 class RegistrationManagerNamespace:
     """Used to traverse to a Registration Manager from a
        Registerable Container."""
-    __used_for__ = interfaces.IRegisterableContainer
+    __used_for__ = IRegisterableContainer
 
     def __init__(self, ob, request=None):
         self.context = ob.registrationManager
