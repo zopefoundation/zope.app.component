@@ -359,16 +359,14 @@ class RegistrationStatusProperty(object):
             if not registry.registered(registration):
                 registry.register(registration)
                 zope.event.notify(
-                    zope.app.component.registration.RegistrationActivatedEvent(
-                        registration)
+                    zope.component.interfaces.Registered(registration)
                     )
 
         elif value == interfaces.InactiveStatus:
             if registry.registered(registration):
                 registry.unregister(registration)
                 zope.event.notify(
-                  zope.app.component.registration.RegistrationDeactivatedEvent(
-                    registration)
+                  zope.component.interfaces.Unregistered(registration)
                   )
         else:
             raise ValueError(value)

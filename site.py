@@ -33,6 +33,7 @@ import zope.deprecation
 import zope.deferredimport
 
 from zope.component.interfaces import ComponentLookupError
+import zope.component.interfaces
 from zope.security.proxy import removeSecurityProxy
 
 from zope.app import zapi
@@ -263,7 +264,8 @@ class LocalSiteManager(BTreeContainer,
         "defined in zope.component, especially IComponentRegistry.",
         )
     def registered(self, registration):
-        if interfaces.IUtilityRegistration.providedBy(registration):
+        if zope.component.interfaces.IUtilityRegistration.providedBy(
+            registration):
             return bool([
                 r for r in self.registeredUtilities()
                 if (
@@ -274,11 +276,43 @@ class LocalSiteManager(BTreeContainer,
                    r.name == registration.name
                 )
                 ])
-        elif interfaces.IAdapterRegistration.providedBy(registration):
+        elif zope.component.interfaces.IAdapterRegistration.providedBy(
+            registration):
             return bool([
                 r for r in self.registeredAdapters()
                 if (
-                   r.component == registration.component
+                   r.factory == registration.component
+                   and
+                   r.provided == registration.provided
+                   and
+                   r.name == registration.name
+                   and
+                   r.required == ((registration.required, )
+                                  + registration.with)
+                )
+                ])
+        elif (
+         zope.component.interfaces.ISubscriptionAdapterRegistration.providedBy(
+            registration)):
+            return bool([
+                r for r in self.registeredSubscriptionAdapters()
+                if (
+                   r.factory == registration.component
+                   and
+                   r.provided == registration.provided
+                   and
+                   r.name == registration.name
+                   and
+                   r.required == ((registration.required, )
+                                  + registration.with)
+                )
+                ])
+        elif zope.component.interfaces.IHandlerRegistration.providedBy(
+            registration):
+            return bool([
+                r for r in self.registeredHandlers()
+                if (
+                   r.factory == registration.component
                    and
                    r.provided == registration.provided
                    and
