@@ -17,12 +17,11 @@ $Id$
 """
 import zope.interface
 import zope.event
+from zope.exceptions.interfaces import UserError
 
 from zope.app import zapi
 from zope.app.component import site, interfaces, browser
 from zope.app.event import objectevent
-from zope.app.exception.interfaces import UserError
-
 from zope.app.i18n import ZopeMessageFactory as _
 
 

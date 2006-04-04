@@ -15,6 +15,7 @@
 
 $Id$
 """
+from zope.exceptions.interfaces import UserError
 from zope.security.proxy import removeSecurityProxy
 from zope.app import zapi
 from zope.app.container.browser.adding import Adding
@@ -156,7 +157,7 @@ class MakeSite(BrowserView):
 
         """
         if ISite.providedBy(self.context):
-            raise zapi.UserError('This is already a site')
+            raise UserError('This is already a site')
 
         # We don't want to store security proxies (we can't,
         # actually), so we have to remove proxies here before passing
