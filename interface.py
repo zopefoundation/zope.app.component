@@ -99,7 +99,7 @@ def provideInterface(id, interface, iface_type=None, info=''):
         iface_type = IInterface
         
     gsm = zapi.getGlobalSiteManager()
-    gsm.provideUtility(iface_type, interface, id, info)
+    gsm.registerUtility(interface, iface_type, id, info)
 
 
 def getInterface(context, id):
