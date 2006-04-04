@@ -49,9 +49,9 @@ def configfile(s):
       </configure>
       """ % s)
 
-class TestContentDirective(PlacelessSetup, unittest.TestCase):
+class TestClassDirective(PlacelessSetup, unittest.TestCase):
     def setUp(self):
-        super(TestContentDirective, self).setUp()
+        super(TestClassDirective, self).setUp()
         XMLConfig('meta.zcml', zope.app.component)()
         XMLConfig('meta.zcml', zope.app.security)()
 
@@ -62,8 +62,8 @@ class TestContentDirective(PlacelessSetup, unittest.TestCase):
 
     def testEmptyDirective(self):
         f = configfile("""
-<content class="zope.app.component.tests.exampleclass.ExampleClass">
-</content>
+<class class="zope.app.component.tests.exampleclass.ExampleClass">
+</class>
                        """)
         xmlconfig(f)
 
@@ -73,9 +73,9 @@ class TestContentDirective(PlacelessSetup, unittest.TestCase):
             "zope.app.component.tests.exampleclass.IExample"), None)
 
         f = configfile("""
-<content class="zope.app.component.tests.exampleclass.ExampleClass">
+<class class="zope.app.component.tests.exampleclass.ExampleClass">
   <implements interface="zope.app.component.tests.exampleclass.IExample" />
-</content>
+</class>
                        """)
         xmlconfig(f)
         self.failUnless(IExample.implementedBy(ExampleClass))
@@ -91,12 +91,12 @@ class TestContentDirective(PlacelessSetup, unittest.TestCase):
             "zope.app.component.tests.exampleclass.IExample2"), None)
 
         f = configfile("""
-<content class="zope.app.component.tests.exampleclass.ExampleClass">
+<class class="zope.app.component.tests.exampleclass.ExampleClass">
   <implements interface="
            zope.app.component.tests.exampleclass.IExample
            zope.app.component.tests.exampleclass.IExample2
                        " />
-</content>
+</class>
                        """)
         xmlconfig(f)
         self.failUnless(IExample.implementedBy(ExampleClass))
@@ -111,26 +111,26 @@ class TestContentDirective(PlacelessSetup, unittest.TestCase):
     def testRequire(self):
         f = configfile("""
 <permission id="zope.View" title="Zope view permission" />
-<content class="zope.app.component.tests.exampleclass.ExampleClass">
+<class class="zope.app.component.tests.exampleclass.ExampleClass">
     <require permission="zope.View"
                       attributes="anAttribute anotherAttribute" />
-</content>
+</class>
                        """)
         xmlconfig(f)
 
     def testAllow(self):
         f = configfile("""
-<content class="zope.app.component.tests.exampleclass.ExampleClass">
+<class class="zope.app.component.tests.exampleclass.ExampleClass">
     <allow attributes="anAttribute anotherAttribute" />
-</content>
+</class>
                        """)
         xmlconfig(f)
 
     def testMimic(self):
         f = configfile("""
-<content class="zope.app.component.tests.exampleclass.ExampleClass">
+<class class="zope.app.component.tests.exampleclass.ExampleClass">
     <require like_class="zope.app.component.tests.exampleclass.ExampleClass" />
-</content>
+</class>
                        """)
         xmlconfig(f)
 
@@ -145,13 +145,13 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
         f = configfile("""
 <permission id="zope.Foo" title="Zope Foo Permission" />
 
-<content class="zope.app.component.tests.exampleclass.ExampleClass">
+<class class="zope.app.component.tests.exampleclass.ExampleClass">
   <factory
       id="test.Example"
       title="Example content"
       description="Example description"
       />
-</content>
+</class>
                        """)
         xmlconfig(f)
         factory = zapi.getUtility(IFactory, 'test.Example')
@@ -162,12 +162,12 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
         f = configfile("""
 <permission id="zope.Foo" title="Zope Foo Permission" />
 
-<content class="zope.app.component.tests.exampleclass.ExampleClass">
+<class class="zope.app.component.tests.exampleclass.ExampleClass">
     <factory
       title="Example content"
       description="Example description"
     />
-</content>
+</class>
                        """)
         xmlconfig(f)
         self.assertRaises(ComponentLookupError, zapi.getUtility, IFactory, 
@@ -181,13 +181,13 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
     def testFactoryPublicPermission(self):
 
         f = configfile("""
-<content class="zope.app.component.tests.exampleclass.ExampleClass">
+<class class="zope.app.component.tests.exampleclass.ExampleClass">
     <factory
       id="test.Example"
       title="Example content"
       description="Example description"
     />
-</content>
+</class>
             """)
         xmlconfig(f)
         factory = zapi.getUtility(IFactory, 'test.Example')
@@ -197,7 +197,7 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
 def test_suite():
     suite = unittest.TestSuite()
     loader = unittest.TestLoader()
-    suite.addTest(loader.loadTestsFromTestCase(TestContentDirective))
+    suite.addTest(loader.loadTestsFromTestCase(TestClassDirective))
     suite.addTest(loader.loadTestsFromTestCase(TestFactorySubdirective))
     return suite
 

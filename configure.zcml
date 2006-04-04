@@ -5,7 +5,7 @@
 
   <!-- Registration Framework -->
 
-  <content class=".registration.RegistrationManager">
+  <class class=".registration.RegistrationManager">
     <factory
         id="zope.app.component.RegistrationManager"
         title="Registration Manager" />
@@ -19,7 +19,7 @@
                    zope.app.container.interfaces.INameChooser" 
         attributes="addRegistration"
         />
-  </content>
+  </class>
 
   <!-- ++registrations++ namespace registrations -->
   <view
@@ -53,7 +53,7 @@
     <allow attributes="ISite" />
   </module>
 
-  <content class=".site.LocalSiteManager">
+  <class class=".site.LocalSiteManager">
     <implements
         interface="zope.app.annotation.interfaces.IAttributeAnnotatable" />
     <require
@@ -63,17 +63,17 @@
         permission="zope.ManageSite"
         interface="zope.component.interfaces.IComponentLookup
                    zope.app.container.interfaces.IWriteContainer" />
-  </content>
+  </class>
 
-  <content class=".site.UtilityRegistration">    
+  <class class=".site.UtilityRegistration">    
     <require
         permission="zope.ManageSite"
         interface=".interfaces.IUtilityRegistration"
         set_schema=".interfaces.IUtilityRegistration" 
         />
-  </content>
+  </class>
 
-  <content class=".site.SiteManagementFolder">
+  <class class=".site.SiteManagementFolder">
     <factory />
     <implements
         interface="zope.app.annotation.interfaces.IAttributeAnnotatable"
@@ -86,7 +86,7 @@
         interface="zope.app.container.interfaces.IWriteContainer"
         attributes="registrationManager" 
         />
-  </content>
+  </class>
   
   <adapter 
       for="zope.component.interfaces.IComponentLookup"
@@ -119,17 +119,22 @@
       />
 
 
-  <!-- Vocabularies -->
- 
-  <vocabulary
-      name="Interfaces"
-      factory=".vocabulary.UtilityVocabulary"
-      interface="zope.interface.interfaces.IInterface" />
+  <!-- the 'Interfaces' vocabulary below requires a registred IInterface -->
+  <interface
+      interface="zope.interface.interfaces.IInterface"
+      />
 
-  <vocabulary
-    name="Utility Component Interfaces"
-    factory=".vocabulary.UtilityComponentInterfacesVocabulary" />
+  <!-- Vocabularies -->
+
+  <utility
+      component=".vocabulary.InterfacesVocabulary"
+      name="Interfaces"
+      />
+
+  <utility
+      component=".vocabulary.UtilityComponentInterfacesVocabulary"
+      provides="zope.app.schema.interfaces.IVocabularyFactory"
+      name="Utility Component Interfaces"
+      />
 
 </configure>
-
-
