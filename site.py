@@ -34,12 +34,12 @@ import zope.component.interfaces
 import zope.traversing.api
 import zope.deprecation
 import zope.deferredimport
+import zope.location
 
 from zope.component.interfaces import ComponentLookupError
 from zope.traversing.interfaces import IContainmentRoot
 from zope.security.proxy import removeSecurityProxy
 
-import zope.app.location
 import zope.app.component.back35
 from zope.app import zapi
 from zope.app.component import interfaces
@@ -140,7 +140,7 @@ def _findNextSiteManager(site):
 
 class _LocalAdapterRegistry(
     zope.component.persistentregistry.PersistentAdapterRegistry,
-    zope.app.location.Location,
+    zope.location.Location,
     ):
     pass
 

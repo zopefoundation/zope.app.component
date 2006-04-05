@@ -339,7 +339,7 @@ Finally, we make a copy of `myfolder21` and add it as `myfolder11` to
   >>> sys.modules['zope.app.component.tests'].MyUtility = MyUtility
   >>> MyUtility.__module__ = 'zope.app.component.tests'
 
-  >>> from zope.app.location.pickling import locationCopy
+  >>> from zope.location.pickling import locationCopy
   >>> myfolder['myfolder11'] = locationCopy(myfolder2['myfolder21'])
 
   >>> myfolder11 = myfolder['myfolder11']
