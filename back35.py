@@ -15,34 +15,30 @@
 
 $Id$
 """
-
 from persistent import Persistent
 
 import zope.event
-
-from zope import interface, schema
 import zope.interface.adapter
 import zope.component.interfaces
 import zope.deprecation
-import zope.app.component.interfaces.registration
 import zope.schema.vocabulary
-from zope.app.i18n import ZopeMessageFactory as _
-import zope.app.container.interfaces
-import zope.app.container.constraints
+from zope import interface, schema
+from zope.traversing.interfaces import TraversalError
 from zope.interface import implements
 from zope.security.checker import InterfaceChecker, CheckerPublic
 from zope.security.proxy import Proxy, removeSecurityProxy
+
+import zope.app.component.registration
+import zope.app.component.interfaces.registration
+import zope.app.container.interfaces
+import zope.app.container.constraints
 from zope.app import zapi
+from zope.app.i18n import ZopeMessageFactory as _
 from zope.app.component.interfaces import registration as interfaces
 from zope.app.container.btree import BTreeContainer
 from zope.app.container.contained import Contained
 from zope.app.event import objectevent
-from zope.app.traversing.interfaces import TraversalError
 from zope.app.i18n import ZopeMessageFactory as _
-import zope.app.component.registration
-
-from zope.app import zapi
-
 
 InactiveStatus = _('Inactive')
 ActiveStatus = _('Active')

@@ -25,13 +25,13 @@
   <view
       name="registrations" type="*"
       for=".interfaces.registration.IRegisterableContainer"
-      provides="zope.app.traversing.interfaces.ITraversable"
+      provides="zope.traversing.interfaces.ITraversable"
       factory=".registration.RegistrationManagerNamespace"
       />
   <adapter
       name="registrations"
       for=".interfaces.registration.IRegisterableContainer"
-      provides="zope.app.traversing.interfaces.ITraversable"
+      provides="zope.traversing.interfaces.ITraversable"
       factory=".registration.RegistrationManagerNamespace"
       />
 

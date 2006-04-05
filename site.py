@@ -27,26 +27,28 @@ $Id$
 
 import zope.event
 import zope.interface
+import zope.component
 import zope.component.registry
 import zope.component.persistentregistry
+import zope.component.interfaces
+import zope.traversing.api
 import zope.deprecation
 import zope.deferredimport
 
 from zope.component.interfaces import ComponentLookupError
-import zope.component.interfaces
+from zope.traversing.interfaces import IContainmentRoot
 from zope.security.proxy import removeSecurityProxy
 
+import zope.app.location
+import zope.app.component.back35
 from zope.app import zapi
 from zope.app.component import interfaces
 from zope.app.component import registration
 from zope.app.component.hooks import setSite
 from zope.app.container.btree import BTreeContainer
 from zope.app.container.contained import Contained
-import zope.app.location
 from zope.app.event import objectevent
 from zope.app.filerepresentation.interfaces import IDirectoryFactory
-from zope.app.traversing.interfaces import IContainmentRoot
-import zope.app.component.back35
 
 ##############################################################################
 # from zope.app.module import resolve
@@ -126,7 +128,7 @@ def _findNextSiteManager(site):
             return None
 
         try:
-            site = zapi.getParent(site)
+            site = zope.traversing.api.getParent(site)
         except TypeError:
             # there was not enough context; probably run from a test
             return None
@@ -182,7 +184,7 @@ class LocalSiteManager(BTreeContainer,
         
         next = _findNextSiteManager(site)
         if next is None:
-            next = zapi.getGlobalSiteManager()
+            next = zope.component.getGlobalSiteManager()
         self.__bases__ = (next, )
 
         # Setup default site management folder
@@ -387,7 +389,7 @@ def SiteManagerAdapter(ob):
         if current is None:
             # It is not a location or has no parent, so we return the global
             # site manager
-            return zapi.getGlobalSiteManager()
+            return zope.component.getGlobalSiteManager()
 
 def changeSiteConfigurationAfterMove(site, event):
     """After a site is moved, its site manager links have to be updated."""

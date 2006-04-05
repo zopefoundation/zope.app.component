@@ -116,7 +116,7 @@ class MakeSite(BrowserView):
     def addSiteManager(self):
         """Convert a possible site to a site
 
-        >>> from zope.app.traversing.interfaces import IContainmentRoot
+        >>> from zope.traversing.interfaces import IContainmentRoot
         >>> from zope.interface import implements
 
         >>> class PossibleSite(object):
