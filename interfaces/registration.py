@@ -15,10 +15,8 @@
 
 $Id$
 """
-
 from zope import interface, schema
 import zope.schema.interfaces
-import zope.app.event.interfaces
 
 import zope.deferredimport
 
