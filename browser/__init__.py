@@ -15,23 +15,23 @@
 
 $Id$
 """
+import zope.component
 from zope.exceptions.interfaces import UserError
 from zope.security.proxy import removeSecurityProxy
-from zope.app import zapi
-from zope.app.container.browser.adding import Adding
-from zope.app.i18n import ZopeMessageFactory as _
-from zope.app.container.interfaces import INameChooser
-from zope.app.publisher.browser import BrowserView
-from zope.app.component.interfaces import ISite
-from zope.app.component.site import LocalSiteManager
+from zope.publisher.browser import BrowserView
 from zope.component.interfaces import ComponentLookupError
 from zope.component.interfaces import IFactory
 from zope.interface.interfaces import IMethod
 from zope.schema.interfaces import IField
+
+from zope.app.i18n import ZopeMessageFactory as _
+from zope.app.container.interfaces import INameChooser
+from zope.app.container.browser.adding import Adding
 from zope.app.interface.interfaces import IInterfaceBasedRegistry
+from zope.app.component.site import LocalSiteManager
+from zope.app.component.interfaces import ISite
+from zope.app.component.interface import getInterface, provideInterface
 from zope.app.component.interface import searchInterface
-from zope.app.component.interface import getInterface
-from zope.app.component.interface import provideInterface
 
 class ComponentAdding(Adding):
     """Adding subclass used for registerable components."""
@@ -44,10 +44,10 @@ class ComponentAdding(Adding):
         return self.added_object
 
     def nextURL(self):
-        v = zapi.queryMultiAdapter(
+        v = zope.component.queryMultiAdapter(
             (self.added_object, self.request), name="registration.html")
         if v is not None:
-            url = str(zapi.getMultiAdapter(
+            url = str(zope.component.getMultiAdapter(
                 (self.added_object, self.request), name='absolute_url'))
             return url + "/@@registration.html"
 
@@ -82,7 +82,7 @@ class ComponentAdding(Adding):
             if extra:
                 factoryname = extra.get('factory')
                 if factoryname:
-                    factory = zapi.getUtility(IFactory, factoryname)
+                    factory = zope.component.getUtility(IFactory, factoryname)
                     intf = factory.getInterfaces()
                     if not intf.extends(self._addFilterInterface):
                         # We only skip new addMenuItem style objects
@@ -101,10 +101,10 @@ class UtilityAdding(ComponentAdding):
     title = _("Add Utility")
 
     def nextURL(self):
-        v = zapi.queryMultiAdapter(
+        v = zope.component.queryMultiAdapter(
             (self.added_object, self.request), name="addRegistration.html")
         if v is not None:
-            url = zapi.absoluteURL(self.added_object, self.request)
+            url = zope.component.absoluteURL(self.added_object, self.request)
             return url + "/addRegistration.html"
 
         return super(UtilityAdding, self).nextURL()
