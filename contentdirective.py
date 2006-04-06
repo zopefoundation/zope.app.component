@@ -26,8 +26,8 @@ from zope.interface import classImplements
 from zope.schema.interfaces import IField
 from zope.configuration.exceptions import ConfigurationError
 from zope.location.interfaces import ILocation
+from zope.annotation.interfaces import IAttributeAnnotatable
 
-from zope.app.annotation.interfaces import IAttributeAnnotatable
 from zope.app.component.interface import provideInterface
 from zope.app.component.interfaces import ILocalUtility
 from zope.app.security.protectclass import protectLikeUnto, protectName

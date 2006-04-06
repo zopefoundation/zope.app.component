@@ -10,7 +10,7 @@
         id="zope.app.component.RegistrationManager"
         title="Registration Manager" />
     <implements
-        interface="zope.app.annotation.interfaces.IAttributeAnnotatable"
+        interface="zope.annotation.interfaces.IAttributeAnnotatable"
         />
     <require
         permission="zope.ManageSite"
@@ -55,7 +55,7 @@
 
   <class class=".site.LocalSiteManager">
     <implements
-        interface="zope.app.annotation.interfaces.IAttributeAnnotatable" />
+        interface="zope.annotation.interfaces.IAttributeAnnotatable" />
     <require
         permission="zope.ManageSite"
         interface="zope.app.container.interfaces.IReadContainer" />
@@ -76,7 +76,7 @@
   <class class=".site.SiteManagementFolder">
     <factory />
     <implements
-        interface="zope.app.annotation.interfaces.IAttributeAnnotatable"
+        interface="zope.annotation.interfaces.IAttributeAnnotatable"
         />
     <require
         permission="zope.ManageSite"
