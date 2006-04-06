@@ -18,10 +18,10 @@ $Id$
 import zope.interface
 import zope.event
 from zope.exceptions.interfaces import UserError
+from zope.lifecycleevent import ObjectCreatedEvent
 
 from zope.app import zapi
 from zope.app.component import site, interfaces, browser
-from zope.app.event import objectevent
 from zope.app.i18n import ZopeMessageFactory as _
 
 
@@ -131,7 +131,7 @@ class SiteManagementView(browser.ComponentAdding):
         sm = zapi.getSiteManager()
         if not tool.folder in sm:
             folder = site.SiteManagementFolder()
-            zope.event.notify(objectevent.ObjectCreatedEvent(folder))
+            zope.event.notify(ObjectCreatedEvent(folder))
             sm[tool.folder] = folder
         return sm[tool.folder]
 

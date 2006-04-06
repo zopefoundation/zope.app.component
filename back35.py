@@ -27,6 +27,7 @@ from zope.traversing.interfaces import TraversalError
 from zope.interface import implements
 from zope.security.checker import InterfaceChecker, CheckerPublic
 from zope.security.proxy import Proxy, removeSecurityProxy
+from zope.lifecycleevent import ObjectCreatedEvent
 
 import zope.app.component.registration
 import zope.app.component.interfaces.registration
@@ -37,7 +38,6 @@ from zope.app.i18n import ZopeMessageFactory as _
 from zope.app.component.interfaces import registration as interfaces
 from zope.app.container.btree import BTreeContainer
 from zope.app.container.contained import Contained
-from zope.app.event import objectevent
 from zope.app.i18n import ZopeMessageFactory as _
 
 InactiveStatus = _('Inactive')
@@ -578,8 +578,7 @@ class RegisterableContainer(object):
         self.registrationManager = RegistrationManager()
         self.registrationManager.__parent__ = self
         self.registrationManager.__name__ = '++registrations++'
-        zope.event.notify(
-            objectevent.ObjectCreatedEvent(self.registrationManager))
+        zope.event.notify(ObjectCreatedEvent(self.registrationManager))
 
 
 class RegistrationManagerNamespace:
