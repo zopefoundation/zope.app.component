@@ -15,8 +15,6 @@
 
 $Id$
 """
-
-from zope.app.event import objectevent
 from zope.interface import implements
 import zope.app.component.interfaces.registration
 import zope.deferredimport
