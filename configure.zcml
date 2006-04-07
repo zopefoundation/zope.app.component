@@ -133,7 +133,7 @@
 
   <utility
       component=".vocabulary.UtilityComponentInterfacesVocabulary"
-      provides="zope.app.schema.interfaces.IVocabularyFactory"
+      provides="zope.schema.interfaces.IVocabularyFactory"
       name="Utility Component Interfaces"
       />
 
