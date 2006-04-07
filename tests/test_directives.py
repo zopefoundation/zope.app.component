@@ -1363,9 +1363,9 @@ class Test(PlacelessSetup, unittest.TestCase):
 
     # BBB 2006/02/24, to be removed after 12 months
     def testFactory(self):
-        def ignorewarning(message, category, filename, lineno, file=None):
-            pass
-        warnings.showwarning = ignorewarning
+        showwarning = warnings.showwarning
+        warnings.showwarning = lambda *a, **k: None
+        
         self.assertRaises(ComponentLookupError, zapi.createObject, 'foo')
 
         xmlconfig(StringIO(template % (
@@ -1380,7 +1380,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         from factory import X
         self.assertEqual(zapi.createObject('foo.bar').__class__, X)
 
-        warnings.resetwarnings()
+        warnings.showwarning = showwarning
 
 class ParticipationStub(object):
 
