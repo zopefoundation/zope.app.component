@@ -16,18 +16,20 @@
 $Id$
 """
 __docformat__ = 'restructuredtext'
+
 from types import ClassType
+
+import zope.component
 from zope.component.interfaces import ComponentLookupError
 from zope.interface import directlyProvides, directlyProvidedBy
 from zope.interface.interfaces import IInterface
-from zope.app import zapi
 
 def provideInterface(id, interface, iface_type=None, info=''):
     """register Interface with global site manager as utility
 
     >>> from zope.app.testing import placelesssetup
     >>> placelesssetup.setUp()
-    >>> gsm = zapi.getGlobalSiteManager()
+    >>> gsm = zope.component.getGlobalSiteManager()
 
     >>> from zope.interface import Interface
     >>> from zope.interface.interfaces import IInterface
@@ -98,7 +100,7 @@ def provideInterface(id, interface, iface_type=None, info=''):
     else:
         iface_type = IInterface
         
-    gsm = zapi.getGlobalSiteManager()
+    gsm = zope.component.getGlobalSiteManager()
     gsm.registerUtility(interface, iface_type, id, info)
 
 
@@ -163,7 +165,7 @@ def queryInterface(id, default=None):
     'I3'
     >>> placelesssetup.tearDown()
     """
-    return zapi.queryUtility(IInterface, id, default)
+    return zope.component.queryUtility(IInterface, id, default)
 
 
 def searchInterface(context, search_string=None, base=None):
@@ -230,7 +232,7 @@ def searchInterfaceIds(context, search_string=None, base=None):
 
 
 def searchInterfaceUtilities(context, search_string=None, base=None):
-    gsm = zapi.getGlobalSiteManager()
+    gsm = zope.component.getGlobalSiteManager()
     iface_utilities = gsm.getUtilitiesFor(IInterface)
 
     if search_string:
