@@ -341,9 +341,9 @@ class RegistrationStatusProperty(object):
 
         registry = registration.getRegistry()
         if registry and registry.registered(registration):
-            return interfaces.ActiveStatus
+            return ActiveStatus
 
-        return interfaces.InactiveStatus
+        return InactiveStatus
 
     def __set__(self, inst, value):
         registration = inst
@@ -351,14 +351,14 @@ class RegistrationStatusProperty(object):
         if registry is None:
             raise ValueError('No registry found.')
 
-        if value == interfaces.ActiveStatus:
+        if value == ActiveStatus:
             if not registry.registered(registration):
                 registry.register(registration)
                 zope.event.notify(
                     zope.component.interfaces.Registered(registration)
                     )
 
-        elif value == interfaces.InactiveStatus:
+        elif value == InactiveStatus:
             if registry.registered(registration):
                 registry.unregister(registration)
                 zope.event.notify(
@@ -534,7 +534,7 @@ class Registered:
     def registrations(self):
         rm = zapi.getParent(self.registerable).registrationManager
         return [reg for reg in rm.values()
-                if (interfaces.IComponentRegistration.providedBy(reg) and
+                if (IComponentRegistration.providedBy(reg) and
                     reg.component is self.registerable)]
 
 
