@@ -28,7 +28,7 @@ from zope.schema.interfaces import ITokenizedTerm, IVocabularyFactory
 
 from zope.app.i18n import ZopeMessageFactory as _
 from zope.app.interface.vocabulary import ObjectInterfacesVocabulary
-from zope.app.component.interfaces import IUtilityRegistration
+from zope.component.interfaces import IUtilityRegistration
 
 class UtilityTerm(object):
     """A term representing a utility.
