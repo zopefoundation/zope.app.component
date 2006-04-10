@@ -19,6 +19,7 @@ __docformat__ = 'restructuredtext'
 
 import warnings
 import zope.interface
+import zope.component
 from zope import component
 from zope.component.interfaces import IDefaultViewName, IFactory
 from zope.configuration.exceptions import ConfigurationError
@@ -29,16 +30,14 @@ from zope.proxy import ProxyBase, getProxiedObject
 from zope.security.checker import InterfaceChecker, CheckerPublic
 from zope.security.checker import Checker, NamesChecker
 from zope.security.proxy import Proxy
-
-from zope.app import zapi
-from zope.app.security.adapter import LocatingTrustedAdapterFactory
-from zope.app.security.adapter import LocatingUntrustedAdapterFactory
-from zope.app.security.adapter import TrustedAdapterFactory
+from zope.security.adapter import LocatingTrustedAdapterFactory
+from zope.security.adapter import LocatingUntrustedAdapterFactory
+from zope.security.adapter import TrustedAdapterFactory
 
 PublicPermission = 'zope.Public'
 
 def handler(methodName, *args, **kwargs):
-    method=getattr(zapi.getGlobalSiteManager(), methodName)
+    method=getattr(zope.component.getGlobalSiteManager(), methodName)
     method(*args, **kwargs)
 
 from zope.app.component.interface import provideInterface
