@@ -59,7 +59,7 @@ def test_toolDirective():
      'IDummyUtility']
 
     >>> tool['callable'].__module__
-    'zope.app.component.metaconfigure'
+    'zope.component.zcml'
     """
 
 def test_suite():

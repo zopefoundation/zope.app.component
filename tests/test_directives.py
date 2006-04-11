@@ -28,6 +28,7 @@ from zope.component.interfaces import IDefaultViewName
 from zope.component.registry import SubscriptionRegistration
 from zope.component.interfaces import ComponentLookupError
 from zope.component.interface import queryInterface
+from zope.component.zcml import interface
 
 from zope.configuration.xmlconfig import xmlconfig, XMLConfig
 from zope.configuration.exceptions import ConfigurationError
@@ -38,7 +39,6 @@ from zope.security.checker import ProxyFactory, selectChecker
 import zope.app.component
 from zope.app import zapi
 from zope.app.testing.placelesssetup import PlacelessSetup
-from zope.app.component.metaconfigure import interface
 from zope.app.component.tests.adapter import A1, A2, A3, Handler
 from zope.app.component.tests.adapter import I1, I2, I3, IS
 from zope.app.component.tests.components import IContent, Content, Comp, comp
