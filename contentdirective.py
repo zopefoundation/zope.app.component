@@ -20,20 +20,20 @@ __docformat__ = 'restructuredtext'
 import warnings
 from types import ModuleType
 from persistent.interfaces import IPersistent
+
 from zope.component.interfaces import IFactory
 from zope.component.factory import Factory
+from zope.component.interface import provideInterface
 from zope.interface import classImplements
 from zope.schema.interfaces import IField
 from zope.configuration.exceptions import ConfigurationError
 from zope.location.interfaces import ILocation
 from zope.annotation.interfaces import IAttributeAnnotatable
 
-from zope.app.component.interface import provideInterface
 from zope.app.component.interfaces import ILocalUtility
+from zope.app.component.metaconfigure import utility
 from zope.app.security.protectclass import protectLikeUnto, protectName
 from zope.app.security.protectclass import protectSetAttribute
-
-from zope.app.component.metaconfigure import utility
 
 PublicPermission = 'zope.Public'
 

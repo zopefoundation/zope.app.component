@@ -26,22 +26,18 @@ from zope.testing.doctestunit import DocTestSuite
 from zope.component import createObject
 from zope.component.interfaces import IDefaultViewName
 from zope.component.registry import SubscriptionRegistration
+from zope.component.interfaces import ComponentLookupError
+from zope.component.interface import queryInterface
 
 from zope.configuration.xmlconfig import xmlconfig, XMLConfig
 from zope.configuration.exceptions import ConfigurationError
 from zope.configuration.xmlconfig import ZopeXMLConfigurationError
-
-from zope.security.proxy import removeSecurityProxy
-from zope.security.proxy import getTestProxyItems
-from zope.security.checker import ProxyFactory
-from zope.security.checker import selectChecker
+from zope.security.proxy import removeSecurityProxy, getTestProxyItems
+from zope.security.checker import ProxyFactory, selectChecker
 
 import zope.app.component
-from zope.component.interfaces import ComponentLookupError
-
 from zope.app import zapi
 from zope.app.testing.placelesssetup import PlacelessSetup
-from zope.app.component.interface import queryInterface
 from zope.app.component.metaconfigure import interface
 from zope.app.component.tests.adapter import A1, A2, A3, Handler
 from zope.app.component.tests.adapter import I1, I2, I3, IS
@@ -51,7 +47,6 @@ from zope.app.component.tests.views import Request, IV, IC, V1, R1, IR
 from zope.app.content.interfaces import IContentType
 
 from zope.app.component.tests import module, exampleclass
-from zope.app.component.interface import queryInterface
 
 # TODO: tests for other directives needed
 

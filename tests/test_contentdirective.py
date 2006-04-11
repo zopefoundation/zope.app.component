@@ -18,15 +18,15 @@ $Id$
 import unittest
 from StringIO import StringIO
 
-import zope.app.security
-import zope.app.component
-
-from zope.app import zapi
 from zope.component.interfaces import IFactory
 from zope.component.interfaces import ComponentLookupError
+from zope.component.interface import queryInterface
 from zope.configuration.xmlconfig import xmlconfig, XMLConfig
+
+import zope.app.security
+import zope.app.component
+from zope.app import zapi
 from zope.app.testing.placelesssetup import PlacelessSetup
-from zope.app.component.interface import queryInterface
 
 # explicitly import ExampleClass and IExample using full paths
 # so that they are the same objects as resolve will get.

@@ -40,7 +40,7 @@ def handler(methodName, *args, **kwargs):
     method=getattr(zope.component.getGlobalSiteManager(), methodName)
     method(*args, **kwargs)
 
-from zope.app.component.interface import provideInterface
+from zope.component.interface import provideInterface
 def interface(_context, interface, type=None, name=''):
     _context.action(
         discriminator = None,
