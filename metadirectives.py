@@ -18,13 +18,12 @@ $Id$
 __docformat__ = 'restructuredtext'
 
 import zope.configuration.fields
+import zope.security.zcml
 import zope.interface
 import zope.schema
 from zope.component.zcml import IBasicComponentInformation
 
-import zope.app.security.fields
 import zope.app.component.fields
-
 from zope.app.i18n import ZopeMessageFactory as _
 
 class IDefaultViewName(zope.interface.Interface):
@@ -47,7 +46,7 @@ class IBasicViewInformation(zope.interface.Interface):
           ),
         )
 
-    permission = zope.app.security.fields.Permission(
+    permission = zope.security.zcml.Permission(
         title=_("Permission"),
         description=_("The permission needed to use the view."),
         required=False,
@@ -232,7 +231,7 @@ class IRequireSubdirective(zope.interface.Interface):
     given Interface require a given permission for access.
     """
 
-    permission = zope.app.security.fields.Permission(
+    permission = zope.security.zcml.Permission(
         title=_("Permission"),
         description=_("""
         Specifies the permission by id that will be required to
