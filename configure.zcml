@@ -90,7 +90,7 @@
   
   <adapter 
       for="zope.component.interfaces.IComponentLookup"
-      provides="zope.app.filerepresentation.interfaces.IDirectoryFactory"
+      provides="zope.filerepresentation.interfaces.IDirectoryFactory"
       factory=".site.SMFolderFactory"
       permission="zope.ManageContent"
       />

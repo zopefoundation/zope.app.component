@@ -40,6 +40,7 @@ from zope.component.interfaces import ComponentLookupError
 from zope.traversing.interfaces import IContainmentRoot
 from zope.security.proxy import removeSecurityProxy
 from zope.lifecycleevent import ObjectCreatedEvent
+from zope.filerepresentation.interfaces import IDirectoryFactory
 
 import zope.app.component.back35
 from zope.app import zapi
@@ -48,7 +49,6 @@ from zope.app.component import registration
 from zope.app.component.hooks import setSite
 from zope.app.container.btree import BTreeContainer
 from zope.app.container.contained import Contained
-from zope.app.filerepresentation.interfaces import IDirectoryFactory
 
 ##############################################################################
 # from zope.app.module import resolve
