@@ -589,6 +589,9 @@ class RegistrationManagerNamespace:
     def __init__(self, ob, request=None):
         self.context = ob.registrationManager
 
+    @zope.deprecation.deprecate(
+        "++registration++ namespace is deprecated and will go away in Zope 3.5"
+        )
     def traverse(self, name, ignore):
         if name == '':
             return self.context
