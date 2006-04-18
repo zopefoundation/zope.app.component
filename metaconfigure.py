@@ -106,8 +106,8 @@ def resource(_context, factory, type, name, layer=None,
     _context.action(
         discriminator = ('resource', name, type, provides),
         callable = handler,
-        args = ('provideAdapter',
-                (type,), provides, name, factory, _context.info),
+        args = ('registerAdapter',
+                factory, (type,), provides, name, _context.info),
         )
     _context.action(
         discriminator = None,
@@ -183,8 +183,8 @@ def view(_context, factory, type, name, for_, layer=None,
     _context.action(
         discriminator = ('view', for_, name, provides),
         callable = handler,
-        args = ('provideAdapter',
-                for_, provides, name, factory, _context.info),
+        args = ('registerAdapter',
+                factory, for_, provides, name, _context.info),
         )
     if type is not None:
         _context.action(
@@ -207,16 +207,16 @@ def view(_context, factory, type, name, for_, layer=None,
                     callable = provideInterface,
                     args = ('', iface)
                     )
-
 ############################################################################
 # BBB: Deprecated. Will go away in 3.3.
+
 def defaultView(_context, type, name, for_):
 
     _context.action(
         discriminator = ('defaultViewName', for_, type, name),
         callable = handler,
-        args = ('provideAdapter',
-                (for_, type), IDefaultViewName, '', name, _context.info)
+        args = ('registerAdapter',
+                 name, (for_, type), IDefaultViewName, '',_context.info)
         )
 
     _context.action(
@@ -236,8 +236,8 @@ deprecated('defaultView',
            'The zope:defaultView directive has been deprecated in favor of '
            'the browser:defaultView directive. '
            'Will be gone in Zope 3.3.')
-############################################################################
 
+############################################################################
 # BBB: Deprecated. Will go away in 3.4.
 def defaultLayer(_context, type, layer):
     import warnings
