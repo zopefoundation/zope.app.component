@@ -239,6 +239,12 @@ class LocalSiteManager(BTreeContainer,
                 registration.provided,
                 registration.name,
                 )
+        try:
+            f = registration.activated
+        except AttributeError:
+            pass
+        else:
+            f()
 
     @zope.deprecation.deprecate(
         "Local registration is now much simpler.  The old baroque APIs "
@@ -259,6 +265,12 @@ class LocalSiteManager(BTreeContainer,
                 registration.provided,
                 registration.name,
                 )
+        try:
+            f = registration.deactivated
+        except AttributeError:
+            pass
+        else:
+            f()
 
     @zope.deprecation.deprecate(
         "Local registration is now much simpler.  The old baroque APIs "
