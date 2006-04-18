@@ -15,264 +15,253 @@
 
 $Id$
 """
+
 import warnings
 
+from zope import interface, component, deprecation, schema
+from zope.formlib import form, page
+import zope.component.interfaces
+
+import zope.publisher.interfaces.browser
+import zope.app.pagetemplate
+import zope.app.form
 from zope.security.proxy import removeSecurityProxy
-from zope.publisher.browser import BrowserView
-
 from zope.app import zapi
-from zope.app.container.browser.adding import Adding
-from zope.app.container.interfaces import INameChooser
-from zope.app.form.browser.widget import SimpleInputWidget
 from zope.app.i18n import ZopeMessageFactory as _
-from zope.app.component import interfaces
-from zope.app.component.interfaces.registration import ActiveStatus
-from zope.app.component.interfaces.registration import InactiveStatus
 
-class RegistrationView(BrowserView):
-    """View for registerable objects that have at most one registration.
+def _registrations(context, comp):
+    sm = component.getSiteManager(context)
+    for r in sm.registeredUtilities():
+        if r.component == comp or comp is None:
+            yield r
+    for r in sm.registeredAdapters():
+        if r.factory == comp or comp is None:
+            yield r
+    for r in sm.registeredSubscriptionAdapters():
+        if r.factory == comp or comp is None:
+            yield r
+    for r in sm.registeredHandlers():
+        if r.factory == comp or comp is None:
+            yield r
 
-    If the object has more than one registration, this performs a
-    redirection to the 'registrations.html' view.
+class IRegistrationDisplay(interface.Interface):
+    """Display registration information
     """
-    def __init__(self, context, request):
-        super(RegistrationView, self).__init__(context, request)
-        useconfig = interfaces.registration.IRegistered(self.context)
-        self.registrations = useconfig.registrations()
 
-    def update(self):
-        """Make changes based on the form submission."""
-        if len(self.registrations) > 1:
-            self.request.response.redirect("registrations.html")
-            return
-        if "deactivate" in self.request:
-            self.registrations[0].status = InactiveStatus
-        elif "activate" in self.request:
-            if not self.registrations:
-                # create a registration:
-                self.request.response.redirect("addRegistration.html")
-                return
-            self.registrations[0].status = ActiveStatus
-
-    def active(self):
-        return self.registrations[0].status == ActiveStatus
-
-    def registered(self):
-        return bool(self.registrations)
-
-    def registration(self):
-        """Return the first registration.
-
-        If there are no registrations, raises an error.
+    def id():
+        """Return an identifier suitable for use in mapping
         """
-        return {'url': zapi.absoluteURL(self.registrations[0], self.request),
-                'details': zapi.queryMultiAdapter(
-                    (self.registrations[0], self.request), name='details')
-                }
 
+    def render():
+        "Return an HTML view of a registration object"
 
-class Registered(object):
-    """View for registerable objects with more than one registration."""
+    def unregister():
+        "Remove the registration by unregistering the component"
+
+class ISiteRegistrationDisplay(IRegistrationDisplay):
+    """Display registration information, including the component registered
+    """
+            
+class RegistrationView(page.Page):
+
+    component.adapts(None, zope.publisher.interfaces.browser.IBrowserRequest)
+
+    render = zope.app.pagetemplate.ViewPageTemplateFile('registration.pt')
 
     def registrations(self):
-        registered = interfaces.registration.IRegistered(self.context)
-        return [
-            {'name': zapi.name(reg),
-             'url': zapi.absoluteURL(reg, self.request),
-             'status': reg.status,
-             'details': zapi.queryMultiAdapter((reg, self.request),
-                                               name='details')}
-            for reg in registered.registrations()]
-
-
-#############################################################################
-# BBB: Only for backward compatibility. 12/07/2004
-class ComponentPathWidget(SimpleInputWidget):
-    """Widget for displaying component paths
-
-    The widget doesn't actually allow editing. Rather it gets the
-    value by inspecting its field's context. If the context is an
-    IComponentRegistration, then it just gets its value from the
-    component using the field's name. Otherwise, it uses the path to
-    the context.
-    """
-
-    def __init__(self, *args, **kw):
-        warnings.warn(
-            "Use of `ComponentPathWidget` deprecated, since the "
-            "registration code now uses the component directly instead "
-            "of using the component's path.",
-            DeprecationWarning, stacklevel=2,
-            )
-        super(ComponentPathWidget, self).__init__(*args, **kw)
-
-    def __call__(self):
-        """See zope.app.browser.interfaces.form.IBrowserWidget"""
-        # Render as a link to the component
-        field = self.context
-        context = field.context
-        if interfaces.registration.IRegistration.providedBy(context):
-            # It's a registration object. Just get the corresponding attr
-            path = getattr(context, field.__name__)
-            # The path may be relative; then interpret relative to ../..
-            if not path.startswith("/"):
-                context = zapi.traverse(context, "../..")
-            component = zapi.traverse(context, path)
-        else:
-            # It must be a component that is about to be configured.
-            component = context
-            # Always use a relative path (just the component name)
-            path = zapi.name(context)
-
-        url = zapi.absoluteURL(component, self.request)
-
-        return ('<a href="%s/@@SelectedManagementView.html">%s</a>'
-                % (url, path))
-
-    def hidden(self):
-        """See zope.app.browser.interfaces.form.IBrowserWidget"""
-        return ''
-
-    def hasInput(self):
-        """See zope.app.form.interfaces.IWidget"""
-        return 1
-
-    def getInputValue(self):
-        """See zope.app.form.interfaces.IWidget"""
-        field = self.context
-        context = field.context
-        if interfaces.registration.IRegistration.providedBy(context):
-            # It's a registration object. Just get the corresponding attr
-            path = getattr(context, field.getName())
-        else:
-            # It must be a component that is about to be configured.
-            # Always return a relative path (just the component name)
-            path = zapi.name(context)
-
-        return path
-#############################################################################
-
-
-class ComponentWidget(SimpleInputWidget):
-    """Widget for displaying/entering component paths that point to components.
-
-    The widget doesn't actually allow editing. Rather it gets the
-    value by inspecting its field's context. If the context is an
-    IComponentRegistration, then it just gets its value from the
-    component using the field's name. Otherwise, it uses the path to
-    the context.
-    """
-
-    def __call__(self):
-        """See zope.app.browser.interfaces.form.IBrowserWidget"""
-        # Render as a link to the component
-        field = self.context
-        context = field.context
-        if interfaces.registration.IRegistration.providedBy(context):
-            # It's a registration object. Just get the corresponding attr
-            component = getattr(context, field.__name__)
-            path = zapi.getPath(component)
-        else:
-            # It must be a component that is about to be configured.
-            component = context
-            # Always use a relative path (just the component name)
-            path = zapi.name(context)
-
-        url = zapi.absoluteURL(component, self.request)
-
-        return ('<a href="%s/@@SelectedManagementView.html">%s</a>'
-                % (url, path))
-
-    def hidden(self):
-        """See zope.app.browser.interfaces.form.IBrowserWidget"""
-        return ''
-
-    def hasInput(self):
-        """See zope.app.form.interfaces.IWidget"""
-        return 1
-
-    def getInputValue(self):
-        """See zope.app.form.interfaces.IWidget"""
-        field = self.context
-        context = field.context
-        if interfaces.registration.IRegistration.providedBy(context):
-            # It's a registration object. Just get the corresponding attr
-            return getattr(context, field.getName())
-
-        # It must be a component that is about to be configured.
-        return context
-
-
-class AddComponentRegistration(BrowserView):
-    """View for adding component registrations
-
-    This class is used to define registration add forms.  It provides
-    the ``add`` and ``nextURL`` methods needed when creating add forms
-    for non-IAdding objects.  We need this here because registration
-    add forms are views of the component being configured.
-    """
-
-    def add(self, registration):
-        """Add a registration
-
-        We are going to add the registration to the local
-        registration manager. We don't want to hard code the name of
-        this, so we'll simply scan the containing folder and add the
-        registration to the first registration manager we find.
-        """
-        component = self.context
-
-        # Get the registration manager for this folder
-        rm = component.__parent__.registrationManager
-        rm.addRegistration(registration)
-        return registration
-
-    def nextURL(self):
-        return "@@SelectedManagementView.html"
-
-
-class RegistrationAdding(Adding):
-    """Adding subclass for adding registrations."""
-    menu_id = "add_registration"
-
-    def nextURL(self):
-        return zapi.absoluteURL(self.context, self.request)
-
-
-class EditRegistration(BrowserView):
-    """A view on a registration manager, used by registrations.pt."""
+        registrations = [
+            component.getMultiAdapter((r, self.request), IRegistrationDisplay)
+            for r in sorted(_registrations(self.context, self.context))
+            ]
+        return registrations
 
     def update(self):
-        """Perform actions depending on user input."""
+        registrations = dict([(r.id(), r) for r in self.registrations()])
+        for id in self.request.form.get('ids', ()):
+            r = registrations.get(id)
+            if r is not None:
+                r.unregister()
 
-        if 'keys' in self.request:
-            k = self.request['keys']
+    def __call__(self):
+        self.update()
+        return self.render()
+
+class UtilityRegistrationDisplay(object):
+    """Utility Registration Details"""
+
+    component.adapts(zope.component.interfaces.IUtilityRegistration,
+                     zope.publisher.interfaces.browser.IBrowserRequest)
+    interface.implements(IRegistrationDisplay)
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def provided(self):
+        provided = self.context.provided
+        return provided.__module__ + '.' + provided.__name__
+
+    def id(self):
+        return 'R' + (("%s %s" % (self.provided(), self.context.name))
+                      .encode('utf8')
+                      .encode('base64')
+                      .replace('+', '_')
+                      .replace('=', '')
+                      .replace('\n', '')
+                      )
+
+    def _comment(self):
+        comment = self.context.info or ''
+        if comment:
+            comment = '<br />comment: ' + comment
+        return comment
+
+    def render(self):
+        name = self.context.name
+        return "%s utility%s%s" % (
+            self.provided(),
+            name and (' named ' + name) or '',
+            self._comment(),
+            )
+
+    def unregister(self):
+        self.context.registry.unregisterUtility(
+            self.context.component,
+            self.context.provided,
+            self.context.name,
+            )
+            
+class SiteRegistrationView(RegistrationView):
+
+    render = zope.app.pagetemplate.ViewPageTemplateFile('siteregistration.pt')
+
+    def registrations(self):
+        registrations = [
+            component.getMultiAdapter((r, self.request),
+                                      ISiteRegistrationDisplay)
+            for r in sorted(_registrations(self.context, None))
+            ]
+        return registrations
+
+class UtilitySiteRegistrationDisplay(UtilityRegistrationDisplay):
+    """Utility Registration Details"""
+
+    interface.implementsOnly(ISiteRegistrationDisplay)
+
+    def render(self):
+        url = component.getMultiAdapter(
+            (self.context.component, self.request), name='absolute_url')
+        try:
+            url = url()
+        except TypeError:
+            url = None
+
+        cname = getattr(self.context.component, '__name__', '(unknown name)')
+        if cname is None:
+            cname = ''
+        if url:
+            cname = '<a href="%s/@@SelectedManagementView.html">%s</a>' % (
+                url, cname)
         else:
-            k = []
+            cname = '%s (moved or deleted)' % cname
 
-        msg = 'You must select at least one item to use this action'
+        name = self.context.name
+        comment = self.context.info
+        
+        return ('%s<br />%s utility%s%s'
+                % (cname,
+                   self.provided(),
+                   name and (' named ' + name) or '',
+                   self._comment(),
+                   )
+                )
 
-        if 'remove_submit' in self.request:
-            if not k: return msg
-            self.remove_objects(k)
-        elif 'refresh_submit' in self.request:
-            pass # Nothing to do
+class AddUtilityRegistration(form.Form):
+    """View for registering utilities
 
-        return ''
+    Normally, the provided interface and name are input.
 
-    def remove_objects(self, key_list):
-        """Unregister and remove the directives from the container."""
-        container = self.context
-        for name in key_list:
-            container[name].status = InactiveStatus
-            del container[name]
+    A subclass can provide an empty 'name' attribute if the component should
+    always be registered without a name.
 
-    def registrationInfo(self):
-        """Render View for each directives."""
-        return [
-            {'name': name,
-             'url': zapi.absoluteURL(reg, self.request),
-             'active': reg.status == ActiveStatus,
-             'details': zapi.queryMultiAdapter((reg, self.request),
-                                               name='details')}
-            for name, reg in self.context.items()]
+    A subclass can provide a 'provided' attribute if a component
+    should always be registered with the same interface.
+    
+    """
+    component.adapts(None, zope.publisher.interfaces.browser.IBrowserRequest)
+
+    form_fields = form.Fields(
+        schema.Choice(
+           __name__ = 'provided',
+           title=_("Provided interface"),
+           description=_("The interface provided by the utility"),
+           vocabulary="Utility Component Interfaces",
+           required=True,
+           ),
+        schema.TextLine(
+           __name__ = 'name',
+           title=_("Register As"),
+           description=_("The name under which the utility will be known."),
+           required=False,
+           default=u'',
+           missing_value=u''
+           ),
+        schema.Text(
+           __name__ = 'comment',
+           title=_("Comment"),
+           required=False,
+           default=u'',
+           missing_value=u''
+           ),
+        )
+
+    name = provided = None
+
+    prefix = 'field' # in hopes of making old tests pass. :)
+
+    def __init__(self, context, request):
+        if self.name is not None:
+            self.form_fields = self.form_fields.omit('name')
+        if self.provided is not None:
+            self.form_fields = self.form_fields.omit('provided')
+        super(AddUtilityRegistration, self).__init__(context, request)
+
+    def update(self):
+        # hack to make work with old tests
+        if 'UPDATE_SUBMIT' in self.request.form:
+            warnings.warn(
+                "Old test needs to be updated.",
+                DeprecationWarning)
+            self.request.form['field.actions.register'] = 'Register'
+            self.request.form['field.comment'] = u''
+        super(AddUtilityRegistration, self).update()
+
+    @property
+    def label(self):
+        return _("Register a $classname",
+                 mapping=dict(classname=self.context.__class__.__name__)
+                 )
+
+    @form.action(_("Register"))
+    def register(self, action, data):
+        sm = component.getSiteManager(self.context)
+        name = self.name
+        if name is None:
+            name = data['name']
+        provided = self.provided
+        if provided is None:
+            provided = data['provided']
+            
+        
+        # We have to remove the security proxy to save the registration
+        sm.registerUtility(
+            removeSecurityProxy(self.context),
+            provided, name,
+            data['comment'] or '')
+        
+        if 'UPDATE_SUBMIT' in self.request.form:
+            # Backward compat until 3.5
+            self.request.response.redirect('@@SelectedManagementView.html')
+            return
+        
+        self.request.response.redirect('@@registration.html')
