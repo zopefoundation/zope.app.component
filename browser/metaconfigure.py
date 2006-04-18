@@ -15,16 +15,12 @@
 
 $Id$
 """
-from zope.component.zcml import utility, interface as ifaceDirective
-from tools import IToolType, IToolConfiguration, ToolConfiguration
+
+import warnings
 
 
 def tool(_context, interface, title, description=None,
          folder="tools", unique=False):
-    name = interface.getName()
-    permission = 'zope.ManageContent'
-    tool = ToolConfiguration(interface, title, description, unique)
-
-    ifaceDirective(_context, interface, IToolType)
-    utility(_context, IToolConfiguration, tool,
-            permission=permission, name=name)
+    warnings.warn("Tools are deprecated and no-longer used. "
+                  "The tool directive will go away in Zope 3.5",
+                  DeprecationWarning)
