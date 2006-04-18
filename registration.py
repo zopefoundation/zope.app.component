@@ -15,8 +15,7 @@
 
 $Id$
 """
-from zope.interface import implements
-import zope.app.component.interfaces.registration
+
 import zope.deferredimport
 
 zope.deferredimport.deprecatedFrom(
@@ -43,5 +42,3 @@ zope.deferredimport.deprecated(
     RegistrationActivatedEvent = 'zope.component.interfaces:Registered',
     RegistrationDeactivatedEvent = 'zope.component.interfaces:Unregistered',
     )
-
-
