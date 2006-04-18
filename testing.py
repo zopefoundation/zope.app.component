@@ -176,8 +176,12 @@ def testingNextUtility(utility, nextutility, interface, name='',
     sitemanager.setNext(nextsitemanager)
 
     sitemanager.provideUtility(interface, utility, name)
-    utility.__conform__ = \
-       lambda iface: iface.isOrExtends(IComponentLookup) and sitemanager or None
+    utility.__conform__ = (
+        lambda iface:
+        iface.isOrExtends(IComponentLookup) and sitemanager or None
+        )
     nextsitemanager.provideUtility(interface, nextutility, name)
-    nextutility.__conform__ = \
-       lambda iface: iface.isOrExtends(IComponentLookup) and nextsitemanager or None
+    nextutility.__conform__ = (
+        lambda iface:
+        iface.isOrExtends(IComponentLookup) and nextsitemanager or None
+        )
