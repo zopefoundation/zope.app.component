@@ -31,7 +31,6 @@ from zope.configuration.exceptions import ConfigurationError
 from zope.location.interfaces import ILocation
 from zope.annotation.interfaces import IAttributeAnnotatable
 
-from zope.app.component.interfaces import ILocalUtility
 from zope.app.security.protectclass import protectLikeUnto, protectName
 from zope.app.security.protectclass import protectSetAttribute
 
@@ -207,8 +206,6 @@ class LocalUtilityDirective(ClassDirective):
       >>> dir = LocalUtilityDirective(None, LU4)
       >>> IAttributeAnnotatable.implementedBy(LU4)
       True
-      >>> ILocalUtility.implementedBy(LU4)
-      True
 
       >>> LocalUtilityDirective(None, LU3)
       Traceback (most recent call last):
@@ -237,6 +234,5 @@ class LocalUtilityDirective(ClassDirective):
                                      '`IPersistent`.' % class_.__name__)
 
         classImplements(class_, IAttributeAnnotatable)
-        classImplements(class_, ILocalUtility)
 
         super(LocalUtilityDirective, self).__init__(_context, class_)
