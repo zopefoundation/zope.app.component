@@ -15,17 +15,17 @@
 
 $Id$
 """
-
 import warnings
 
 from zope import interface, component, deprecation, schema
-from zope.formlib import form, page
+from zope.formlib import form
+from zope.publisher.browser import BrowserPage
+from zope.security.proxy import removeSecurityProxy
 import zope.component.interfaces
-
 import zope.publisher.interfaces.browser
+
 import zope.app.pagetemplate
 import zope.app.form
-from zope.security.proxy import removeSecurityProxy
 from zope.app import zapi
 from zope.app.i18n import ZopeMessageFactory as _
 
@@ -62,7 +62,7 @@ class ISiteRegistrationDisplay(IRegistrationDisplay):
     """Display registration information, including the component registered
     """
             
-class RegistrationView(page.Page):
+class RegistrationView(BrowserPage):
 
     component.adapts(None, zope.publisher.interfaces.browser.IBrowserRequest)
 
