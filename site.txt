@@ -143,21 +143,11 @@ can register some components. Let's start with a utility
   ...         return "%s('%s')" %(self.__class__.__name__, self.title)
 
 Now we can create an instance of our utility and put it in the site
-management folder:
+management folder and register it:
 
   >>> myutil = MyUtility('My custom utility')
   >>> default['myutil'] = myutil
-
-Then we have to create a registration for the utility and activate it:
-
-  >>> reg = site.UtilityRegistration('u1', IMyUtility, myutil)
-  >>> default.registrationManager.addRegistration(reg)
-  'UtilityRegistration'
-  >>> reg.status = interfaces.registration.ActiveStatus
-
-Note that you can only change the status *after* you have added the
-registration to the registration manager, since registration component uses
-its location to determine the correct registry to add the component to.
+  >>> sm.registerUtility(myutil, IMyUtility, 'u1')
 
 Now we can ask the site manager for the utility:
 
@@ -170,7 +160,7 @@ registrations:
   >>> gutil = MyUtility('Global Utility')
   >>> from zope.app import zapi
   >>> gsm = zapi.getGlobalSiteManager()
-  >>> gsm.provideUtility(IMyUtility, gutil, 'gutil')
+  >>> gsm.registerUtility(gutil, IMyUtility, 'gutil')
   
   >>> sm.queryUtility(IMyUtility, 'gutil')
   MyUtility('Global Utility')
@@ -246,7 +236,7 @@ it a site:
 
 If we ask the second site manager for its next, we get
 
-  >>> sm11.next is sm
+  >>> sm11.__bases__ == (sm, )
   True
 
 and the first site manager should have the folling sub manager:
@@ -261,10 +251,7 @@ new site manager folder,
   >>> myutil11 = MyUtility('Utility, uno & uno')
   >>> default11['myutil'] = myutil11
 
-  >>> reg11 = site.UtilityRegistration('u1', IMyUtility, myutil11)
-  >>> default11.registrationManager.addRegistration(reg11)
-  'UtilityRegistration'
-  >>> reg11.status = interfaces.registration.ActiveStatus
+  >>> sm11.registerUtility(myutil11, IMyUtility, 'u1')
 
 then it will will be available in the second site manager
 
@@ -296,8 +283,10 @@ Before we can move or copy sites, we need to register two event subscribers
 that manage the wiring of site managers after moving or copying:
 
   >>> from zope.app import container
-  >>> gsm.subscribe((interfaces.ISite, container.interfaces.IObjectMovedEvent),
-  ...               None, site.changeSiteConfigurationAfterMove) 
+  >>> gsm.registerHandler(
+  ...    site.changeSiteConfigurationAfterMove,
+  ...    (interfaces.ISite, container.interfaces.IObjectMovedEvent),
+  ...    ) 
 
 We only have to register one event listener, since the copy action causes an
 `IObjectAddedEvent` to be created, which is just a special type of
@@ -305,7 +294,7 @@ We only have to register one event listener, since the copy action causes an
 
 First, make sure that everything is setup correctly in the first place:
 
-  >>> myfolder11.getSiteManager().next is myfolder.getSiteManager()
+  >>> myfolder11.getSiteManager().__bases__ == (myfolder.getSiteManager(), )
   True
   >>> myfolder.getSiteManager().subs[0] is myfolder11.getSiteManager()
   True
@@ -320,7 +309,7 @@ Let's now move `myfolder11` from `myfolder` to `myfolder2`:
 Now the next site manager for `myfolder11`'s site manager should have changed:
 
   >>> myfolder21 = myfolder11
-  >>> myfolder21.getSiteManager().next is myfolder2.getSiteManager()
+  >>> myfolder21.getSiteManager().__bases__ == (myfolder2.getSiteManager(), )
   True
   >>> myfolder2.getSiteManager().subs[0] is myfolder21.getSiteManager()
   True
@@ -342,7 +331,7 @@ Finally, we make a copy of `myfolder21` and add it as `myfolder11` to
   >>> myfolder['myfolder11'] = locationCopy(myfolder2['myfolder21'])
 
   >>> myfolder11 = myfolder['myfolder11']
-  >>> myfolder11.getSiteManager().next is myfolder.getSiteManager()
+  >>> myfolder11.getSiteManager().__bases__ == (myfolder.getSiteManager(), )
   True
   >>> myfolder.getSiteManager().subs[0] is myfolder11.getSiteManager()
   True

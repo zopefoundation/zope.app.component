@@ -408,4 +408,4 @@ def changeSiteConfigurationAfterMove(site, event):
     next = None
     if event.newParent is not None:
         next = _findNextSiteManager(site)
-    site.getSiteManager().setNext(next)
+    site.getSiteManager().__bases__ = (next, )
