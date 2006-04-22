@@ -16,7 +16,9 @@
 $Id$
 """
 __docformat__ = "reStructuredText"
+
 import unittest
+import warnings
 
 import zope.component.testing as placelesssetup
 from zope.testing import doctest
@@ -27,12 +29,18 @@ def setUp(test):
     setup.setUpAnnotations()
     setup.setUpDependable()
     setup.setUpTraversal()
+    test.globs['showwarning'] = warnings.showwarning
+    warnings.showwarning = lambda *a, **k: None
+
+def tearDown(test):
+    warnings.showwarning = test.globs['showwarning']
+    placelesssetup.tearDown(test)
 
 def test_suite():
     suite = unittest.TestSuite((
-        doctest.DocFileSuite('deprecated35_statusproperty.txt'),
-        doctest.DocFileSuite('deprecated35_registration.txt',
-                             setUp=setUp, tearDown=placelesssetup.tearDown),
+        doctest.DocFileSuite('deprecated35_statusproperty.txt',
+                             'deprecated35_registration.txt',
+                             setUp=setUp, tearDown=tearDown),
         ))
     suite.level = 2
     return suite
