@@ -338,6 +338,11 @@ class LocalSiteManager(BTreeContainer,
                 ])
         return False
 
+    @zope.deprecation.deprecate(
+        "Local registration is now much simpler.  The old baroque APIs "
+        "will go away in Zope 3.5.  See the new component-registration APIs "
+        "defined in zope.component, especially IComponentRegistry.",
+        )
     def registrations(self):
         """See zope.component.interfaces.IRegistry"""
         for r in self.registeredUtilities():
@@ -348,15 +353,6 @@ class LocalSiteManager(BTreeContainer,
             yield r
         for r in self.registeredSubscriptionAdapters():
             yield r
-
-
-## zope.deferredimport.deprecatedFrom(
-##     "Local registration is now much simpler.  The old baroque APIs "
-##     "will go away in Zope 3.5.  See the new component-registration APIs "
-##     "defined in zope.component, especially IComponentRegistry.",
-##     'zope.app.component.back35',
-##     'AdapterRegistration',
-##     )
 
 zope.deferredimport.deprecatedFrom(
     "Local registration is now much simpler.  The old baroque APIs "
