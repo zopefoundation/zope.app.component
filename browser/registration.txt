@@ -22,7 +22,7 @@ zope.app.component.browser.tests to define 3 sample objects:
 All objects have a "Registration" tab that is accessable to people
 with the zope.ManageSite permission:
 
-    >>> from zope.testbrowser import Browser
+    >>> from zope.testbrowser.testing import Browser
     >>> browser = Browser()
     >>> browser.addHeader('Authorization', 'Basic mgr:mgrpw')
     >>> browser.addHeader('Accept-Language', 'test')
