@@ -26,10 +26,9 @@ from zope.app import zapi
 
 # BBB 2006/02/18, to be removed after 12 months
 import zope.deprecation
-zope.deprecation.__show__.off()
-from zope.publisher.interfaces import ILayer
-zope.deprecation.__show__.on()
+from zope.publisher.interfaces.back35 import ILayer
 
+# XXX why osn't LayerField deprecated?
 class LayerField(GlobalObject):
     r"""This field represents a layer.
 
