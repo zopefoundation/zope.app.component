@@ -18,6 +18,7 @@ $Id$
 from persistent import Persistent
 
 import zope.event
+import zope.schema
 import zope.interface.adapter
 import zope.component.interfaces
 import zope.deprecation
@@ -28,6 +29,10 @@ from zope.interface import implements
 from zope.security.checker import InterfaceChecker, CheckerPublic
 from zope.security.proxy import Proxy, removeSecurityProxy
 from zope.lifecycleevent import ObjectCreatedEvent
+from zope.component.interfaces import ComponentLookupError
+from zope.configuration.fields import GlobalObject
+from zope.configuration.exceptions import ConfigurationError
+from zope.publisher.interfaces.back35 import ILayer
 
 import zope.app.component.registration
 import zope.app.component.interfaces.registration
@@ -805,3 +810,94 @@ class UtilityRegistration(ComponentRegistration):
 
     def getRegistry(self):
         return zapi.getSiteManager(self)
+
+
+class LayerField(GlobalObject):
+    r"""This field represents a layer.
+
+    Besides being able to look up the layer by importing it, we also try
+    to look up the name in the site manager.
+
+    >>> from zope.interface import directlyProvides
+    >>> from zope.interface.interface import InterfaceClass
+
+    >>> layer1 = InterfaceClass('layer1', (),
+    ...                         __doc__='Layer: layer1',
+    ...                         __module__='zope.app.layers')
+    >>> directlyProvides(layer1, ILayer)
+
+    >>> layers = None
+    >>> class Resolver(object):
+    ...     def resolve(self, path):
+    ...         if '..' in path:
+    ...             raise ValueError('Empty module name')
+    ...         if (path.startswith('zope.app.layers') and
+    ...             hasattr(layers, 'layer1') or
+    ...             path == 'zope.app.component.fields.layer1' or
+    ...             path == '.fields.layer1'):
+    ...             return layer1
+    ...         raise ConfigurationError('layer1')
+
+    >>> field = LayerField()
+    >>> field = field.bind(Resolver())
+
+    Test 1: Import the layer
+    ------------------------
+
+    >>> field.fromUnicode('zope.app.component.fields.layer1') is layer1
+    True
+
+    Test 2: We have a shortcut name. Import the layer from `zope.app.layers`.
+    -------------------------------------------------------------------------
+
+    >>> from types import ModuleType as module
+    >>> import sys
+    >>> layers = module('layers')
+    >>> old = sys.modules.get('zope.app.layers', None)
+    >>> sys.modules['zope.app.layers'] = layers
+    >>> setattr(layers, 'layer1', layer1)
+
+    >>> field.fromUnicode('layer1') is layer1
+    True
+
+    >>> if old is not None:
+    ...     sys.modules['zope.app.layers'] = old
+
+    Test 3: Get the layer from the site manager
+    -------------------------------------------
+
+    >>> from zope.app.testing import ztapi
+    >>> ztapi.provideUtility(ILayer, layer1, 'layer1')
+
+    >>> field.fromUnicode('layer1') is layer1
+    True
+
+    Test 4: Import the layer by using a short name
+    ----------------------------------------------
+
+    >>> field.fromUnicode('.fields.layer1') is layer1
+    True
+    """
+
+    def fromUnicode(self, u):
+        name = str(u.strip())
+
+        try:
+            value = zope.component.queryUtility(ILayer, name)
+        except ComponentLookupError:
+            # The component architecture is not up and running.
+            pass
+        else:
+            if value is not None:
+                return value
+
+        try:
+            value = self.context.resolve('zope.app.layers.'+name)
+        except (ConfigurationError, ValueError), v:
+            try:
+                value = self.context.resolve(name)
+            except ConfigurationError, v:
+                raise zope.schema.ValidationError(v)
+
+        self.validate(value)
+        return value

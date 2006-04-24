@@ -23,7 +23,7 @@ import zope.interface
 import zope.schema
 from zope.component.zcml import IBasicComponentInformation
 
-import zope.app.component.fields
+from zope.app.component.back35 import LayerField
 from zope.app.i18n import ZopeMessageFactory as _
 
 class IDefaultViewName(zope.interface.Interface):
@@ -59,7 +59,7 @@ class IBasicViewInformation(zope.interface.Interface):
         )
 
     # BBB 2006/02/18, to be removed after 12 months
-    layer = zope.app.component.fields.LayerField(
+    layer = LayerField(
         title=_("The layer the view is in."),
         description=_("""
         A skin is composed of layers. It is common to put skin
@@ -186,7 +186,7 @@ class IResourceDirective(IBasicComponentInformation,
     """Register a resource"""
 
     # BBB 2006/02/18, to be removed after 12 months
-    layer = zope.app.component.fields.LayerField(
+    layer = LayerField(
         title=_("The layer the resource is in.  This argument has been "
                 "deprecated and will be removed in Zope 3.5.  Use the "
                 "'type' argument instead."),
