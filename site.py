@@ -359,7 +359,8 @@ zope.deferredimport.deprecatedFrom(
     "will go away in Zope 3.5.  See the new component-registration APIs "
     "defined in zope.component, especially IComponentRegistry.",
     'zope.app.component.back35',
-    'LocalAdapterRegistry', 'LocalUtilityRegistry', 'UtilityRegistration',
+    'LocalAdapterRegistry', 'AdapterRegistration',
+    'LocalUtilityRegistry', 'UtilityRegistration',
     )
 
 def threadSiteSubscriber(ob, event):
