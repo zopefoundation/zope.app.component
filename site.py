@@ -137,7 +137,6 @@ def _findNextSiteManager(site):
             return site.getSiteManager()
 
 
-
 class _LocalAdapterRegistry(
     zope.component.persistentregistry.PersistentAdapterRegistry,
     zope.location.Location,
@@ -354,13 +353,12 @@ class LocalSiteManager(BTreeContainer,
         for r in self.registeredSubscriptionAdapters():
             yield r
 
-zope.deferredimport.deprecatedFrom(
+zope.deferredimport.deprecated(
     "Local registration is now much simpler.  The old baroque APIs "
     "will go away in Zope 3.5.  See the new component-registration APIs "
     "defined in zope.component, especially IComponentRegistry.",
-    'zope.app.component.back35',
-    'LocalAdapterRegistry', 'AdapterRegistration',
-    'LocalUtilityRegistry', 'UtilityRegistration',
+    LocalAdapterRegistry = 'zope.app.component.site:_LocalAdapterRegistry',
+    LocalUtilityRegistry = 'zope.app.component.site:_LocalAdapterRegistry',
     )
 
 def threadSiteSubscriber(ob, event):

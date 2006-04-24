@@ -19,7 +19,7 @@ zope.deferredimport.deprecated(
     "Local registration is now much simpler.  The old baroque APIs "
     "will go away in Zope 3.5.  See the new component-registration APIs "
     "defined in zope.component, especially IComponentRegistry.",
-    LocalAdapterRegistry = 'zope.app.component.back35.AdapterRegistry',
-    AdapterRegistration = 'zope.app.component.back35.AdapterRegistration2',
+    LocalAdapterRegistry = 'zope.app.component.site:_LocalAdapterRegistry',
+    AdapterRegistration = 'zope.app.component.back35:AdapterRegistration2',
     )
 
