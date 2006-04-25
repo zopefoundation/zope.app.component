@@ -27,8 +27,18 @@ from zope.component.interfaces import IDefaultViewName, IFactory
 from zope.configuration.exceptions import ConfigurationError
 from zope.security.checker import CheckerPublic
 from zope.security.checker import Checker, NamesChecker
+import zope.deferredimport
 
 PublicPermission = 'zope.Public'
+
+zope.deferredimport.deprecatedFrom(
+    "Moved to zope.component.zcml. Importing from here will stop working "
+    "in Zope 3.5",
+    "zope.component.zcml",
+    "handler", "adapter", "subscriber", "utility", "interface",
+    )
+    
+
 
 # BBB 2006/02/24, to be removed after 12 months
 def factory(_context, component, id, title=None, description=None):
