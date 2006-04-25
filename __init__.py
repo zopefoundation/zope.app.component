@@ -17,7 +17,6 @@ $Id$
 """
 __docformat__ = "reStructuredText"
 import zope.component
-import zope.app.component.interfaces
 
 _marker = object()
 
@@ -37,7 +36,7 @@ def queryNextSiteManager(context, default=None):
     `default` is returned.
     """
     sm = zope.component.getSiteManager(context)
-    if not zope.app.component.interfaces.ILocalSiteManager.providedBy(sm):
+    if sm is zope.component.getGlobalSiteManager():
         return default
 
     bases = sm.__bases__
