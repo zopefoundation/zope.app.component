@@ -138,13 +138,17 @@ def _findNextSiteManager(site):
 
 
 class _LocalAdapterRegistry(
+    zope.app.component.back35._LocalAdapterRegistryGeneration3SupportMixin,
     zope.component.persistentregistry.PersistentAdapterRegistry,
     zope.location.Location,
     ):
     pass
 
-class LocalSiteManager(BTreeContainer,
-                       zope.component.persistentregistry.PersistentComponents):
+class LocalSiteManager(
+    BTreeContainer,
+    zope.app.component.back35.LocalSiteGeneration3SupportMixin,
+    zope.component.persistentregistry.PersistentComponents,
+    ):
     """Local Site Manager implementation"""
     zope.interface.implements(interfaces.ILocalSiteManager)
 
@@ -359,6 +363,8 @@ zope.deferredimport.deprecated(
     "defined in zope.component, especially IComponentRegistry.",
     LocalAdapterRegistry = 'zope.app.component.site:_LocalAdapterRegistry',
     LocalUtilityRegistry = 'zope.app.component.site:_LocalAdapterRegistry',
+    UtilityRegistration = 'zope.app.component.back35:UtilityRegistration',
+    AdaptersRegistration = 'zope.app.component.back35:AdaptersRegistration',
     )
 
 def threadSiteSubscriber(ob, event):

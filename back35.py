@@ -15,8 +15,17 @@
 
 $Id$
 """
+
+import UserDict
+import warnings
+
+import persistent
+import persistent.list
+import persistent.mapping
+
 from persistent import Persistent
 
+import zope.cachedescriptors.property
 import zope.event
 import zope.schema
 import zope.interface.adapter
@@ -373,7 +382,7 @@ class RegistrationStatusProperty(object):
             raise ValueError(value)
 
 
-class SimpleRegistration(Persistent, Contained):
+class SimpleRegistration(persistent.Persistent, Contained):
     """Registration objects that just contain registration data"""
     implements(IRegistration, IRegistrationManagerContained)
 
@@ -770,3 +779,132 @@ class LayerField(GlobalObject):
 
         self.validate(value)
         return value
+
+
+class LocalSiteGeneration3SupportMixin:
+
+    @zope.cachedescriptors.property.readproperty
+    def _utility_registrations(self):
+        return _OldUtilityRegistrations(
+            self, 'utilities', '_utility_registrations')
+
+    @zope.cachedescriptors.property.readproperty
+    def _adapter_registrations(self):
+        return _OldAdapterRegistrations(
+            self, 'adapters', '_adapter_registrations')
+
+    @zope.cachedescriptors.property.readproperty
+    def _subscription_registrations(self):
+        return _OldSubscriberRegistrations(self, '_subscription_registrations')
+
+    @zope.cachedescriptors.property.readproperty
+    def _handler_registrations(self):
+        return _OldSubscriberRegistrations(self, '_handler_registrations')
+
+    def _evolve_to_generation_4(self):
+        self._utility_registrations.update(())
+        self._adapter_registrations.update(())
+        self._subscription_registrations.extend(())
+        self._handler_registrations.extend(())
+        for sub in self.subs:
+            sub._evolve_to_generation_4()
+        
+
+class _OldUtilityRegistrations(UserDict.DictMixin):
+
+    def __init__(self, site, rname, name):
+        self.site = site
+        self.rname = rname
+        self.__name__ = name
+
+    def _getOldRegistrations(self):
+        return getattr(self.site, self.rname)._registrations
+
+    def __getitem__(self, key):
+        (provided, name) = key
+        for r in self._getOldRegistrations():
+            if r.name == name and r.provided == provided:
+                return r.component, u''
+        raise KeyError, key
+
+    def keys(self):
+        return [
+            (r.provided, r.name)
+            for r in self._getOldRegistrations()
+            ]
+
+    def update(self, other):
+        newregistrations = persistent.mapping.PersistentMapping()
+        for r in self._getOldRegistrations():
+            newregistrations[(r.provided, r.name)] = r.component, u''
+
+        # finish the conversion of the utilities:
+        del getattr(self.site, self.rname)._registrations
+
+        for key, value in dict(other).iteritems():
+            newregistrations[key] = value
+
+        setattr(self.site, self.__name__, newregistrations)
+
+    def __setitem__(self, *args):
+        self.update(args)
+
+class _OldAdapterRegistrations(_OldUtilityRegistrations):
+
+    def _getOldRegistrations(self):
+        if self.site.adapters._registrations:
+            warnings.warn(
+                "Old non-utility registrations are not supported and will not "
+                "be converted",
+                DeprecationWarning)
+        return ()
+
+
+class _OldSubscriberRegistrations(object):
+
+    def __init__(self, site, name):
+        self.site = site
+        self.__name__ = name
+
+    def __iter__(self):
+        return iter(())
+
+    def __setslice__(self, i, j, other):
+        assert i == 0
+        self.extend(other)
+
+    def extend(self, other):
+        assert not other
+        setattr(self.site, self.__name__, persistent.list.PersistentList())
+
+    def append(self, value):
+        setattr(self.site, self.__name__,
+                persistent.list.PersistentList([value]),
+                )
+
+class _LocalAdapterRegistryGeneration3SupportMixin(object):
+
+    def __setstate__(self, state):
+        if '_registrations' in state:
+            # convert data to generation 3 data structure:
+            next = state['next']
+            if next is None:
+                next = state['base']
+            bases = (next, )
+            self.__init__(bases)
+            registrations = []
+            for r in state['_registrations']:
+                if isinstance(r, UtilityRegistration):
+                    self.register((), r.provided, r.name, r.component)
+                    registrations.append(r)
+                else:
+                    warnings.warn(
+                        "Old %s registrations are not supported and will not "
+                        "be converted" % r.__class__.__name__,
+                        DeprecationWarning)
+            
+            self._registrations = tuple(registrations)
+        else:
+            super(_LocalAdapterRegistryGeneration3SupportMixin, self
+                  ).__setstate__(state)
+                    
