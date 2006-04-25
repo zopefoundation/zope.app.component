@@ -219,6 +219,10 @@ Let's try to do so in a separate connection:
     >>> sm3.getUtility(IFoo, '5') is sm3['default']['5']
     True
 
+    >>> sorted([r.name for r in sm2.registeredUtilities()])
+    [u'2', u'3', u'4']
+
+
 Because we registered utilities, the corresponding data structures
 have been updated:
 

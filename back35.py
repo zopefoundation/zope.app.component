@@ -846,8 +846,8 @@ class _OldUtilityRegistrations(UserDict.DictMixin):
 
         setattr(self.site, self.__name__, newregistrations)
 
-    def __setitem__(self, *args):
-        self.update(args)
+    def __setitem__(self, k, v):
+        self.update([(k, v)])
 
 class _OldAdapterRegistrations(_OldUtilityRegistrations):
 
