@@ -18,12 +18,12 @@ $Id$
 __docformat__ = 'restructuredtext'
 
 import zope.configuration.fields
+import zope.security.zcml
 import zope.interface
 import zope.schema
+from zope.component.zcml import IBasicComponentInformation
 
-import zope.app.security.fields
-import zope.app.component.fields
-
+from zope.app.component.back35 import LayerField
 from zope.app.i18n import ZopeMessageFactory as _
 
 class IDefaultViewName(zope.interface.Interface):
@@ -32,33 +32,6 @@ class IDefaultViewName(zope.interface.Interface):
     A default view name is used to select a view when a user hasn't
     specified one.
     """
-
-class IBasicComponentInformation(zope.interface.Interface):
-
-    component = zope.configuration.fields.GlobalObject(
-        title=_("Component to use"),
-        description=_("Python name of the implementation object.  This"
-                      " must identify an object in a module using the"
-                      " full dotted name.  If specified, the"
-                      " ``factory`` field must be left blank."),
-        required=False,
-        )
-
-    permission = zope.app.security.fields.Permission(
-        title=_("Permission"),
-        description=_("Permission required to use this component."),
-        required=False,
-        )
-
-    factory = zope.configuration.fields.GlobalObject(
-        title=_("Factory"),
-        description=_("Python name of a factory which can create the"
-                      " implementation object.  This must identify an"
-                      " object in a module using the full dotted name."
-                      " If specified, the ``component`` field must"
-                      " be left blank."),
-        required=False,
-        )
 
 class IBasicViewInformation(zope.interface.Interface):
     """This is the basic information for all views."""
@@ -73,7 +46,7 @@ class IBasicViewInformation(zope.interface.Interface):
           ),
         )
 
-    permission = zope.app.security.fields.Permission(
+    permission = zope.security.zcml.Permission(
         title=_("Permission"),
         description=_("The permission needed to use the view."),
         required=False,
@@ -86,7 +59,7 @@ class IBasicViewInformation(zope.interface.Interface):
         )
 
     # BBB 2006/02/18, to be removed after 12 months
-    layer = zope.app.component.fields.LayerField(
+    layer = LayerField(
         title=_("The layer the view is in."),
         description=_("""
         A skin is composed of layers. It is common to put skin
@@ -147,175 +120,6 @@ class IBasicResourceInformation(zope.interface.Interface):
         required=True
         )
 
-class IInterfaceDirective(zope.interface.Interface):
-    """
-    Define an interface
-    """
-
-    interface = zope.configuration.fields.GlobalInterface(
-        title=_("Interface"),
-        required=True,
-        )
-
-    type = zope.configuration.fields.GlobalInterface(
-        title=_("Interface type"),
-        required=False,
-        )
-
-    name = zope.schema.TextLine(
-        title=_("Name"),
-        required=False,
-        )
-
-class IAdapterDirective(zope.interface.Interface):
-    """
-    Register an adapter
-    """
-
-    factory = zope.configuration.fields.Tokens(
-        title=_("Adapter factory/factories"),
-        description=_("A list of factories (usually just one) that create"
-                      " the adapter instance."),
-        required=True,
-        value_type=zope.configuration.fields.GlobalObject()
-        )
-
-    provides = zope.configuration.fields.GlobalInterface(
-        title=_("Interface the component provides"),
-        description=_("This attribute specifies the interface the adapter"
-                      " instance must provide."),
-        required=False,
-        )
-
-    for_ = zope.configuration.fields.Tokens(
-        title=_("Specifications to be adapted"),
-        description=_("This should be a list of interfaces or classes"),
-        required=False,
-        value_type=zope.configuration.fields.GlobalObject(
-          missing_value=object(),
-          ),
-        )
-
-    permission = zope.app.security.fields.Permission(
-        title=_("Permission"),
-        description=_("This adapter is only available, if the principal"
-                      " has this permission."),
-        required=False,
-        )
-
-    name = zope.schema.TextLine(
-        title=_("Name"),
-        description=_("Adapters can have names.\n\n"
-                      "This attribute allows you to specify the name for"
-                      " this adapter."),
-        required=False,
-        )
-
-    trusted = zope.configuration.fields.Bool(
-        title=_("Trusted"),
-        description=_("""Make the adapter a trusted adapter
-
-        Trusted adapters have unfettered access to the objects they
-        adapt.  If asked to adapt security-proxied objects, then,
-        rather than getting an unproxied adapter of security-proxied
-        objects, you get a security-proxied adapter of unproxied
-        objects.
-        """),
-        required=False,
-        default=False,
-        )
-
-    locate = zope.configuration.fields.Bool(
-        title=_("Locate"),
-        description=_("""Make the adapter a locatable adapter
-
-        Located adapter should be used if a non-public permission
-        is used.
-        """),
-        required=False,
-        default=False,
-        )
-
-class ISubscriberDirective(zope.interface.Interface):
-    """
-    Register a subscriber
-    """
-
-    factory = zope.configuration.fields.GlobalObject(
-        title=_("Subscriber factory"),
-        description=_("A factory used to create the subscriber instance."),
-        required=False,
-        )
-
-    handler = zope.configuration.fields.GlobalObject(
-        title=_("Handler"),
-        description=_("A callable object that handles events."),
-        required=False,
-        )
-
-    provides = zope.configuration.fields.GlobalInterface(
-        title=_("Interface the component provides"),
-        description=_("This attribute specifies the interface the adapter"
-                      " instance must provide."),
-        required=False,
-        )
-
-    for_ = zope.configuration.fields.Tokens(
-        title=_("Interfaces or classes that this subscriber depends on"),
-        description=_("This should be a list of interfaces or classes"),
-        required=False,
-        value_type=zope.configuration.fields.GlobalObject(
-          missing_value = object(),
-          ),
-        )
-
-    permission = zope.app.security.fields.Permission(
-        title=_("Permission"),
-        description=_("This subscriber is only available, if the"
-                      " principal has this permission."),
-        required=False,
-        )
-
-    trusted = zope.configuration.fields.Bool(
-        title=_("Trusted"),
-        description=_("""Make the subscriber a trusted subscriber
-
-        Trusted subscribers have unfettered access to the objects they
-        adapt.  If asked to adapt security-proxied objects, then,
-        rather than getting an unproxied subscriber of security-proxied
-        objects, you get a security-proxied subscriber of unproxied
-        objects.
-        """),
-        required=False,
-        default=False,
-        )
-
-    locate = zope.configuration.fields.Bool(
-        title=_("Locate"),
-        description=_("""Make the subscriber a locatable subscriber
-
-        Located subscribers should be used if a non-public permission
-        is used.
-        """),
-        required=False,
-        default=False,
-        )
-
-class IUtilityDirective(IBasicComponentInformation):
-    """Register a utility."""
-
-    provides = zope.configuration.fields.GlobalInterface(
-        title=_("Provided interface"),
-        description=_("Interface provided by the utility."),
-        required=False,
-        )
-
-    name = zope.schema.TextLine(
-        title=_("Name"),
-        description=_("Name of the registration.  This is used by"
-                      " application code when locating a utility."),
-        required=False,
-        )
 
 # BBB 2006/02/24, to be removed after 12 months
 class IFactoryDirective(zope.interface.Interface):
@@ -382,7 +186,7 @@ class IResourceDirective(IBasicComponentInformation,
     """Register a resource"""
 
     # BBB 2006/02/18, to be removed after 12 months
-    layer = zope.app.component.fields.LayerField(
+    layer = LayerField(
         title=_("The layer the resource is in.  This argument has been "
                 "deprecated and will be removed in Zope 3.5.  Use the "
                 "'type' argument instead."),
@@ -427,7 +231,7 @@ class IRequireSubdirective(zope.interface.Interface):
     given Interface require a given permission for access.
     """
 
-    permission = zope.app.security.fields.Permission(
+    permission = zope.security.zcml.Permission(
         title=_("Permission"),
         description=_("""
         Specifies the permission by id that will be required to

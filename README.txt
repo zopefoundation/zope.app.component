@@ -69,7 +69,7 @@ raised, since there is no site manager beyond the global site manager:
   >>> component.getNextSiteManager(object())
   Traceback (most recent call last):
   ...
-  ComponentLookupError: 'No more site managers have been found.'
+  ComponentLookupError: No more site managers have been found.
 
 If you use the `queryNextSiteManager()` function, you can specify a `default`
 return value:
@@ -94,7 +94,7 @@ inserting it in our folder hiearchy:
   ...         return "%s('%s')" %(self.__class__.__name__, self.id)  
 
   >>> gutil = MyUtility('global') 
-  >>> gsm.provideUtility(IMyUtility, gutil, 'myutil')
+  >>> gsm.registerUtility(gutil, IMyUtility, 'myutil')
 
   >>> util1 = setup.addUtility(folder1_sm, 'myutil', IMyUtility, 
   ...                          MyUtility('one'))
@@ -120,8 +120,8 @@ However, if we ask the global utility for the next one, an error is raised
   Traceback (most recent call last):
   ...  
   ComponentLookupError: 
-  "No more utilities for <InterfaceClass __builtin__.IMyUtility>, 
-  'myutil' have been found."
+  No more utilities for <InterfaceClass __builtin__.IMyUtility>, 
+  'myutil' have been found.
 
 or you can simply use the `queryNextUtility` and specify a default:
 

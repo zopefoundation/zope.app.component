@@ -15,26 +15,23 @@
 
 $Id$
 """
-from zope.component.interfaces import ISiteManager
+import zope.component
+from zope.exceptions.interfaces import UserError
 from zope.security.proxy import removeSecurityProxy
-from zope.app import zapi
-from zope.app.container.browser.adding import Adding
-from zope.app.i18n import ZopeMessageFactory as _
-from zope.app.container.interfaces import INameChooser
-from zope.app.component.interfaces.registration import ActiveStatus
-from zope.app.component.interfaces.registration import InactiveStatus
-from zope.app.component.interfaces import ILocalUtility
-from zope.app.publisher.browser import BrowserView
-from zope.app.component.interfaces import ISite
-from zope.app.component.site import LocalSiteManager
-from zope.component.exceptions import ComponentLookupError
+from zope.publisher.browser import BrowserView
+from zope.component.interfaces import ComponentLookupError
 from zope.component.interfaces import IFactory
+from zope.component.interface import getInterface, provideInterface
+from zope.component.interface import searchInterface
 from zope.interface.interfaces import IMethod
 from zope.schema.interfaces import IField
+
+from zope.app.i18n import ZopeMessageFactory as _
+from zope.app.container.interfaces import INameChooser
+from zope.app.container.browser.adding import Adding
 from zope.app.interface.interfaces import IInterfaceBasedRegistry
-from zope.app.component.interface import searchInterface
-from zope.app.component.interface import getInterface
-from zope.app.component.interface import provideInterface
+from zope.app.component.site import LocalSiteManager
+from zope.app.component.interfaces import ISite
 
 class ComponentAdding(Adding):
     """Adding subclass used for registerable components."""
@@ -47,10 +44,10 @@ class ComponentAdding(Adding):
         return self.added_object
 
     def nextURL(self):
-        v = zapi.queryMultiAdapter(
+        v = zope.component.queryMultiAdapter(
             (self.added_object, self.request), name="registration.html")
         if v is not None:
-            url = str(zapi.getMultiAdapter(
+            url = str(zope.component.getMultiAdapter(
                 (self.added_object, self.request), name='absolute_url'))
             return url + "/@@registration.html"
 
@@ -85,7 +82,7 @@ class ComponentAdding(Adding):
             if extra:
                 factoryname = extra.get('factory')
                 if factoryname:
-                    factory = zapi.getUtility(IFactory, factoryname)
+                    factory = zope.component.getUtility(IFactory, factoryname)
                     intf = factory.getInterfaces()
                     if not intf.extends(self._addFilterInterface):
                         # We only skip new addMenuItem style objects
@@ -103,19 +100,11 @@ class UtilityAdding(ComponentAdding):
     menu_id = None
     title = _("Add Utility")
 
-    _addFilterInterface = ILocalUtility
-
-    def add(self, content):
-        # Override so as to check the type of the new object.
-        if not ILocalUtility.providedBy(content):
-            raise TypeError("%s is not a local utility" % content)
-        return super(UtilityAdding, self).add(content)
-
     def nextURL(self):
-        v = zapi.queryMultiAdapter(
+        v = zope.component.queryMultiAdapter(
             (self.added_object, self.request), name="addRegistration.html")
         if v is not None:
-            url = zapi.absoluteURL(self.added_object, self.request)
+            url = zope.component.absoluteURL(self.added_object, self.request)
             return url + "/addRegistration.html"
 
         return super(UtilityAdding, self).nextURL()
@@ -127,7 +116,7 @@ class MakeSite(BrowserView):
     def addSiteManager(self):
         """Convert a possible site to a site
 
-        >>> from zope.app.traversing.interfaces import IContainmentRoot
+        >>> from zope.traversing.interfaces import IContainmentRoot
         >>> from zope.interface import implements
 
         >>> class PossibleSite(object):
@@ -168,7 +157,7 @@ class MakeSite(BrowserView):
 
         """
         if ISite.providedBy(self.context):
-            raise zapi.UserError('This is already a site')
+            raise UserError('This is already a site')
 
         # We don't want to store security proxies (we can't,
         # actually), so we have to remove proxies here before passing

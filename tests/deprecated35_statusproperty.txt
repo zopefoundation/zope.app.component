@@ -107,7 +107,7 @@ Now we switch our registration to active:
   >>> reg.status = ActiveStatus
   >>> event = events.pop()
   >>> event.__class__
-  <class 'zope.app.component.registration.RegistrationActivatedEvent'>
+  <class 'zope.component.interfaces.Registered'>
   >>> event.object is reg
   True
 
@@ -115,7 +115,7 @@ and deactivate it again:
 
   >>> reg.status = InactiveStatus
   >>> events.pop().__class__
-  <class 'zope.app.component.registration.RegistrationDeactivatedEvent'>
+  <class 'zope.component.interfaces.Unregistered'>
   >>> event.object is reg
   True
 

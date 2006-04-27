@@ -5,17 +5,12 @@
 <form tal:attributes="action request/URL" 
       method="POST"
       >
-
   <div tal:condition="not:view/registrations">
-    <p i18n:translate="">
-      This object isn't yet registered.  Click 
-      <a href="@@addRegistration.html">here</a>
-      to register the object.
-    </p>
+    <p i18n:translate="">Nothing is registered for this site.</p>
   </div>
   <div tal:condition="view/registrations">
     <p i18n:translate="">
-      This object is registered:
+      Registrations for this site:
     </p>
     <table>
       <tr tal:repeat="registration view/registrations">
@@ -28,6 +23,7 @@
                   />
          </td>
          <td tal:content="structure registration/render">
+           <a href="foo/bar">foo/bar</a><br />
            zope.app.fooIFoo utility named bob
            comment: needed a bob
          </td>
@@ -40,10 +36,6 @@
         </td>
       </tr>
     </table>
-    <p>
-      Click <a href="@@addRegistration.html">here</a>
-      to register the object again.
-    </p>
   </div>
 
 </form>

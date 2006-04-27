@@ -19,19 +19,16 @@ $Id$
 """
 __docformat__ = "reStructuredText"
 
+import zope.component
 from zope.interface import implements, classProvides, Interface
 from zope.interface.interfaces import IInterface
 from zope.interface.verify import verifyObject
 from zope.schema.interfaces import IVocabulary, IVocabularyTokenized
-from zope.schema.interfaces import ITokenizedTerm
+from zope.schema.interfaces import ITokenizedTerm, IVocabularyFactory
 
-from zope.app import zapi
 from zope.app.i18n import ZopeMessageFactory as _
-from zope.app.schema.interfaces import IVocabularyFactory
 from zope.app.interface.vocabulary import ObjectInterfacesVocabulary
-
-from zope.app.component.interfaces import IUtilityRegistration
-
+from zope.component.interfaces import IUtilityRegistration
 
 class UtilityTerm(object):
     """A term representing a utility.
@@ -191,10 +188,10 @@ class UtilityVocabulary(object):
             self.nameOnly = bool(kw.get('nameOnly', False))
             interface = kw.get('interface', Interface)
             if isinstance(interface, (str, unicode)):
-                interface = zapi.getUtility(IInterface, interface)
+                interface = zope.component.getUtility(IInterface, interface)
             self.interface = interface
 
-        utils = zapi.getUtilitiesFor(self.interface, context)
+        utils = zope.component.getUtilitiesFor(self.interface, context)
         self._terms = dict(
             (name, UtilityTerm(self.nameOnly and name or util, name))
             for name, util in utils)
@@ -349,7 +346,7 @@ class UtilityNames:
         self.interface = interface
 
     def __contains__(self, value):
-        return zapi.queryUtility(self.interface, value) is not None
+        return zope.component.queryUtility(self.interface, value) is not None
 
     def getTerm(self, value):
         if value in self:
@@ -357,7 +354,7 @@ class UtilityNames:
         raise ValueError(value)
 
     def getTermByToken(self, token):
-        for name, ut in zapi.getUtilitiesFor(self.interface):
+        for name, ut in zope.component.getUtilitiesFor(self.interface):
             name = unicode(name)
             if token == "t":
                 if not name:
@@ -369,9 +366,9 @@ class UtilityNames:
         return self.getTerm(name)
 
     def __iter__(self):
-        for name, ut in zapi.getUtilitiesFor(self.interface):
+        for name, ut in zope.component.getUtilitiesFor(self.interface):
             yield UtilityNameTerm(name)
 
     def __len__(self):
         """Return the number of valid terms, or sys.maxint."""
-        return len(list(zapi.getUtilitiesFor(self.interface)))
+        return len(list(zope.component.getUtilitiesFor(self.interface)))

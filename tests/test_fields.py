@@ -21,7 +21,7 @@ from zope.app.testing import placelesssetup
 
 def test_suite():
     return unittest.TestSuite((
-        DocTestSuite('zope.app.component.fields',
+        DocTestSuite('zope.app.component.back35',
                      setUp=placelesssetup.setUp,
                      tearDown=placelesssetup.tearDown),
         ))

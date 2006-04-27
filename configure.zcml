@@ -3,14 +3,10 @@
   <interface interface="zope.interface.Interface" />
 
 
-  <!-- Registration Framework -->
-
-  <class class=".registration.RegistrationManager">
-    <factory
-        id="zope.app.component.RegistrationManager"
-        title="Registration Manager" />
+  <!-- Registration Framework Goes away in 3.5-->  
+  <class class=".back35.RegistrationManager">
     <implements
-        interface="zope.app.annotation.interfaces.IAttributeAnnotatable"
+        interface="zope.annotation.interfaces.IAttributeAnnotatable"
         />
     <require
         permission="zope.ManageSite"
@@ -24,50 +20,15 @@
   <!-- ++registrations++ namespace registrations -->
   <view
       name="registrations" type="*"
-      for=".interfaces.registration.IRegisterableContainer"
-      provides="zope.app.traversing.interfaces.ITraversable"
-      factory=".registration.RegistrationManagerNamespace"
+      for=".back35.IRegisterableContainer"
+      provides="zope.traversing.interfaces.ITraversable"
+      factory=".back35.RegistrationManagerNamespace"
       />
   <adapter
       name="registrations"
-      for=".interfaces.registration.IRegisterableContainer"
-      provides="zope.app.traversing.interfaces.ITraversable"
-      factory=".registration.RegistrationManagerNamespace"
-      />
-
-  <class class=".registration.Registered">
-    <allow attributes="registrations" />
-  </class>
-
-  <adapter
-      for=".interfaces.registration.IRegisterable"
-      provides=".interfaces.registration.IRegistered"
-      factory=".registration.Registered"
-      trusted="true"
-      />
-
-  <subscriber
-      for=".interfaces.registration.IComponentRegistration
-           zope.app.container.interfaces.IObjectRemovedEvent"
-      handler=".registration.ComponentRegistrationRemoveSubscriber"
-      />
-
-  <subscriber
-      for=".interfaces.registration.IComponentRegistration
-           zope.app.container.interfaces.IObjectAddedEvent"
-      handler=".registration.ComponentRegistrationAddSubscriber"
-      />
-
-  <subscriber
-      for=".interfaces.registration.IComponentRegistration
-           .interfaces.registration.IRegistrationEvent"
-      handler=".registration.componentRegistrationEventNotify"
-      />
-
-  <subscriber
-      for=".interfaces.registration.IRegisterable
-           zope.app.container.interfaces.IObjectMovedEvent"
-      handler=".registration.RegisterableMoveSubscriber"
+      for=".back35.IRegisterableContainer"
+      provides="zope.traversing.interfaces.ITraversable"
+      factory=".back35.RegistrationManagerNamespace"
       />
 
 
@@ -79,38 +40,27 @@
 
   <class class=".site.LocalSiteManager">
     <implements
-        interface="zope.app.annotation.interfaces.IAttributeAnnotatable" />
+        interface="zope.annotation.interfaces.IAttributeAnnotatable" />
     <require
         permission="zope.ManageSite"
         interface="zope.app.container.interfaces.IReadContainer" />
     <require
         permission="zope.ManageSite"
-        interface="zope.component.interfaces.ISiteManager
+        interface="zope.component.interfaces.IComponentLookup
                    zope.app.container.interfaces.IWriteContainer" />
   </class>
 
-  <!-- TODO: We allow these attributes to be changed. We need some subscriber
-       that updated the registries once attributes change. -->
-  <class class=".site.AdapterRegistration">
+  <class class="zope.component.registry.UtilityRegistration">    
     <require
         permission="zope.ManageSite"
-        interface=".interfaces.IAdapterRegistration"
-        set_schema=".interfaces.IAdapterRegistration"
-        />
-  </class>
-
-  <class class=".site.UtilityRegistration">    
-    <require
-        permission="zope.ManageSite"
-        interface=".interfaces.IUtilityRegistration"
-        set_schema=".interfaces.IUtilityRegistration" 
+        interface="zope.component.interfaces.IUtilityRegistration"
         />
   </class>
 
   <class class=".site.SiteManagementFolder">
     <factory />
     <implements
-        interface="zope.app.annotation.interfaces.IAttributeAnnotatable"
+        interface="zope.annotation.interfaces.IAttributeAnnotatable"
         />
     <require
         permission="zope.ManageSite"
@@ -123,15 +73,15 @@
   </class>
   
   <adapter 
-      for="zope.component.interfaces.ISiteManager"
-      provides="zope.app.filerepresentation.interfaces.IDirectoryFactory"
+      for="zope.component.interfaces.IComponentLookup"
+      provides="zope.filerepresentation.interfaces.IDirectoryFactory"
       factory=".site.SMFolderFactory"
       permission="zope.ManageContent"
       />
 
   <adapter
       for="zope.interface.Interface" 
-      provides="zope.component.interfaces.ISiteManager"
+      provides="zope.component.interfaces.IComponentLookup"
       factory=".site.SiteManagerAdapter"
       />
 
@@ -167,7 +117,7 @@
 
   <utility
       component=".vocabulary.UtilityComponentInterfacesVocabulary"
-      provides="zope.app.schema.interfaces.IVocabularyFactory"
+      provides="zope.schema.interfaces.IVocabularyFactory"
       name="Utility Component Interfaces"
       />
 

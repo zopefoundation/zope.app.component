@@ -2,32 +2,9 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:meta="http://namespaces.zope.org/meta">
 
+  <include package="zope.component" file="meta.zcml" />
+
   <meta:directives namespace="http://namespaces.zope.org/zope">
-
-    <meta:directive
-        name="interface"
-        schema=".metadirectives.IInterfaceDirective"
-        handler="zope.app.component.metaconfigure.interface"
-        />
-
-    <meta:directive
-        name="adapter"
-        schema=".metadirectives.IAdapterDirective"
-        handler="zope.app.component.metaconfigure.adapter"
-        />
-
-    <meta:directive
-        name="subscriber"
-        schema=".metadirectives.ISubscriberDirective"
-        handler="zope.app.component.metaconfigure.subscriber"
-        />
-
-
-    <meta:directive
-        name="utility"
-        schema=".metadirectives.IUtilityDirective"
-        handler="zope.app.component.metaconfigure.utility"
-        />
 
     <!-- BBB 2006/02/24, to be removed after 12 months -->
     <meta:directive

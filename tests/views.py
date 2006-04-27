@@ -15,7 +15,12 @@
 
 $Id: views.py 26551 2004-07-15 07:06:37Z srichter $
 """
-from zope.interface import Interface, implements
+from zope.interface import Interface, implements, directlyProvides
+
+class Request(object):
+
+    def __init__(self, type):
+        directlyProvides(self, type)
 
 class IR(Interface):
     pass

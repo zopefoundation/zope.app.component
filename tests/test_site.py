@@ -19,6 +19,7 @@ __docformat__ = "reStructuredText"
 import unittest
 
 import zope.interface
+import zope.interface.verify
 from zope.testing import doctest
 
 from zope.app.testing import setup

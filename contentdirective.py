@@ -20,20 +20,19 @@ __docformat__ = 'restructuredtext'
 import warnings
 from types import ModuleType
 from persistent.interfaces import IPersistent
+
 from zope.component.interfaces import IFactory
 from zope.component.factory import Factory
+from zope.component.interface import provideInterface
+from zope.component.zcml import utility
 from zope.interface import classImplements
 from zope.schema.interfaces import IField
 from zope.configuration.exceptions import ConfigurationError
+from zope.location.interfaces import ILocation
+from zope.annotation.interfaces import IAttributeAnnotatable
 
-from zope.app.annotation.interfaces import IAttributeAnnotatable
-from zope.app.component.interface import provideInterface
-from zope.app.component.interfaces import ILocalUtility
-from zope.app.location.interfaces import ILocation
 from zope.app.security.protectclass import protectLikeUnto, protectName
 from zope.app.security.protectclass import protectSetAttribute
-
-from zope.app.component.metaconfigure import utility
 
 PublicPermission = 'zope.Public'
 
@@ -207,8 +206,6 @@ class LocalUtilityDirective(ClassDirective):
       >>> dir = LocalUtilityDirective(None, LU4)
       >>> IAttributeAnnotatable.implementedBy(LU4)
       True
-      >>> ILocalUtility.implementedBy(LU4)
-      True
 
       >>> LocalUtilityDirective(None, LU3)
       Traceback (most recent call last):
@@ -237,6 +234,5 @@ class LocalUtilityDirective(ClassDirective):
                                      '`IPersistent`.' % class_.__name__)
 
         classImplements(class_, IAttributeAnnotatable)
-        classImplements(class_, ILocalUtility)
 
         super(LocalUtilityDirective, self).__init__(_context, class_)

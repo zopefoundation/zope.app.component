@@ -18,254 +18,27 @@ $Id$
 __docformat__ = 'restructuredtext'
 
 import warnings
-import zope.interface
+import zope.component
 from zope import component
+from zope.interface import Interface
+from zope.component.zcml import handler, proxify, utility
+from zope.component.interface import provideInterface
 from zope.component.interfaces import IDefaultViewName, IFactory
 from zope.configuration.exceptions import ConfigurationError
-from zope.interface import Interface, providedBy
-from zope.interface.interfaces import IInterface
-from zope.proxy import ProxyBase, getProxiedObject
-
-from zope.security.checker import InterfaceChecker, CheckerPublic
+from zope.security.checker import CheckerPublic
 from zope.security.checker import Checker, NamesChecker
-from zope.security.proxy import Proxy
-
-from zope.app import zapi
-from zope.app.security.adapter import LocatingTrustedAdapterFactory
-from zope.app.security.adapter import LocatingUntrustedAdapterFactory
-from zope.app.security.adapter import TrustedAdapterFactory
+import zope.deferredimport
 
 PublicPermission = 'zope.Public'
 
-def handler(methodName, *args, **kwargs):
-    method=getattr(zapi.getGlobalSiteManager(), methodName)
-    method(*args, **kwargs)
+zope.deferredimport.deprecatedFrom(
+    "Moved to zope.component.zcml. Importing from here will stop working "
+    "in Zope 3.5",
+    "zope.component.zcml",
+    "handler", "adapter", "subscriber", "utility", "interface",
+    )
+    
 
-from zope.app.component.interface import provideInterface
-def interface(_context, interface, type=None, name=''):
-    _context.action(
-        discriminator = None,
-        callable = provideInterface,
-        args = (name, interface, type)
-        )
-
-
-class PermissionProxy(ProxyBase):
-
-    __slots__ = ('__Security_checker__', )
-
-    def __providedBy__(self):
-        return providedBy(getProxiedObject(self))
-    __providedBy__ = property(__providedBy__)
-
-def proxify(ob, checker):
-    """Try to get the object proxied with the `checker`, but not too soon
-
-    We really don't want to proxy the object unless we need to.
-    """
-
-    ob = PermissionProxy(ob)
-    ob.__Security_checker__ = checker
-    return ob
-
-_handler=handler
-def subscriber(_context, for_=None, factory=None, handler=None, provides=None,
-               permission=None, trusted=False, locate=False):
-
-
-    if factory is None:
-        if handler is None:
-            raise TypeError("No factory or handler provided")
-        if provides is not None:
-            raise TypeError("Cannot use handler with provides")
-        factory = handler
-    else:
-        if handler is not None:
-            raise TypeError("Cannot use handler with factory")
-        if provides is None:
-            import warnings
-            warnings.warn(
-                "\n  %s\n"
-                "Use of factory without provides to indicate a handler "
-                "is deprecated and will change it's meaning in Zope 3.3. "
-                "Use the handler attribute instead."
-                % _context.info,
-                DeprecationWarning)
-
-    if for_ is None:
-        for_ = component.adaptedBy(factory)
-        if for_ is None:
-            raise TypeError("No for attribute was provided and can't "
-                            "determine what the factory (or handler) adapts.")
-
-    if permission is not None:
-        if permission == PublicPermission:
-            permission = CheckerPublic
-        checker = InterfaceChecker(provides, permission)
-        factory = _protectedFactory(factory, checker)
-
-    for_ = tuple(for_)
-
-    # invoke custom adapter factories
-    if locate or (permission is not None and permission is not CheckerPublic):
-        if trusted:
-            factory = LocatingTrustedAdapterFactory(factory)
-        else:
-            factory = LocatingUntrustedAdapterFactory(factory)
-    else:
-        if trusted:
-            factory = TrustedAdapterFactory(factory)
-
-    _context.action(
-        discriminator = None,
-        callable = _handler,
-        args = ('subscribe',
-                for_, provides, factory, _context.info),
-        )
-
-    if provides is not None:
-        _context.action(
-            discriminator = None,
-            callable = provideInterface,
-            args = ('', provides)
-            )
-
-    # For each interface, state that the adapter provides that interface.
-    for iface in for_:
-        if iface is not None:
-            _context.action(
-                discriminator = None,
-                callable = provideInterface,
-                args = ('', iface)
-                )
-
-def adapter(_context, factory, provides=None, for_=None, permission=None,
-            name='', trusted=False, locate=False):
-
-    if for_ is None:
-        if len(factory) == 1:
-            for_ = component.adaptedBy(factory[0])
-
-        if for_ is None:
-            raise TypeError("No for attribute was provided and can't "
-                            "determine what the factory adapts.")
-
-    for_ = tuple(for_)
-
-    if provides is None:
-        if len(factory) == 1:
-            p = list(zope.interface.implementedBy(factory[0]))
-            if len(p) == 1:
-                provides = p[0]
-
-        if provides is None:
-            raise TypeError("Missing 'provides' attribute")
-
-    # Generate a single factory from multiple factories:
-    factories = factory
-    if len(factories) == 1:
-        factory = factories[0]
-    elif len(factories) < 1:
-        raise ValueError("No factory specified")
-    elif len(factories) > 1 and len(for_) != 1:
-        raise ValueError("Can't use multiple factories and multiple for")
-    else:
-        factory = _rolledUpFactory(factories)
-
-    if permission is not None:
-        if permission == PublicPermission:
-            permission = CheckerPublic
-        checker = InterfaceChecker(provides, permission)
-        factory = _protectedFactory(factory, checker)
-
-    # invoke custom adapter factories
-    if locate or (permission is not None and permission is not CheckerPublic):
-        if trusted:
-            factory = LocatingTrustedAdapterFactory(factory)
-        else:
-            factory = LocatingUntrustedAdapterFactory(factory)
-    else:
-        if trusted:
-            factory = TrustedAdapterFactory(factory)
-
-    _context.action(
-        discriminator = ('adapter', for_, provides, name),
-        callable = handler,
-        args = ('provideAdapter',
-                for_, provides, name, factory, _context.info),
-        )
-    _context.action(
-        discriminator = None,
-        callable = provideInterface,
-        args = ('', provides)
-               )
-    if for_:
-        for iface in for_:
-            if iface is not None:
-                _context.action(
-                    discriminator = None,
-                    callable = provideInterface,
-                    args = ('', iface)
-                    )
-
-def _rolledUpFactory(factories):
-    # This has to be named 'factory', aparently, so as not to confuse
-    # apidoc :(
-    def factory(ob):
-        for f in factories:
-            ob = f(ob)
-        return ob
-    # Store the original factory for documentation
-    factory.factory = factories[0]
-    return factory
-
-def _protectedFactory(original_factory, checker):
-    # This has to be named 'factory', aparently, so as not to confuse
-    # apidoc :(
-    def factory(*args):
-        ob = original_factory(*args)
-        try:
-            ob.__Security_checker__ = checker
-        except AttributeError:
-            ob = Proxy(ob, checker)
-
-        return ob
-    factory.factory = original_factory
-    return factory
-
-
-def utility(_context, provides=None, component=None, factory=None,
-            permission=None, name=''):
-    if factory:
-        if component:
-            raise TypeError("Can't specify factory and component.")
-        component = factory()
-
-    if provides is None:
-        provides = list(zope.interface.providedBy(component))
-        if len(provides) == 1:
-            provides = provides[0]
-        else:
-            raise TypeError("Missing 'provides' attribute")
-
-    if permission is not None:
-        if permission == PublicPermission:
-            permission = CheckerPublic
-        checker = InterfaceChecker(provides, permission)
-
-        component = proxify(component, checker)
-
-    _context.action(
-        discriminator = ('utility', provides, name),
-        callable = handler,
-        args = ('provideUtility',
-                provides, component, name),
-        )
-    _context.action(
-        discriminator = None,
-        callable = provideInterface,
-        args = (provides.__module__ + '.' + provides.getName(), provides)
-               )
 
 # BBB 2006/02/24, to be removed after 12 months
 def factory(_context, component, id, title=None, description=None):
@@ -343,8 +116,8 @@ def resource(_context, factory, type, name, layer=None,
     _context.action(
         discriminator = ('resource', name, type, provides),
         callable = handler,
-        args = ('provideAdapter',
-                (type,), provides, name, factory, _context.info),
+        args = ('registerAdapter',
+                factory, (type,), provides, name, _context.info),
         )
     _context.action(
         discriminator = None,
@@ -420,8 +193,8 @@ def view(_context, factory, type, name, for_, layer=None,
     _context.action(
         discriminator = ('view', for_, name, provides),
         callable = handler,
-        args = ('provideAdapter',
-                for_, provides, name, factory, _context.info),
+        args = ('registerAdapter',
+                factory, for_, provides, name, _context.info),
         )
     if type is not None:
         _context.action(
@@ -444,16 +217,16 @@ def view(_context, factory, type, name, for_, layer=None,
                     callable = provideInterface,
                     args = ('', iface)
                     )
-
 ############################################################################
 # BBB: Deprecated. Will go away in 3.3.
+
 def defaultView(_context, type, name, for_):
 
     _context.action(
         discriminator = ('defaultViewName', for_, type, name),
         callable = handler,
-        args = ('provideAdapter',
-                (for_, type), IDefaultViewName, '', name, _context.info)
+        args = ('registerAdapter',
+                 name, (for_, type), IDefaultViewName, '',_context.info)
         )
 
     _context.action(
@@ -473,8 +246,8 @@ deprecated('defaultView',
            'The zope:defaultView directive has been deprecated in favor of '
            'the browser:defaultView directive. '
            'Will be gone in Zope 3.3.')
-############################################################################
 
+############################################################################
 # BBB: Deprecated. Will go away in 3.4.
 def defaultLayer(_context, type, layer):
     import warnings

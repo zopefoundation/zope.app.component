@@ -16,8 +16,8 @@
 $Id$
 """
 import zope.interface
-from zope.component import site
-from zope.component.interfaces import ISiteManager
+from zope.component.interfaces import IComponentLookup
+from zope.app.component.interfaces import ILocalSiteManager
 from zope.app import zapi
 from zope.app.testing import setup
 from zope.app.testing.placelesssetup import PlacelessSetup
@@ -96,15 +96,15 @@ class PlacefulSetup(PlacelessSetup):
 
 
 class SiteManagerStub(object):
-    zope.interface.implements(ISiteManager)
+    zope.interface.implements(ILocalSiteManager)
     
-    next = None
+    __bases__ = ()
 
     def __init__(self):
         self._utils = {}
 
     def setNext(self, next):
-        self.next = next
+        self.__bases__ = (next, )
 
     def provideUtility(self, iface, util, name=''):
         self._utils[(iface, name)] = util
@@ -176,8 +176,12 @@ def testingNextUtility(utility, nextutility, interface, name='',
     sitemanager.setNext(nextsitemanager)
 
     sitemanager.provideUtility(interface, utility, name)
-    utility.__conform__ = \
-       lambda iface: iface.isOrExtends(ISiteManager) and sitemanager or None
+    utility.__conform__ = (
+        lambda iface:
+        iface.isOrExtends(IComponentLookup) and sitemanager or None
+        )
     nextsitemanager.provideUtility(interface, nextutility, name)
-    nextutility.__conform__ = \
-       lambda iface: iface.isOrExtends(ISiteManager) and nextsitemanager or None
+    nextutility.__conform__ = (
+        lambda iface:
+        iface.isOrExtends(IComponentLookup) and nextsitemanager or None
+        )

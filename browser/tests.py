@@ -1,28 +1,40 @@
 ##############################################################################
 #
-# Copyright (c) 2003 Zope Corporation and Contributors.
+# Copyright (c) 2004 Zope Corporation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
-# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Interface utility tests
+"""Registration functional tests
 
 $Id$
 """
+
 import unittest
-from zope.testing.doctestunit import DocTestSuite
+import zope.app.testing.functional
+
+from zope import interface
+
+class ISampleBase(interface.Interface):
+    pass
+
+class ISample(ISampleBase):
+    pass
+
+class Sample:
+    interface.implements(ISample)
+
 
 def test_suite():
-    return unittest.TestSuite((
-        DocTestSuite('zope.app.component.interface'),
-        ))
-
-if __name__ == "__main__":
-    unittest.TextTestRunner().run(test_suite())
+    return zope.app.testing.functional.FunctionalDocFileSuite(
+        'registration.txt')
+        
+if __name__ == '__main__':
+    unittest.main(defaultTest='test_suite')
 

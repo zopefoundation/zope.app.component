@@ -17,12 +17,6 @@ $Id$
 """
 __docformat__ = "reStructuredText"
 import zope.component
-from zope.app import zapi
-
-# BBB: Will go away in 3.3.
-from zope.app.component.bbb import localservice
-import sys
-sys.modules['zope.app.component.localservice'] = localservice
 
 _marker = object()
 
@@ -41,12 +35,14 @@ def queryNextSiteManager(context, default=None):
     If the site manager of the given context is the global site manager, then
     `default` is returned.
     """
-    sm = zapi.getSiteManager(context)
-    if zope.component.site.IGlobalSiteManager.providedBy(sm):
+    sm = zope.component.getSiteManager(context)
+    if sm is zope.component.getGlobalSiteManager():
         return default
-    if sm.next is None:
-        return zapi.getGlobalSiteManager()
-    return sm.next
+
+    bases = sm.__bases__
+    if not bases:
+        return zope.component.getGlobalSiteManager()
+    return bases[0]
 
 
 def getNextUtility(context, interface, name=''):

@@ -52,7 +52,7 @@ To convert a possible site to a real site, we have to provide a site manager:
 
 Note that an event is generated when a local site manager is created:
 
-  >>> from zope.app.event.tests.placelesssetup import getEvents
+  >>> from zope.component.eventtesting import getEvents
   >>> from zope.app.component.interfaces import INewLocalSite
   >>> [event] = getEvents(INewLocalSite)
   >>> event.manager is sm
@@ -64,7 +64,7 @@ If one tries to set a bogus site manager, a `ValueError` will be raised:
    >>> myfolder2.setSiteManager(object)
    Traceback (most recent call last):
    ...
-   ValueError: setSiteManager requires an ISiteManager
+   ValueError: setSiteManager requires an IComponentLookup
 
 Also, if the possible site has been changed to a site already, a `TypeError`
 is raised, when one attempts to add a new site manager:
@@ -79,12 +79,12 @@ location:
 
   >>> myfolder['mysubfolder'] = folder.Folder()
   >>> import zope.component
-  >>> zope.component.interfaces.ISiteManager(myfolder['mysubfolder']) is sm
+  >>> zope.component.interfaces.IComponentLookup(myfolder['mysubfolder']) is sm
   True
 
 If the location passed is a site, the site manager of that site is returned:
 
-  >>> zope.component.interfaces.ISiteManager(myfolder) is sm
+  >>> zope.component.interfaces.IComponentLookup(myfolder) is sm
   True
 
 During traversal, 
@@ -136,29 +136,18 @@ can register some components. Let's start with a utility
   >>> import persistent
   >>> from zope.app.container.contained import Contained
   >>> class MyUtility(persistent.Persistent, Contained):
-  ...     zope.interface.implements(IMyUtility,
-  ...                               interfaces.ILocalUtility)
+  ...     zope.interface.implements(IMyUtility)
   ...     def __init__(self, title):
   ...         self.title = title
   ...     def __repr__(self):
   ...         return "%s('%s')" %(self.__class__.__name__, self.title)
 
 Now we can create an instance of our utility and put it in the site
-management folder:
+management folder and register it:
 
   >>> myutil = MyUtility('My custom utility')
   >>> default['myutil'] = myutil
-
-Then we have to create a registration for the utility and activate it:
-
-  >>> reg = site.UtilityRegistration('u1', IMyUtility, myutil)
-  >>> default.registrationManager.addRegistration(reg)
-  'UtilityRegistration'
-  >>> reg.status = interfaces.registration.ActiveStatus
-
-Note that you can only change the status *after* you have added the
-registration to the registration manager, since registration component uses
-its location to determine the correct registry to add the component to.
+  >>> sm.registerUtility(myutil, IMyUtility, 'u1')
 
 Now we can ask the site manager for the utility:
 
@@ -171,13 +160,13 @@ registrations:
   >>> gutil = MyUtility('Global Utility')
   >>> from zope.app import zapi
   >>> gsm = zapi.getGlobalSiteManager()
-  >>> gsm.provideUtility(IMyUtility, gutil, 'gutil')
+  >>> gsm.registerUtility(gutil, IMyUtility, 'gutil')
   
   >>> sm.queryUtility(IMyUtility, 'gutil')
   MyUtility('Global Utility')
 
 Next let's see whether we can also successfully register an adapter as
-well. Here the adpater will provide the size of a file:
+well. Here the adapter will provide the size of a file:
 
   >>> class IFile(zope.interface.Interface):
   ...     pass
@@ -193,19 +182,9 @@ well. Here the adpater will provide the size of a file:
   ...     def __init__(self, context):
   ...         self.context = context
 
-We place the adapter in a particular module, so that adapter registration will
-be able to look it up by name.
+Now that we have the adapter we need to register it:
 
-  >>> import sys
-  >>> sys.modules['zope.app.component.tests'].FileSize = FileSize
-
-Now that we the adapter we need to register it:
-
-  >>> areg = site.AdapterRegistration(IFile, ISized, 
-  ...                                 'zope.app.component.tests.FileSize')
-  >>> default.registrationManager.addRegistration(areg)
-  'AdapterRegistration'
-  >>> areg.status = interfaces.registration.ActiveStatus
+  >>> sm.registerAdapter(FileSize, [IFile])
 
 Finally, we can get the adapter for a file:
 
@@ -257,7 +236,7 @@ it a site:
 
 If we ask the second site manager for its next, we get
 
-  >>> sm11.next is sm
+  >>> sm11.__bases__ == (sm, )
   True
 
 and the first site manager should have the folling sub manager:
@@ -272,10 +251,7 @@ new site manager folder,
   >>> myutil11 = MyUtility('Utility, uno & uno')
   >>> default11['myutil'] = myutil11
 
-  >>> reg11 = site.UtilityRegistration('u1', IMyUtility, myutil11)
-  >>> default11.registrationManager.addRegistration(reg11)
-  'UtilityRegistration'
-  >>> reg11.status = interfaces.registration.ActiveStatus
+  >>> sm11.registerUtility(myutil11, IMyUtility, 'u1')
 
 then it will will be available in the second site manager
 
@@ -307,8 +283,10 @@ Before we can move or copy sites, we need to register two event subscribers
 that manage the wiring of site managers after moving or copying:
 
   >>> from zope.app import container
-  >>> gsm.subscribe((interfaces.ISite, container.interfaces.IObjectMovedEvent),
-  ...               None, site.changeSiteConfigurationAfterMove) 
+  >>> gsm.registerHandler(
+  ...    site.changeSiteConfigurationAfterMove,
+  ...    (interfaces.ISite, container.interfaces.IObjectMovedEvent),
+  ...    ) 
 
 We only have to register one event listener, since the copy action causes an
 `IObjectAddedEvent` to be created, which is just a special type of
@@ -316,7 +294,7 @@ We only have to register one event listener, since the copy action causes an
 
 First, make sure that everything is setup correctly in the first place:
 
-  >>> myfolder11.getSiteManager().next is myfolder.getSiteManager()
+  >>> myfolder11.getSiteManager().__bases__ == (myfolder.getSiteManager(), )
   True
   >>> myfolder.getSiteManager().subs[0] is myfolder11.getSiteManager()
   True
@@ -331,7 +309,7 @@ Let's now move `myfolder11` from `myfolder` to `myfolder2`:
 Now the next site manager for `myfolder11`'s site manager should have changed:
 
   >>> myfolder21 = myfolder11
-  >>> myfolder21.getSiteManager().next is myfolder2.getSiteManager()
+  >>> myfolder21.getSiteManager().__bases__ == (myfolder2.getSiteManager(), )
   True
   >>> myfolder2.getSiteManager().subs[0] is myfolder21.getSiteManager()
   True
@@ -343,16 +321,17 @@ Finally, we make a copy of `myfolder21` and add it as `myfolder11` to
 
   # Make sure that our interfaces and classes are picklable.
 
+  >>> import sys
   >>> sys.modules['zope.app.component.tests'].IMyUtility = IMyUtility
   >>> IMyUtility.__module__ = 'zope.app.component.tests'
   >>> sys.modules['zope.app.component.tests'].MyUtility = MyUtility
   >>> MyUtility.__module__ = 'zope.app.component.tests'
 
-  >>> from zope.app.location.pickling import locationCopy
+  >>> from zope.location.pickling import locationCopy
   >>> myfolder['myfolder11'] = locationCopy(myfolder2['myfolder21'])
 
   >>> myfolder11 = myfolder['myfolder11']
-  >>> myfolder11.getSiteManager().next is myfolder.getSiteManager()
+  >>> myfolder11.getSiteManager().__bases__ == (myfolder.getSiteManager(), )
   True
   >>> myfolder.getSiteManager().subs[0] is myfolder11.getSiteManager()
   True
