@@ -406,7 +406,6 @@ def SiteManagerAdapter(ob):
 
 def changeSiteConfigurationAfterMove(site, event):
     """After a site is moved, its site manager links have to be updated."""
-    next = None
     if event.newParent is not None:
         next = _findNextSiteManager(site)
-    site.getSiteManager().__bases__ = (next, )
+        site.getSiteManager().__bases__ = (next, )

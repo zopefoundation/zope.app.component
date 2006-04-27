@@ -35,10 +35,10 @@ Let's now delete the site again:
     >>> browser.getControl(name='ids:list').getControl(
     ...     value='samplesite').selected = True
 
-#    >>> browser.handleErrors = False
-#    >>> browser.getControl('Delete').click()
-#
-#The site should be gone now.
-#
-#    >>> 'samplesite' in self.contents
-#    False
+    >>> browser.handleErrors = False
+    >>> browser.getControl('Delete').click()
+
+The site should be gone now.
+
+    >>> 'samplesite' in browser.contents
+    False
