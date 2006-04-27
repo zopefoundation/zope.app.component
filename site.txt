@@ -87,7 +87,7 @@ If the location passed is a site, the site manager of that site is returned:
   >>> zope.component.interfaces.IComponentLookup(myfolder) is sm
   True
 
-During traversal, 
+During traversal,
 
   >>> from zope.app import publication
   >>> request = object()
@@ -161,7 +161,7 @@ registrations:
   >>> from zope.app import zapi
   >>> gsm = zapi.getGlobalSiteManager()
   >>> gsm.registerUtility(gutil, IMyUtility, 'gutil')
-  
+
   >>> sm.queryUtility(IMyUtility, 'gutil')
   MyUtility('Global Utility')
 
@@ -195,7 +195,7 @@ Finally, we can get the adapter for a file:
   >>> size.context is file
   True
 
-By the way, once you set a site 
+By the way, once you set a site
 
   >>> hooks.setSite(myfolder)
 
@@ -224,7 +224,7 @@ Multiple Sites
 
 Until now we have only dealt with one local and the global site. But things
 really become interesting, once we have multiple sites. We can override other
-local configuration. 
+local configuration.
 
 Let's now create a new folder called `folder11`, add it to `myfolder` and make
 it a site:
@@ -286,7 +286,7 @@ that manage the wiring of site managers after moving or copying:
   >>> gsm.registerHandler(
   ...    site.changeSiteConfigurationAfterMove,
   ...    (interfaces.ISite, container.interfaces.IObjectMovedEvent),
-  ...    ) 
+  ...    )
 
 We only have to register one event listener, since the copy action causes an
 `IObjectAddedEvent` to be created, which is just a special type of
