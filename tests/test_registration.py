@@ -27,11 +27,15 @@ from ZODB.DemoStorage import DemoStorage
 import transaction
 import persistent
 
+import zope.component.globalregistry
 import zope.component.testing as placelesssetup
 from zope.testing import doctest
 from zope.app.testing import setup
 import zope.app.container.contained
 from zope import interface
+
+import zope.app.component.site
+
 
 # test class for testing data conversion
 class IFoo(interface.Interface):
@@ -41,6 +45,9 @@ class Foo(persistent.Persistent, zope.app.container.contained.Contained):
     name = ''
     def __init__(self, name=''):
         self.name = name
+
+    def __repr__(self):
+        return 'Foo(%r)' % self.name
 
 def setUpOld(test):
     placelesssetup.setUp(test)
@@ -329,6 +336,75 @@ Cleanup:
     >>> db.close()
 
 """
+
+
+class GlobalRegistry:
+    pass
+
+base = zope.component.globalregistry.GlobalAdapterRegistry(
+    GlobalRegistry, 'adapters')
+GlobalRegistry.adapters = base
+def clear_base():
+    base.__init__(GlobalRegistry, 'adapters')
+    
+    
+def test_deghostification_of_persistent_adapter_registries():
+    """
+
+Note that this test duplicates one from zope.component.tests.
+We should be able to get rid of this one when we get rid of
+__setstate__ implementation we have in back35.
+    
+We want to make sure that we see updates corrextly.
+
+    >>> import ZODB.tests.util
+    >>> db = ZODB.tests.util.DB()
+    >>> tm1 = transaction.TransactionManager()
+    >>> c1 = db.open(transaction_manager=tm1)
+    >>> r1 = zope.app.component.site._LocalAdapterRegistry((base,))
+    >>> r2 = zope.app.component.site._LocalAdapterRegistry((r1,))
+    >>> c1.root()[1] = r1
+    >>> c1.root()[2] = r2
+    >>> tm1.commit()
+    >>> r1._p_deactivate()
+    >>> r2._p_deactivate()
+
+    >>> tm2 = transaction.TransactionManager()
+    >>> c2 = db.open(transaction_manager=tm2)
+    >>> r1 = c2.root()[1]
+    >>> r2 = c2.root()[2]
+
+    >>> r1.lookup((), IFoo, '')
+
+    >>> base.register((), IFoo, '', Foo(''))
+    >>> r1.lookup((), IFoo, '')
+    Foo('')
+
+    >>> r2.lookup((), IFoo, '1')
+
+    >>> r1.register((), IFoo, '1', Foo('1'))
+
+    >>> r2.lookup((), IFoo, '1')
+    Foo('1')
+
+    >>> r1.lookup((), IFoo, '2')
+    >>> r2.lookup((), IFoo, '2')
+
+    >>> base.register((), IFoo, '2', Foo('2'))
+    
+    >>> r1.lookup((), IFoo, '2')
+    Foo('2')
+
+    >>> r2.lookup((), IFoo, '2')
+    Foo('2')
+
+Cleanup:
+
+    >>> db.close()
+    >>> clear_base()
+
+    """
+
 
 def test_suite():
     suite = unittest.TestSuite((
