@@ -731,15 +731,15 @@ class LayerField(GlobalObject):
     >>> from types import ModuleType as module
     >>> import sys
     >>> layers = module('layers')
-    >>> old = sys.modules.get('zope.app.layers', None)
+    >>> import zope.app.layers
+    >>> old = sys.modules['zope.app.layers']
     >>> sys.modules['zope.app.layers'] = layers
     >>> setattr(layers, 'layer1', layer1)
 
     >>> field.fromUnicode('layer1') is layer1
     True
 
-    >>> if old is not None:
-    ...     sys.modules['zope.app.layers'] = old
+    >>> sys.modules['zope.app.layers'] = old
 
     Test 3: Get the layer from the site manager
     -------------------------------------------
