@@ -75,8 +75,9 @@ will be shown:
 
     >>> print browser.contents
     <!DOCTYPE html ...
-    ...zope.app.component.browser.tests.ISample
-    utility<br />comment: unnamed sample...
+    ...[[zope][zope.app.component.browser.tests.ISample utility]]
+    <br />
+    [[zope][comment: unnamed sample]]...
 
 We can create multiple registrations by selecting "here" again:
 
@@ -86,10 +87,10 @@ We can create multiple registrations by selecting "here" again:
 
     >>> print browser.contents
     <!DOCTYPE html ...
-    ...zope.app.component.browser.tests.ISample
-    utility<br />comment: unnamed sample...
-    ...zope.app.component.browser.tests.ISample
-    utility named one...
+    ...[[zope][zope.app.component.browser.tests.ISample utility]]
+    <br />
+    [[zope][comment: unnamed sample]]...
+    ...[[zope][zope.app.component.browser.tests.ISample utility named 'one']]...
 
 Each entry has a checkbox for selecting it.  This can be used to
 unregister an object. We'll unregister the utility named "one":
@@ -98,7 +99,7 @@ unregister an object. We'll unregister the utility named "one":
     ... value='Rem9wZS5hcHAuY29tcG9uZW50LmJyb3dzZXIudGVzdHMuSVNhbXBsZSBvbmU'
     ... ).selected = True
     >>> browser.getControl('[[zope][unregister-button (Unregister)]]').click()
-    >>> 'utility named one' not in browser.contents
+    >>> "utility named 'one'" not in browser.contents
     True
 
 If there is already an object registered, new registrations will
@@ -122,10 +123,11 @@ site-manager's registrations page:
     ...[[zope][Registrations for this site: (
     Registrations for this site:
     )]]...
-    ...sample1...zope.app.component.browser.tests.ISample
-    utility<br />comment: unnamed sample...
-    ...sample2...zope.app.component.browser.tests.ISample
-    utility named two...
+    ...sample1...[[zope][zope.app.component.browser.tests.ISample utility]]
+    <br />
+    [[zope][comment: unnamed sample]]...
+    ...sample2...[[zope][zope.app.component.browser.tests.ISample
+    utility named 'two']]...
 
 This shows all of the registrations for the site, including our sample
 registrations. The display includes a link to each component.  Now,
@@ -145,10 +147,11 @@ listing of registered components for the site:
     ...[[zope][Registrations for this site: (
     Registrations for this site:
     )]]...
-    ...sample1...zope.app.component.browser.tests.ISample
-    utility<br />comment: unnamed sample...
-    ...sample3...zope.app.component.browser.tests.ISample
-    utility named two...
+    ...sample1...[[zope][zope.app.component.browser.tests.ISample utility]]
+    <br />
+    [[zope][comment: unnamed sample]]...
+    ...sample3...[[zope][zope.app.component.browser.tests.ISample
+    utility named 'two']]...
 
     >>> 'sample2' not in browser.contents
     True
@@ -189,8 +192,14 @@ It remains registered, and can be unregistered:
     ...[[zope][Registrations for this site: (
     Registrations for this site:
     )]]...
-    ...(moved or deleted)...zope.app.component.browser.tests.ISample
-    utility<br />comment: unnamed sample...
+    ...[[zope][[[zope][(unknown name)]] (moved or deleted) (
+    [[zope][(unknown name)]]
+    (moved or deleted)
+    )]]
+    <br />
+    [[zope][zope.app.component.browser.tests.ISample utility]]
+    <br />
+    [[zope][comment: unnamed sample]]...
 
     >>> browser.getControl(name='ids:list').getControl(
     ... value="Rem9wZS5hcHAuY29tcG9uZW50LmJyb3dzZXIudGVzdHMuSVNhbXBsZSA"

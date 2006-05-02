@@ -29,6 +29,7 @@ import zope.app.form
 from zope.app import zapi
 from zope.app.i18n import ZopeMessageFactory as _
 
+
 def _registrations(context, comp):
     sm = component.getSiteManager(context)
     for r in sm.registeredUtilities():
@@ -61,7 +62,7 @@ class IRegistrationDisplay(interface.Interface):
 class ISiteRegistrationDisplay(IRegistrationDisplay):
     """Display registration information, including the component registered
     """
-            
+
 class RegistrationView(BrowserPage):
 
     component.adapts(None, zope.publisher.interfaces.browser.IBrowserRequest)
@@ -113,16 +114,25 @@ class UtilityRegistrationDisplay(object):
     def _comment(self):
         comment = self.context.info or ''
         if comment:
-            comment = '<br />comment: ' + comment
+            comment = _("comment: ${comment}", mapping={"comment": comment})
         return comment
 
-    def render(self):
+    def _provided(self):
         name = self.context.name
-        return "%s utility%s%s" % (
-            self.provided(),
-            name and (' named ' + name) or '',
-            self._comment(),
-            )
+        provided = self.provided()
+        if name:
+            info = _("${provided} utility named '${name}'",
+                     mapping={"provided": provided, "name": name})
+        else:
+            info = _("${provided} utility",
+                     mapping={"provided": provided})
+        return info
+
+    def render(self):
+        return {
+            "info": self._provided(),
+            "comment": self._comment()
+            }
 
     def unregister(self):
         self.context.registry.unregisterUtility(
@@ -130,7 +140,7 @@ class UtilityRegistrationDisplay(object):
             self.context.provided,
             self.context.name,
             )
-            
+
 class SiteRegistrationView(RegistrationView):
 
     render = zope.app.pagetemplate.ViewPageTemplateFile('siteregistration.pt')
@@ -154,27 +164,20 @@ class UtilitySiteRegistrationDisplay(UtilityRegistrationDisplay):
         try:
             url = url()
         except TypeError:
-            url = None
+            url = ""
 
-        cname = getattr(self.context.component, '__name__', '(unknown name)')
-        if cname is None:
-            cname = ''
+        cname = getattr(self.context.component, '__name__', '')
+        if not cname:
+            cname = _("(unknown name)")
         if url:
-            cname = '<a href="%s/@@SelectedManagementView.html">%s</a>' % (
-                url, cname)
-        else:
-            cname = '%s (moved or deleted)' % cname
+            url += "/@@SelectedManagementView.html"
 
-        name = self.context.name
-        comment = self.context.info
-        
-        return ('%s<br />%s utility%s%s'
-                % (cname,
-                   self.provided(),
-                   name and (' named ' + name) or '',
-                   self._comment(),
-                   )
-                )
+        return {
+            "cname": cname,
+            "url": url,
+            "info": self._provided(),
+            "comment": self._comment()
+            }
 
 class AddUtilityRegistration(form.Form):
     """View for registering utilities
@@ -186,7 +189,7 @@ class AddUtilityRegistration(form.Form):
 
     A subclass can provide a 'provided' attribute if a component
     should always be registered with the same interface.
-    
+
     """
     component.adapts(None, zope.publisher.interfaces.browser.IBrowserRequest)
 
@@ -251,17 +254,16 @@ class AddUtilityRegistration(form.Form):
         provided = self.provided
         if provided is None:
             provided = data['provided']
-            
-        
+
         # We have to remove the security proxy to save the registration
         sm.registerUtility(
             removeSecurityProxy(self.context),
             provided, name,
             data['comment'] or '')
-        
+
         if 'UPDATE_SUBMIT' in self.request.form:
             # Backward compat until 3.5
             self.request.response.redirect('@@SelectedManagementView.html')
             return
-        
+
         self.request.response.redirect('@@registration.html')

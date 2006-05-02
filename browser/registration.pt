@@ -2,13 +2,13 @@
     i18n:domain="zope">
 <body>
 <div metal:fill-slot="body">
-<form tal:attributes="action request/URL" 
+<form tal:attributes="action request/URL"
       method="POST"
       >
 
   <div tal:condition="not:view/registrations">
     <p i18n:translate="">
-      This object isn't yet registered.  Click 
+      This object isn't yet registered.  Click
       <a href="@@addRegistration.html">here</a>
       to register the object.
     </p>
@@ -20,16 +20,23 @@
     <table>
       <tr tal:repeat="registration view/registrations">
          <td>
-           <input type="checkbox" 
+           <input type="checkbox"
                   class="noborder" name="ids:list"
                   tal:attributes="value registration/id;
                                   id registration/id;
                                   "
                   />
          </td>
-         <td tal:content="structure registration/render">
-           zope.app.fooIFoo utility named bob
-           comment: needed a bob
+         <td tal:define="info registration/render">
+           <tal:block content="info/info">
+             zope.app.fooIFoo utility named bob
+           </tal:block>
+           <tal:block condition="info/comment">
+             <br />
+             <tal:block content="info/comment">
+               comment: needed a bob
+             </tal:block>
+           </tal:block>
          </td>
       </tr>
       <tr>
@@ -40,7 +47,7 @@
         </td>
       </tr>
     </table>
-    <p>
+    <p i18n:translate="">
       Click <a href="@@addRegistration.html">here</a>
       to register the object again.
     </p>
