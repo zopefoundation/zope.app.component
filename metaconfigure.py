@@ -185,7 +185,9 @@ def view(_context, factory, type, name, for_, layer=None,
         for_ = for_ + (layer,)
         warnings.warn_explicit(
             "The 'layer' argument of the 'view' directive has been "
-            "deprecated.  Use the 'type' argument instead.",
+            "deprecated.  Use the 'type' argument instead. If you have "
+            "an existing type BrowserRequest, replace it with the layer, "
+            "which subclasses BrowserRequest.",
             DeprecationWarning, _context.info.file, _context.info.line)
     else:
         for_ = for_ + (type,)
