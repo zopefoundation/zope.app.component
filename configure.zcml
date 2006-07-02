@@ -79,11 +79,7 @@
       permission="zope.ManageContent"
       />
 
-  <adapter
-      for="zope.interface.Interface" 
-      provides="zope.component.interfaces.IComponentLookup"
-      factory=".site.SiteManagerAdapter"
-      />
+  <adapter factory=".site.SiteManagerAdapter" />
 
   <subscriber
       for=".interfaces.ISite

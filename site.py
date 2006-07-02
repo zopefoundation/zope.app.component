@@ -388,6 +388,8 @@ from zope.testing.cleanup import addCleanUp
 addCleanUp(clearSite)
 
 
+@zope.component.adapter(zope.interface.Interface)
+@zope.interface.implementer(zope.component.interfaces.IComponentLookup)
 def SiteManagerAdapter(ob):
     """An adapter from ILocation to IComponentLookup.
 
