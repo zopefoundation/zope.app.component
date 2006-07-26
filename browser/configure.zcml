@@ -14,10 +14,17 @@
   <browser:page
       for="*"
       name="registration.html"
-      menu="zmi_views" title="Registration"
       permission="zope.ManageSite"
       class=".registration.RegistrationView"
       />
+
+  <browser:menuItem
+      menu="zmi_views"
+      title="Registration"
+      for="*"
+      action="registration.html"
+      order="999"
+  />
 
   <browser:page
       for="*"
