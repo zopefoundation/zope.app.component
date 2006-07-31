@@ -25,7 +25,6 @@ import persistent.mapping
 
 from persistent import Persistent
 
-from zope import component
 import zope.cachedescriptors.property
 import zope.event
 import zope.schema
@@ -533,6 +532,7 @@ class ComponentRegistration(BBBComponentRegistration,
     # See zope.app.component.interfaces.registration.IComponentRegistration
     interface = None
 
+
 class Registered:
     """An adapter from IRegisterable to IRegistered.
 
@@ -546,12 +546,10 @@ class Registered:
         self.registerable = registerable
 
     def registrations(self):
-        context = self.registerable
-        return [
-            r
-            for r in component.getSiteManager(context).registeredUtilities()
-            if r.component == context
-            ]
+        rm = zapi.getParent(self.registerable).registrationManager
+        return [reg for reg in rm.values()
+                if (IComponentRegistration.providedBy(reg) and
+                    reg.component is self.registerable)]
 
 
 class RegistrationManager(BTreeContainer):
@@ -850,10 +848,6 @@ class _OldUtilityRegistrations(UserDict.DictMixin):
 
     def __setitem__(self, k, v):
         self.update([(k, v)])
-
-    def __delitem__(self, k):
-        self.update(())
-        del getattr(self.site, self.__name__)[k]
 
 class _OldAdapterRegistrations(_OldUtilityRegistrations):
 
