@@ -32,6 +32,8 @@ a list of all registered (active) components.
   ...         """See zope.component.interfaces.IRegistry"""
   ...         return self._registrations
   ...
+  ...     registeredUtilities = registrations
+  ...
   ...     def register(self, registration):
   ...         """See interfaces.registration.IRegistry"""
   ...         self._registrations.append(registration)
@@ -78,6 +80,7 @@ use the global `registry` object. Now that we have a registry and a suitable
 registration class, let's test what we have so far. To do that we have to
 create a component that we would like to register:
 
+  >>> import zope.component.interfaces
   >>> from zope.app.container.contained import Contained
   >>> class Component(Contained):
   ...     zope.interface.implements(interfaces.registration.IRegisterable)
@@ -85,6 +88,10 @@ create a component that we would like to register:
   ...         self.title = title
   ...     def __repr__(self):
   ...        return "<Component: '%s'>" %self.title
+  ...
+  ...     def __conform__(self, iface):
+  ...         if iface == zope.component.interfaces.IComponentLookup:
+  ...             return registry
 
 Note that `Contained` is used as a base class, since `IRegisterable` requires
 it to be. We will later see why this is the case. 
@@ -323,6 +330,7 @@ component is returned:
 The `Registered` Adapter
 ------------------------
 
+
 Registerable components are able to get a list of all their
 registrations. However, the adapter only works for components and
 registrations that are stored in the registerable container and registration
@@ -333,15 +341,4 @@ manager, respectively.
   >>> registered.registrations() #doctest: +NORMALIZE_WHITESPACE
   [<Registration for '<Component: 'Foo'>'>, 
    <Registration for '<Component: 'Foo'>'>]
-
-If the registerable component is not stored in a registrable container, a
-type error is raised, since no parent can be found:
-
-  >>> registered = Registered(something)
-  >>> registered.registrations() #doctest: +NORMALIZE_WHITESPACE
-  Traceback (most recent call last):
-  ...
-  TypeError: ('Not enough context information to get parent', 
-              <Component: 'Something'>)
-
   
