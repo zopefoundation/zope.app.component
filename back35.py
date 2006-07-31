@@ -902,6 +902,14 @@ class _LocalAdapterRegistryGeneration3SupportMixin(object):
             for r in state['_registrations']:
                 if isinstance(r, UtilityRegistration):
                     self.register((), r.provided, r.name, r.component)
+                    
+                    if not [
+                        1 for rseen in registrations
+                        if rseen.provided == r.provided
+                           and rseen.component == r.component
+                        ]:
+                        self.subscribe((), r.provided, r.component)
+
                     registrations.append(r)
                 else:
                     warnings.warn(
