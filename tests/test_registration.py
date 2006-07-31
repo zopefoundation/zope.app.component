@@ -257,7 +257,7 @@ changed:
     True
 
 The _evolve_to_generation_4 method actually converts the remaining
-data structures. It also evolves all of it's subinterfaces:
+data structures. It also evolves all of it's subsites:
 
     >>> sm1._evolve_to_generation_4()
     >>> tm2.commit()
@@ -330,6 +330,20 @@ and that lookups still work as expected:
     >>> sm3.getUtility(IFoo, '5') is sm3['default']['5']
     True
 
+getAllUtilitiesRegisteredFor should work too: :)
+
+    >>> all = list(sm3.getAllUtilitiesRegisteredFor(IFoo))
+    >>> all.remove(sm1['default']['1'])
+    >>> all.remove(sm1['default']['2'])
+    >>> all.remove(sm1['default']['3'])
+    >>> all.remove(sm2['default']['2'])
+    >>> all.remove(sm2['default']['3'])
+    >>> all.remove(sm2['default']['4'])
+    >>> all.remove(sm3['default']['3'])
+    >>> all.remove(sm3['default']['4'])
+    >>> all.remove(sm3['default']['5'])
+    >>> len(all)
+    2
 
 Cleanup:
 
