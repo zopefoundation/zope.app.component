@@ -177,6 +177,11 @@ class ClassDirective(object):
 
 # BBB 2006/02/24, to be removed after 12 months
 class ContentDirective(ClassDirective):
+    """ *BBB: DEPRECATED*
+
+    The ``content`` alias for the ``class`` directive has been
+    deprecated and will be removed in Zope 3.5.
+    """
 
     def __init__(self, _context, class_):
         warnings.warn_explicit(

@@ -62,6 +62,8 @@ class IBasicViewInformation(zope.interface.Interface):
     layer = LayerField(
         title=_("The layer the view is in."),
         description=_("""
+        *BBB: DEPRECATED*
+
         A skin is composed of layers. It is common to put skin
         specific views in a layer named after the skin. If the 'layer'
         attribute is not supplied, it defaults to 'default'."""),
@@ -123,7 +125,20 @@ class IBasicResourceInformation(zope.interface.Interface):
 
 # BBB 2006/02/24, to be removed after 12 months
 class IFactoryDirective(zope.interface.Interface):
-    """Define a factory"""
+    """
+    *BBB: DEPRECATED*
+
+    The ``factory`` directive has been deprecated and will be
+    removed in Zope 3.5.  Use the ``utility`` directive instead::
+
+      <utility
+          provides="zope.component.interfaces.IFactory"
+          component="some.factory.class"
+          name="factoryName"
+          />
+
+    (Define a factory.)
+    """
 
     component = zope.configuration.fields.GlobalObject(
         title=_("Component to be used"),
@@ -162,7 +177,12 @@ class IViewDirective(IBasicViewInformation, IBasicResourceInformation):
 ############################################################################
 # BBB: Deprecated; use browser:defaultView instead. Will go away in 3.3.
 class IDefaultViewDirective(IBasicResourceInformation):
-    """The name of the view that should be the default.
+    """
+    *BBB: DEPRECATED*
+
+    Use ``browser:defaultView`` instead.
+
+    The name of the view that should be the default.
 
     This name refers to view that should be the
     view used by default (if no view name is supplied
@@ -208,7 +228,13 @@ class IResourceDirective(IBasicComponentInformation,
 
 
 class IClassDirective(zope.interface.Interface):
-    """Make statements about a class"""
+    """Make statements about a class
+
+    It is discouraged to use ``content`` or ``localUtility`` directives.
+    They are no longer useful, and will be deprecated soon or later.
+
+    Only use ``class`` directive for class statements.
+    """
 
     class_ = zope.configuration.fields.GlobalObject(
         title=_("Class"),
@@ -327,9 +353,14 @@ class IFactorySubdirective(zope.interface.Interface):
 
 # BBB: Deprecated. Will go away in 3.4.
 class IDefaultLayerDirective(zope.interface.Interface):
-    """Associate a default layer with a request type.
+    """
+    *BBB: DEPRECATED*
 
-    This directive has been deprecated and will go away in Zope 3.4."""
+    This directive has been deprecated and will go away in Zope 3.4.
+    It doesn't actually do anything, and never did.
+
+    (Associate a default layer with a request type.)
+    """
 
     type = zope.configuration.fields.GlobalInterface(
         title=_("Request type"),

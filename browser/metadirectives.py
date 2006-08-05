@@ -20,7 +20,13 @@ from zope.interface import Interface
 
     
 class IUtilityToolDirective(Interface):
-    """Directive for creating new utility-based tools."""
+    """ *BBB: DEPRECATED*
+
+    Tools are deprecated and no-longer used.
+    The tool directive will go away in Zope 3.5.
+
+    (Directive for creating new utility-based tools.)
+    """
 
     folder = zope.configuration.fields.PythonIdentifier(
         title=u"Destination Folder",
