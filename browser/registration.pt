@@ -1,19 +1,17 @@
 <html metal:use-macro="context/@@standard_macros/view"
-    i18n:domain="zope">
+      i18n:domain="zope">
 <body>
 <div metal:fill-slot="body">
-<form tal:attributes="action request/URL"
-      method="POST"
-      >
 
-  <div tal:condition="not:view/registrations">
-    <p i18n:translate="">
-      This object isn't yet registered.  Click
-      <a href="@@addRegistration.html">here</a>
-      to register the object.
-    </p>
-  </div>
-  <div tal:condition="view/registrations">
+  <form action="@@addRegistration.html" method="get"
+        tal:condition="not:view/registrations">
+    <p i18n:translate="">This object isn't yet registered.</p>
+    <input type="submit" value="Register this object"
+           i18n:attributes="value register-button" />
+  </form>
+
+  <tal:block tal:condition="view/registrations">
+  <form action="" method="post" tal:attributes="action request/URL">
     <p i18n:translate="">
       This object is registered:
     </p>
@@ -23,8 +21,7 @@
            <input type="checkbox"
                   class="noborder" name="ids:list"
                   tal:attributes="value registration/id;
-                                  id registration/id;
-                                  "
+                                  id registration/id;"
                   />
          </td>
          <td tal:define="info registration/render">
@@ -47,13 +44,13 @@
         </td>
       </tr>
     </table>
-    <p i18n:translate="">
-      Click <a href="@@addRegistration.html">here</a>
-      to register the object again.
-    </p>
-  </div>
+  </form>
 
-</form>
+  <form action="@@addRegistration.html" method="get">
+    <input type="submit" value="Register this object again"
+           i18n:attributes="value register-again-button" />
+  </form>
+  </tal:block>
 
 </div>
 </body>
