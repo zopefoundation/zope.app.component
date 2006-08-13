@@ -34,17 +34,12 @@ registrations:
 
     >>> print browser.contents
     <!DOCTYPE html ...
-    ...[[zope][This object isn't yet registered. Click
-    <a href="@@addRegistration.html">here</a>
-    to register the object. (
-    This object isn't yet registered.  Click
-    <a href="@@addRegistration.html">here</a>
-    to register the object.
-    )]]...
+    ...[[zope][This object isn't yet registered.]]...
 
-To add a registration, we'll click on the "here" link:
+To add a registration, we'll click on the `Register this object`
+button:
 
-    >>> browser.getLink('here').click()
+    >>> browser.getControl('Register this object').click()
 
 This will being up a form that provides for selection from the
 interfaces the object provides and provides and entries for name to
@@ -79,9 +74,10 @@ will be shown:
     <br />
     [[zope][comment: unnamed sample]]...
 
-We can create multiple registrations by selecting "here" again:
+We can create multiple registrations by clicking on *Register this
+object again*:
 
-    >>> browser.getLink('here').click()
+    >>> browser.getControl('Register this object again').click()
     >>> browser.getControl('[[zope][Register As]]').value = 'one'
     >>> browser.getControl('[[zope][Register]]').click()
 
@@ -108,7 +104,7 @@ for sample2 and then overriding it's registration by registering
 sample3. First, we register sample2:
 
     >>> browser.open('http://localhost/sample2/registration.html')
-    >>> browser.getLink('here').click()
+    >>> browser.getControl('Register this object').click()
     >>> browser.getControl('[[zope][Register As]]').value = 'two'
     >>> browser.getControl('[[zope][Register]]').click()
 
@@ -134,7 +130,7 @@ registrations. The display includes a link to each component.  Now,
 we'll register sample 3:
 
     >>> browser.open('http://localhost/sample3/registration.html')
-    >>> browser.getLink('here').click()
+    >>> browser.getControl('Register this object').click()
     >>> browser.getControl('[[zope][Register As]]').value = 'two'
     >>> browser.getControl('[[zope][Register]]').click()
 
@@ -213,7 +209,7 @@ The registration view for an object only shows the registrations in
 the immediately enclosing site.  To see this, we register sample2:
 
     >>> browser.open('http://localhost/sample2/registration.html')
-    >>> browser.getLink('here').click()
+    >>> browser.getControl('Register this object').click()
     >>> browser.getControl('[[zope][Register]]').click()
 
 Now we'll create a subsite and move sample2 there:
