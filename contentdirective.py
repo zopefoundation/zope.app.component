@@ -72,7 +72,7 @@ class ClassDirective(object):
     def require(self, _context,
                 permission=None, attributes=None, interface=None,
                 like_class=None, set_attributes=None, set_schema=None):
-        """Require a the permission to access a specific aspect"""
+        """Require a permission to access a specific aspect"""
         if like_class:
             self.__mimic(_context, like_class)
 
