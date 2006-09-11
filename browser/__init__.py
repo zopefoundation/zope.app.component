@@ -157,7 +157,7 @@ class MakeSite(BrowserView):
 
         """
         if ISite.providedBy(self.context):
-            raise UserError('This is already a site')
+            raise UserError(_(u'This is already a site'))
 
         # We don't want to store security proxies (we can't,
         # actually), so we have to remove proxies here before passing
