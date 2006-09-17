@@ -250,12 +250,3 @@ deprecated('defaultView',
            'the browser:defaultView directive. '
            'Will be gone in Zope 3.3.')
 
-############################################################################
-# BBB: Deprecated. Will go away in 3.4.
-def defaultLayer(_context, type, layer):
-    import warnings
-    warnings.warn("""The defaultLayer directive is deprecated and will
-go away in Zope 3.4.  It doesn't actually do anything, and never did.
-
-(%s)
-""" % _context.info, DeprecationWarning)

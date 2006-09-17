@@ -32,12 +32,6 @@
         handler="zope.app.component.metaconfigure.resource"
         />
 
-    <meta:directive
-        name="defaultLayer"
-        schema=".metadirectives.IDefaultLayerDirective"
-        handler="zope.app.component.metaconfigure.defaultLayer"
-        />
-
     <meta:complexDirective
         name="class"
         schema=".metadirectives.IClassDirective"
@@ -69,7 +63,7 @@
     <!-- BBB 2006/02/24, to be removed after 12 months -->
     <meta:complexDirective
         name="content"
-        schema=".metadirectives.IClassDirective"
+        schema=".metadirectives.IBBBClassDirective"
         handler=".contentdirective.ContentDirective"
         >
 
@@ -95,9 +89,10 @@
 
     </meta:complexDirective>
 
+    <!-- BBB 2006/09/17, to be removed after 12 months -->
     <meta:complexDirective
         name="localUtility"
-        schema=".metadirectives.IClassDirective"
+        schema=".metadirectives.IBBBClassDirective"
         handler=".contentdirective.LocalUtilityDirective"
         >
 

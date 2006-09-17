@@ -187,11 +187,15 @@ class ContentDirective(ClassDirective):
         warnings.warn_explicit(
             "The 'content' alias for the 'class' directive has been "
             "deprecated and will be removed in Zope 3.5.\n",
-            DeprecationWarning, _context.info.file, _context.info.line)        
+            DeprecationWarning, _context.info.file, _context.info.line)
         super(ContentDirective, self).__init__(_context, class_)
 
+# BBB 2006/09/17, to be removed after 12 months
 class LocalUtilityDirective(ClassDirective):
-    r"""localUtility directive handler.
+    r""" *BBB: DEPRECATED*
+
+    The ``localUtility`` alias for the ``class`` directive has been
+    deprecated and will be removed in Zope 3.5.
 
     Examples:
 
@@ -238,6 +242,9 @@ class LocalUtilityDirective(ClassDirective):
             raise ConfigurationError('Class `%s` does not implement '
                                      '`IPersistent`.' % class_.__name__)
 
+        warnings.warn_explicit(
+            "The 'localUtility' alias for the 'class' directive has been "
+            "deprecated and will be removed in Zope 3.5.\n",
+            DeprecationWarning, _context.info.file, _context.info.line)
         classImplements(class_, IAttributeAnnotatable)
-
         super(LocalUtilityDirective, self).__init__(_context, class_)

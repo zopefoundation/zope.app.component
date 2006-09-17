@@ -228,18 +228,21 @@ class IResourceDirective(IBasicComponentInformation,
 
 
 class IClassDirective(zope.interface.Interface):
-    """Make statements about a class
-
-    It is discouraged to use ``content`` or ``localUtility`` directives.
-    They are no longer useful, and will be deprecated soon or later.
-
-    Only use ``class`` directive for class statements.
-    """
+    """Make statements about a class"""
 
     class_ = zope.configuration.fields.GlobalObject(
         title=_("Class"),
         required=True
         )
+
+# BBB 2006/09/17, to be removed after 12 months
+class IBBBClassDirective(IClassDirective):
+    """ *BBB: DEPRECATED*
+
+    It is discouraged to use ``content`` or ``localUtility`` directives.
+    They are currently deprecated:
+    only use ``class`` directive for class statements.
+    """
 
 class IImplementsSubdirective(zope.interface.Interface):
     """Declare that the class given by the content directive's class
@@ -349,25 +352,4 @@ class IFactorySubdirective(zope.interface.Interface):
         description=_("Longer narrative description of what this"
                       " factory does"),
         required=False,
-        )
-
-# BBB: Deprecated. Will go away in 3.4.
-class IDefaultLayerDirective(zope.interface.Interface):
-    """
-    *BBB: DEPRECATED*
-
-    This directive has been deprecated and will go away in Zope 3.4.
-    It doesn't actually do anything, and never did.
-
-    (Associate a default layer with a request type.)
-    """
-
-    type = zope.configuration.fields.GlobalInterface(
-        title=_("Request type"),
-        required=True
-        )
-
-    layer = zope.configuration.fields.GlobalObject(
-        title=_("Layer"),
-        required=True
         )
