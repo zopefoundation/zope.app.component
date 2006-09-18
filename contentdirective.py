@@ -192,12 +192,15 @@ class ContentDirective(ClassDirective):
 
 # BBB 2006/09/17, to be removed after 12 months
 class LocalUtilityDirective(ClassDirective):
-    r""" *BBB: DEPRECATED*
+    r"""*BBB: DEPRECATED*
 
-    The ``localUtility`` alias for the ``class`` directive has been
-    deprecated and will be removed in Zope 3.5.
+    The ``localUtility`` directive has been deprecated
+    and will be removed after 09/2007.
 
-    Examples:
+    Use ``class`` directive with additional subdirective
+    ``<implements interface="zope.annotation.interfaces.IAttributeAnnotatable" />``
+
+    Deprecated examples:
 
       >>> from zope.interface import implements
       >>> class LU1(object):
@@ -243,8 +246,9 @@ class LocalUtilityDirective(ClassDirective):
                                      '`IPersistent`.' % class_.__name__)
 
         warnings.warn_explicit(
-            "The 'localUtility' alias for the 'class' directive has been "
-            "deprecated and will be removed in Zope 3.5.\n",
+            "The 'localUtility' directive has been deprecated. It will "
+            "be removed after 09/2007.\n"
+            "Use 'class' directive + implements(IAttributeAnnotatable).\n",
             DeprecationWarning, _context.info.file, _context.info.line)
         classImplements(class_, IAttributeAnnotatable)
         super(LocalUtilityDirective, self).__init__(_context, class_)
