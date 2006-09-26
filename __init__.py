@@ -17,9 +17,16 @@ $Id$
 """
 __docformat__ = "reStructuredText"
 import zope.component
+import zope.deprecation
 
 _marker = object()
 
+# BBB: Deprecated on 9/26/2006
+@zope.deprecation.deprecate('''This function has been deprecated and will go
+away in Zope 3.6. There is no replacement for this function, since it odes not
+make sense in light of registry bases anymore. If you are using this function
+to lookup the next utility, consider using get/queryNextUtility. Otherwise, it
+is suggested to iterate through the list of bases of a registry manually.''')
 def getNextSiteManager(context):
     """Get the next site manager."""
     sm = queryNextSiteManager(context, _marker)
@@ -29,6 +36,12 @@ def getNextSiteManager(context):
     return sm
 
 
+# BBB: Deprecated on 9/26/2006
+@zope.deprecation.deprecate('''This function has been deprecated and will go
+away in Zope 3.6. There is no replacement for this function, since it odes not
+make sense in light of registry bases anymore. If you are using this function
+to lookup the next utility, consider using get/queryNextUtility. Otherwise, it
+is suggested to iterate through the list of bases of a registry manually.''')
 def queryNextSiteManager(context, default=None):
     """Get the next site manager.
 
@@ -63,8 +76,11 @@ def queryNextUtility(context, interface, name='', default=None):
 
     Find the next available utility providing `interface` and having the
     specified name. If no utility was found, return the specified `default`
-    value."""    
-    sm = queryNextSiteManager(context)
-    if sm is None:
-        return default
-    return sm.queryUtility(interface, name, default)
+    value."""
+    sm = zope.component.getSiteManager(context)
+    bases = sm.__bases__
+    for base in bases:
+        util = base.queryUtility(interface, name, _marker)
+        if util is not _marker:
+            return util
+    return default

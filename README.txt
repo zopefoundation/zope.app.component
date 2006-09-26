@@ -32,9 +32,14 @@ document these frameworks in different files.
 Local Component Architecture API
 --------------------------------
 
-While the component architecture API provided by `zope.component` is
+While the component architecture API provided by ``zope.component`` is
 sufficient most of the time, there are a couple of functions that are useful
-in the context of multiple sites. 
+in the context of multiple sites and base component registries.
+
+--- BBB: Deprecated on 9/26/2006 --
+
+  >>> import zope.deprecation
+  >>> zope.deprecation.__show__.off()
 
 A very common use case is to get the nearest site manager in a given
 context. Sometimes, however, one wants the next higher-up site manager. First,
@@ -44,7 +49,7 @@ let's create a folder tree and create some sites from it:
   >>> root = setup.buildSampleFolderTree()
   >>> root_sm = setup.createSiteManager(root)
   >>> folder1_sm = setup.createSiteManager(root['folder1'])
- 
+
 If we ask `folder1` for its nearest site manager, we get
 
   >>> from zope.app import zapi
@@ -77,30 +82,33 @@ return value:
   >>> component.queryNextSiteManager(object(), 'default')
   'default'
 
-A related use case to the above is to find the next available utility
-providing a certain interface and name. This is often used when a utility
-delegates a query to the next one. Let's start by creating a utility and
-inserting it in our folder hiearchy:
+  >>> zope.deprecation.__show__.on()
+
+--- BBB: End of block --
+
+It is common for a utility to delegate its answer to a utility providing the
+same interface in one of the component registry's bases. Let's start by
+creating a utility and inserting it in our folder hiearchy:
 
   >>> import zope.interface
   >>> class IMyUtility(zope.interface.Interface):
   ...     pass
-  
+
   >>> class MyUtility(object):
   ...     zope.interface.implements(IMyUtility)
   ...     def __init__(self, id):
   ...         self.id = id
   ...     def __repr__(self):
-  ...         return "%s('%s')" %(self.__class__.__name__, self.id)  
+  ...         return "%s('%s')" %(self.__class__.__name__, self.id)
 
-  >>> gutil = MyUtility('global') 
+  >>> gutil = MyUtility('global')
   >>> gsm.registerUtility(gutil, IMyUtility, 'myutil')
 
-  >>> util1 = setup.addUtility(folder1_sm, 'myutil', IMyUtility, 
+  >>> util1 = setup.addUtility(folder1_sm, 'myutil', IMyUtility,
   ...                          MyUtility('one'))
 
   >>> folder1_1_sm = setup.createSiteManager(root['folder1']['folder1_1'])
-  >>> util1_1 = setup.addUtility(folder1_1_sm, 'myutil', IMyUtility, 
+  >>> util1_1 = setup.addUtility(folder1_1_sm, 'myutil', IMyUtility,
   ...                            MyUtility('one-one'))
 
 Now, if we ask `util1_1` for its next available utility and we get
@@ -115,15 +123,35 @@ Next we ask `util1` for its next utility and we should get the global version:
 
 However, if we ask the global utility for the next one, an error is raised
 
-  >>> component.getNextUtility(gutil, IMyUtility, 
+  >>> component.getNextUtility(gutil, IMyUtility,
   ...                          'myutil') #doctest: +NORMALIZE_WHITESPACE
   Traceback (most recent call last):
-  ...  
-  ComponentLookupError: 
-  No more utilities for <InterfaceClass __builtin__.IMyUtility>, 
+  ...
+  ComponentLookupError:
+  No more utilities for <InterfaceClass __builtin__.IMyUtility>,
   'myutil' have been found.
 
 or you can simply use the `queryNextUtility` and specify a default:
 
   >>> component.queryNextUtility(gutil, IMyUtility, 'myutil', 'default')
   'default'
+
+Let's now ensure that the function also works with multiple registries. First
+we create another base registry:
+
+  >>> from zope.component import registry
+  >>> myregistry = registry.Components()
+
+  >>> custom_util = MyUtility('my_custom_util')
+  >>> myregistry.registerUtility(custom_util, IMyUtility, 'my_custom_util')
+
+Now we add it as a base to the local site manager:
+
+  >>> folder1_sm.__bases__ = (myregistry,) + folder1_sm.__bases__
+
+Both, the ``myregistry`` and global utilities should be available:
+
+  >>> component.queryNextUtility(folder1_sm, IMyUtility, 'my_custom_util')
+  MyUtility('my_custom_util')
+  >>> component.queryNextUtility(folder1_sm, IMyUtility, 'myutil')
+  MyUtility('global')
