@@ -16,6 +16,7 @@
 $Id$
 """
 __docformat__ = "reStructuredText"
+
 import zope.component
 import zope.deprecation
 
@@ -23,7 +24,7 @@ _marker = object()
 
 # BBB: Deprecated on 9/26/2006
 @zope.deprecation.deprecate('''This function has been deprecated and will go
-away in Zope 3.6. There is no replacement for this function, since it odes not
+away in Zope 3.6. There is no replacement for this function, since it does not
 make sense in light of registry bases anymore. If you are using this function
 to lookup the next utility, consider using get/queryNextUtility. Otherwise, it
 is suggested to iterate through the list of bases of a registry manually.''')
@@ -38,7 +39,7 @@ def getNextSiteManager(context):
 
 # BBB: Deprecated on 9/26/2006
 @zope.deprecation.deprecate('''This function has been deprecated and will go
-away in Zope 3.6. There is no replacement for this function, since it odes not
+away in Zope 3.6. There is no replacement for this function, since it does not
 make sense in light of registry bases anymore. If you are using this function
 to lookup the next utility, consider using get/queryNextUtility. Otherwise, it
 is suggested to iterate through the list of bases of a registry manually.''')
