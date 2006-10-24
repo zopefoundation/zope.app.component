@@ -15,6 +15,7 @@
 
 $Id$
 """
+__docformat__ = 'restructuredtext'
 
 import UserDict
 import warnings
@@ -88,7 +89,7 @@ class IComponentRegistration(IRegistration):
 
     An interface can optionally be specified that describes the interface the
     component provides for the registry.
-    
+
     The interface will be used to produce a proxy for the component, if
     the permission is also specified.
     """
@@ -140,7 +141,7 @@ class IRegistry(zope.component.interfaces.IRegistry):
 class ILocatedRegistry(IRegistry):
     """A registry that is located in a tree of registries.
 
-    
+
     """
     next = interface.Attribute(
         "Set the next local registry in the tree. This attribute "
@@ -226,7 +227,7 @@ class IRegisterableContainer(zope.app.container.interfaces.IContainer):
 class IRegisterable(zope.app.container.interfaces.IContained):
     """Mark a component as registerable.
 
-    All registerable components need to implement this interface. 
+    All registerable components need to implement this interface.
     """
     #zope.app.container.constraints.containers(IRegisterableContainer)
 
@@ -242,7 +243,7 @@ class IRegisterableContainerContaining(
     """
     zope.app.container.constraints.contains(
         IRegisterable, IRegisterableContainer)
-    
+
 
 class IRegistered(interface.Interface):
     """An object that can track down its registrations.
@@ -810,7 +811,7 @@ class LocalSiteGeneration3SupportMixin:
         self._handler_registrations.extend(())
         for sub in self.subs:
             sub._evolve_to_generation_4()
-        
+
 
 class _OldUtilityRegistrations(UserDict.DictMixin):
 
@@ -902,7 +903,7 @@ class _LocalAdapterRegistryGeneration3SupportMixin(object):
             for r in state['_registrations']:
                 if isinstance(r, UtilityRegistration):
                     self.register((), r.provided, r.name, r.component)
-                    
+
                     if not [
                         1 for rseen in registrations
                         if rseen.provided == r.provided
@@ -916,9 +917,9 @@ class _LocalAdapterRegistryGeneration3SupportMixin(object):
                         "Old %s registrations are not supported and will not "
                         "be converted" % r.__class__.__name__,
                         DeprecationWarning)
-            
+
             self._registrations = tuple(registrations)
         else:
             super(_LocalAdapterRegistryGeneration3SupportMixin, self
                   ).__setstate__(state)
-                    
+

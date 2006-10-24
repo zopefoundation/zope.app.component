@@ -15,6 +15,8 @@
 
 $Id$
 """
+__docformat__ = 'restructuredtext'
+
 import zope.component
 from zope.exceptions.interfaces import UserError
 from zope.security.proxy import removeSecurityProxy
@@ -71,7 +73,7 @@ class ComponentAdding(Adding):
     _addFilterInterface = None
 
     def addingInfo(self):
-        # A site management folder can have many things. We only want 
+        # A site management folder can have many things. We only want
         # things that implement a particular interface
         info = super(ComponentAdding, self).addingInfo()
         if self._addFilterInterface is None:
