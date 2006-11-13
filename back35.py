@@ -894,7 +894,7 @@ class _LocalAdapterRegistryGeneration3SupportMixin(object):
     def __setstate__(self, state):
         if '_registrations' in state:
             # convert data to generation 3 data structure:
-            next = state['next']
+            next = state.get('next')
             if next is None:
                 next = state['base']
             bases = (next, )
