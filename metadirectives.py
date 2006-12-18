@@ -58,12 +58,9 @@ class IBasicViewInformation(zope.interface.Interface):
         required=False,
         )
 
-    # BBB 2006/02/18, to be removed after 12 months
     layer = LayerField(
         title=_("The layer the view is in."),
         description=_("""
-        *BBB: DEPRECATED*
-
         A skin is composed of layers. It is common to put skin
         specific views in a layer named after the skin. If the 'layer'
         attribute is not supplied, it defaults to 'default'."""),
@@ -205,11 +202,8 @@ class IResourceDirective(IBasicComponentInformation,
                          IBasicResourceInformation):
     """Register a resource"""
 
-    # BBB 2006/02/18, to be removed after 12 months
     layer = LayerField(
-        title=_("The layer the resource is in.  This argument has been "
-                "deprecated and will be removed in Zope 3.5.  Use the "
-                "'type' argument instead."),
+        title=_("The layer the resource is in."),
         required=False,
         )
 
