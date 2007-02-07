@@ -18,6 +18,7 @@ $Id$
 
 import unittest
 import zope.app.testing.functional
+from zope.app.component.testing import AppComponentLayer
 
 from zope import interface
 
@@ -32,8 +33,10 @@ class Sample:
 
 
 def test_suite():
-    return zope.app.testing.functional.FunctionalDocFileSuite(
+    suite = zope.app.testing.functional.FunctionalDocFileSuite(
         'registration.txt')
+    suite.layer = AppComponentLayer
+    return suite
         
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')

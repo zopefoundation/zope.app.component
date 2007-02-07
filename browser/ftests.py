@@ -21,12 +21,15 @@ import unittest
 
 from zope.testing import doctest
 from zope.app.testing import functional
+from zope.app.component.testing import AppComponentLayer
 
 def test_suite():
+    site = functional.FunctionalDocFileSuite(
+        "site.txt",
+        optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+    site.layer = AppComponentLayer
     return unittest.TestSuite((
-        functional.FunctionalDocFileSuite(
-            "site.txt",
-            optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE),
+        site,
         ))
 
 

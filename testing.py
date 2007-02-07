@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# Copyright (c) 2001-2007 Zope Corporation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -13,8 +13,12 @@
 ##############################################################################
 """Base Mix-in class for Placeful Setups 
 
+Also contains common test related classes/functions/objects.
+
 $Id$
 """
+
+import os
 import zope.interface
 from zope.component.interfaces import IComponentLookup
 from zope.app.component.interfaces import ILocalSiteManager
@@ -22,6 +26,11 @@ from zope.app import zapi
 from zope.app.testing import setup
 from zope.app.testing.placelesssetup import PlacelessSetup
 from zope.app.folder import rootFolder
+from zope.app.testing.functional import ZCMLLayer
+
+AppComponentLayer = ZCMLLayer(
+    os.path.join(os.path.split(__file__)[0], 'ftesting.zcml'),
+    __name__, 'AppComponentLayer', allow_teardown=True)
 
 class Place(object):
 
