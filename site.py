@@ -198,6 +198,9 @@ class LocalSiteManager(
     def _init_registries(self):
         self.adapters = _LocalAdapterRegistry()
         self.utilities = _LocalAdapterRegistry()
+        self.adapters.__parent__ = self.utilities.__parent__ = self
+        self.adapters.__name__ = u'adapters'
+        self.utilities.__name__ = u'utilities'
 
     def addSub(self, sub):
         """See interfaces.registration.ILocatedRegistry"""
