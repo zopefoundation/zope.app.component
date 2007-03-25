@@ -13,7 +13,20 @@ setup(name='zope.app.component',
 
       namespace_packages=['zope', 'zope.app'],
       include_package_data = True,
-
+      install_requires=['zope.component',
+                        'zope.interface',
+                        'zope.exceptions',
+                        'zope.security',
+                        'zope.app.container',
+                        #'zope.app.interface',
+                        #'zope.app.i18n',
+                        #'zope.schema',
+                        #'zope.app.module',
+                        #'zope.traversing',
+                        #'zope.deferredimport',
+                        #'zope.deprecation',
+                        #'zope.lifecycleevent',
+                        ],
       zip_safe = False,
       )
 
