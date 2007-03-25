@@ -20,8 +20,7 @@ $Id$
 import zope.interface
 import zope.component.interfaces
 import zope.app.container.interfaces
-import zope.app.container.constraints
-from zope.app.i18n import ZopeMessageFactory as _
+from zope.app.component.i18n import ZopeMessageFactory as _
 import registration
 
 import zope.deferredimport

@@ -28,7 +28,7 @@ from zope.component.interface import searchInterface
 from zope.interface.interfaces import IMethod
 from zope.schema.interfaces import IField
 
-from zope.app.i18n import ZopeMessageFactory as _
+from zope.app.component.i18n import ZopeMessageFactory as _
 from zope.app.container.interfaces import INameChooser
 from zope.app.container.browser.adding import Adding
 from zope.app.interface.interfaces import IInterfaceBasedRegistry

@@ -50,11 +50,10 @@ import zope.app.component.interfaces.registration
 import zope.app.container.interfaces
 import zope.app.container.constraints
 from zope.app import zapi
-from zope.app.i18n import ZopeMessageFactory as _
+from zope.app.component.i18n import ZopeMessageFactory as _
 from zope.app.component.interfaces import registration as interfaces
 from zope.app.container.btree import BTreeContainer
 from zope.app.container.contained import Contained
-from zope.app.i18n import ZopeMessageFactory as _
 
 InactiveStatus = _('Inactive')
 ActiveStatus = _('Active')

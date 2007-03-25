@@ -26,7 +26,7 @@ from zope.interface.verify import verifyObject
 from zope.schema.interfaces import IVocabulary, IVocabularyTokenized
 from zope.schema.interfaces import ITokenizedTerm, IVocabularyFactory
 
-from zope.app.i18n import ZopeMessageFactory as _
+from zope.app.component.i18n import ZopeMessageFactory as _
 from zope.app.interface.vocabulary import ObjectInterfacesVocabulary
 from zope.component.interfaces import IUtilityRegistration
 

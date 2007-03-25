@@ -27,7 +27,7 @@ import zope.publisher.interfaces.browser
 import zope.app.pagetemplate
 import zope.app.form
 from zope.app import zapi
-from zope.app.i18n import ZopeMessageFactory as _
+from zope.app.component.i18n import ZopeMessageFactory as _
 
 
 def _registrations(context, comp):

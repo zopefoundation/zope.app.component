@@ -24,7 +24,7 @@ import zope.schema
 from zope.component.zcml import IBasicComponentInformation
 
 from zope.app.component.back35 import LayerField
-from zope.app.i18n import ZopeMessageFactory as _
+from zope.app.component.i18n import ZopeMessageFactory as _
 
 class IDefaultViewName(zope.interface.Interface):
     """A string that contains the default view name
