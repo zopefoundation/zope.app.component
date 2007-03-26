@@ -21,17 +21,11 @@ import zope.component
 from zope.exceptions.interfaces import UserError
 from zope.security.proxy import removeSecurityProxy
 from zope.publisher.browser import BrowserView
-from zope.component.interfaces import ComponentLookupError
 from zope.component.interfaces import IFactory
-from zope.component.interface import getInterface, provideInterface
 from zope.component.interface import searchInterface
-from zope.interface.interfaces import IMethod
-from zope.schema.interfaces import IField
 
 from zope.app.component.i18n import ZopeMessageFactory as _
-from zope.app.container.interfaces import INameChooser
 from zope.app.container.browser.adding import Adding
-from zope.app.interface.interfaces import IInterfaceBasedRegistry
 from zope.app.component.site import LocalSiteManager
 from zope.app.component.interfaces import ISite
 

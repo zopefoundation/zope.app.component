@@ -1,4 +1,4 @@
-##############################################################################
+#############################################################################
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
@@ -18,7 +18,6 @@ $Id$
 __docformat__ = 'restructuredtext'
 
 import warnings
-import zope.component
 from zope import component
 from zope.interface import Interface
 from zope.component.zcml import handler, proxify, utility

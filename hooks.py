@@ -18,7 +18,6 @@ $Id$
 __docformat__ = 'restructuredtext'
 
 import zope.component
-import zope.deprecation
 import zope.thread
 import zope.security
 

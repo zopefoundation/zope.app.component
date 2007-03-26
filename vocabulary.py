@@ -22,8 +22,7 @@ __docformat__ = "reStructuredText"
 import zope.component
 from zope.interface import implements, classProvides, Interface
 from zope.interface.interfaces import IInterface
-from zope.interface.verify import verifyObject
-from zope.schema.interfaces import IVocabulary, IVocabularyTokenized
+from zope.schema.interfaces import IVocabularyTokenized
 from zope.schema.interfaces import ITokenizedTerm, IVocabularyFactory
 
 from zope.app.component.i18n import ZopeMessageFactory as _
@@ -34,8 +33,11 @@ class UtilityTerm(object):
     """A term representing a utility.
 
     The token of the term is the name of the utility. Here is a brief example
-    on how the IVocabulary interface is handled in this term as a utility:
-
+    on how the IVocabulary interface is handled in this term as a
+    utility:
+    
+    >>> from zope.interface.verify import verifyObject
+    >>> from zope.schema.interfaces import IVocabulary
     >>> term = UtilityTerm(IVocabulary, 'zope.schema.interfaces.IVocabulary')
     >>> verifyObject(ITokenizedTerm, term)
     True

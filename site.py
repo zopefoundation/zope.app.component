@@ -28,7 +28,6 @@ $Id$
 import zope.event
 import zope.interface
 import zope.component
-import zope.component.registry
 import zope.component.persistentregistry
 import zope.component.interfaces
 import zope.traversing.api
@@ -38,12 +37,10 @@ import zope.location
 
 from zope.component.interfaces import ComponentLookupError
 from zope.traversing.interfaces import IContainmentRoot
-from zope.security.proxy import removeSecurityProxy
 from zope.lifecycleevent import ObjectCreatedEvent
 from zope.filerepresentation.interfaces import IDirectoryFactory
 
 import zope.app.component.back35
-from zope.app import zapi
 from zope.app.component import interfaces
 from zope.app.component import registration
 from zope.app.component.hooks import setSite

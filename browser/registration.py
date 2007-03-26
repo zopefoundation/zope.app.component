@@ -17,7 +17,7 @@ $Id$
 """
 import warnings
 
-from zope import interface, component, deprecation, schema
+from zope import interface, component, schema
 from zope.formlib import form
 from zope.publisher.browser import BrowserPage
 from zope.security.proxy import removeSecurityProxy
@@ -25,8 +25,6 @@ import zope.component.interfaces
 import zope.publisher.interfaces.browser
 
 import zope.app.pagetemplate
-import zope.app.form
-from zope.app import zapi
 from zope.app.component.i18n import ZopeMessageFactory as _
 
 

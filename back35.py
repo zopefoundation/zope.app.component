@@ -30,7 +30,6 @@ from zope import component
 import zope.cachedescriptors.property
 import zope.event
 import zope.schema
-import zope.interface.adapter
 import zope.component.interfaces
 import zope.deprecation
 import zope.schema.vocabulary
@@ -45,7 +44,6 @@ from zope.configuration.fields import GlobalObject
 from zope.configuration.exceptions import ConfigurationError
 from zope.publisher.interfaces.back35 import ILayer
 
-import zope.app.component.registration
 import zope.app.component.interfaces.registration
 import zope.app.container.interfaces
 import zope.app.container.constraints
