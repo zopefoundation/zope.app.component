@@ -384,8 +384,12 @@ def clearThreadSiteSubscriber(event):
 
 # Clear the site thread global
 clearSite = setSite
-from zope.testing.cleanup import addCleanUp
-addCleanUp(clearSite)
+try:
+    from zope.testing.cleanup import addCleanUp
+except ImportError:
+    pass
+else:
+    addCleanUp(clearSite)
 
 
 @zope.component.adapter(zope.interface.Interface)

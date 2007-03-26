@@ -108,5 +108,9 @@ def resetHooks():
 
 # Clear the site thread global
 clearSite = setSite
-from zope.testing.cleanup import addCleanUp
-addCleanUp(resetHooks)
+try:
+    from zope.testing.cleanup import addCleanUp
+except ImportError:
+    pass
+else:
+    addCleanUp(resetHooks)
