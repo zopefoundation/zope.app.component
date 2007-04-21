@@ -36,7 +36,6 @@ if sys.platform == 'win32':
     cmd = '"%s"' % cmd # work around spawn lamosity on windows
 
 ws = pkg_resources.working_set
-import pdb;pdb.set_trace()
 assert os.spawnle(
     os.P_WAIT, sys.executable, sys.executable,
     '-c', cmd, '-mqNxd', tmpeggs, 'zc.buildout',
