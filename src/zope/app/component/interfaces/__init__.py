@@ -23,6 +23,8 @@ import zope.app.container.interfaces
 
 import zope.deferredimport
 
+from zope.location.interfaces import IPossibleSite, ISite
+
 zope.deferredimport.deprecatedFrom(
     "Local registration is now much simpler.  The old baroque APIs "
     "will go away in Zope 3.5.  See the new component-registration APIs "
@@ -32,22 +34,6 @@ zope.deferredimport.deprecatedFrom(
     'IUtilityRegistration',
     )
 
-class IPossibleSite(zope.interface.Interface):
-    """An object that could be a site
-    """
-
-    def setSiteManager(sitemanager):
-        """Sets the site manager for this object.
-        """
-
-    def getSiteManager():
-        """Returns the site manager contained in this object.
-
-        If there isn't a site manager, raise a component lookup.
-        """
-
-class ISite(IPossibleSite):
-    """Marker interface to indicate that we have a site"""
 
 class INewLocalSite(zope.interface.Interface):
     """Event: a local site was created
