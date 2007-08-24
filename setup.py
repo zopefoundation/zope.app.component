@@ -4,7 +4,7 @@ from setuptools import setup, find_packages, Extension
 
 setup(name='zope.app.component',
       version = '3.4.0b4',
-      url='http://pypi.zope.org/pypi/zope.app.component',
+      url='http://pypi.python.org/pypi/zope.app.component',
       author='Zope Corporation and Contributors',
       author_email='zope3-dev@zope.org',
 
