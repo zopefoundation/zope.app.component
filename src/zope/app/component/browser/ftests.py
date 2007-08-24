@@ -17,20 +17,24 @@ $Id$
 """
 __docformat__ = "reStructuredText"
 
+import os.path
 import unittest
 
 from zope.testing import doctest
 from zope.app.testing import functional
-from zope.app.component.testing import AppComponentLayer
+
+
+AppComponentBrowserLayer = functional.ZCMLLayer(
+    os.path.join(os.path.dirname(__file__), 'ftesting.zcml'),
+    __name__, 'AppComponentBrowserLayer', allow_teardown=True)
+
 
 def test_suite():
     site = functional.FunctionalDocFileSuite(
         "site.txt",
         optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
-    site.layer = AppComponentLayer
-    return unittest.TestSuite((
-        site,
-        ))
+    site.layer = AppComponentBrowserLayer
+    return site
 
 
 if __name__ == '__main__':

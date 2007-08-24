@@ -3,12 +3,6 @@
    xmlns:browser="http://namespaces.zope.org/browser"
    >
 
-  <browser:addMenuItem
-      class=".tests.Sample"
-      permission="zope.ManageSite"
-      title="Sample"
-      />
-
 <!-- Registration Managemenet -->
 
   <browser:page
