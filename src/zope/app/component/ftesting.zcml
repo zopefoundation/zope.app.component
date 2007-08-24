@@ -15,7 +15,8 @@
   <include package="zope.formlib" />
 
   <securityPolicy
-    component="zope.app.securitypolicy.zopepolicy.ZopeSecurityPolicy" />
+      component="zope.app.securitypolicy.zopepolicy.ZopeSecurityPolicy"
+      />
 
   <role id="zope.Manager" title="Site Manager" />
 
