@@ -15,12 +15,17 @@
 
 $Id$
 """
-
+import os.path
 import unittest
 import zope.app.testing.functional
-from zope.app.component.testing import AppComponentLayer
-
 from zope import interface
+from zope.app.component.testing import AppComponentLayer
+from zope.app.testing import functional
+from zope.testing import doctest
+
+AppComponentBrowserLayer = functional.ZCMLLayer(
+    os.path.join(os.path.dirname(__file__), 'ftesting.zcml'),
+    __name__, 'AppComponentBrowserLayer', allow_teardown=True)
 
 class ISampleBase(interface.Interface):
     pass
@@ -33,11 +38,16 @@ class Sample:
 
 
 def test_suite():
-    suite = zope.app.testing.functional.FunctionalDocFileSuite(
-        'registration.txt')
-    suite.layer = AppComponentLayer
-    return suite
-        
+    site = zope.app.testing.functional.FunctionalDocFileSuite(
+        "site.txt",
+        optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+    site.layer = AppComponentBrowserLayer
+    reg = zope.app.testing.functional.FunctionalDocFileSuite(
+        'registration.txt',
+        optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+    reg.layer = AppComponentLayer
+    return unittest.TestSuite((site, reg))
+
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')
 
