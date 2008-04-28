@@ -21,9 +21,9 @@ import pprint
 import warnings
 from cStringIO import StringIO
 
+import zope.component
 from zope.interface import implements
 from zope.testing.doctestunit import DocTestSuite
-from zope.component import createObject
 from zope.component.interfaces import IDefaultViewName
 from zope.component.interfaces import ComponentLookupError
 from zope.component.interface import queryInterface
@@ -32,9 +32,9 @@ from zope.configuration.xmlconfig import xmlconfig, XMLConfig
 from zope.configuration.exceptions import ConfigurationError
 from zope.configuration.xmlconfig import ZopeXMLConfigurationError
 from zope.security.checker import ProxyFactory, selectChecker
+from zope.security import proxy
 
 import zope.app.component
-from zope.app import zapi
 from zope.app.testing.placelesssetup import PlacelessSetup
 from zope.app.component.tests.adapter import A1, A2, A3
 from zope.app.component.tests.adapter import I1, I2, I3, IS
@@ -87,7 +87,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         ob = Ob()
         request = Request(IV)
         self.assertEqual(
-            zapi.queryMultiAdapter((ob, request), name=u'test'), None)
+            zope.component.queryMultiAdapter((ob, request), name=u'test'), None)
 
         xmlconfig(StringIO(template %
             '''
@@ -99,7 +99,8 @@ class Test(PlacelessSetup, unittest.TestCase):
             ))
 
         self.assertEqual(
-            zapi.queryMultiAdapter((ob, request), name=u'test').__class__,
+            zope.component.queryMultiAdapter((ob, request),
+                                             name=u'test').__class__,
             V1)
 
 
@@ -120,7 +121,8 @@ class Test(PlacelessSetup, unittest.TestCase):
         a1 = A1()
         a2 = A2()
         request = Request(IV)
-        view = zapi.queryMultiAdapter((ob, a1, a2, request), name=u'test')
+        view = zope.component.queryMultiAdapter((ob, a1, a2, request),
+                                                name=u'test')
         self.assertEqual(view.__class__, A3)
         self.assertEqual(view.context, (ob, a1, a2, request))
 
@@ -159,7 +161,7 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         # The view should be a V1 around an A3, around an A2, around
         # an A1, anround ob:
-        view = zapi.queryMultiAdapter((ob, Request(IV)), name=u'test')
+        view = zope.component.queryMultiAdapter((ob, Request(IV)), name=u'test')
         self.assertEqual(view.__class__, V1)
         a3 = view.context
         self.assertEqual(a3.__class__, A3)
@@ -186,7 +188,8 @@ class Test(PlacelessSetup, unittest.TestCase):
     def testViewThatProvidesAnInterface(self):
         ob = Ob()
         self.assertEqual(
-            zapi.queryMultiAdapter((ob, Request(IR)), IV, u'test'), None)
+            zope.component.queryMultiAdapter((ob, Request(IR)), IV, u'test'),
+            None)
 
         xmlconfig(StringIO(template %
             '''
@@ -199,7 +202,8 @@ class Test(PlacelessSetup, unittest.TestCase):
             ))
 
         self.assertEqual(
-            zapi.queryMultiAdapter((ob, Request(IR)), IV, u'test'), None)
+            zope.component.queryMultiAdapter((ob, Request(IR)), IV, u'test'),
+            None)
 
         xmlconfig(StringIO(template %
             '''
@@ -212,14 +216,14 @@ class Test(PlacelessSetup, unittest.TestCase):
             '''
             ))
 
-        v = zapi.queryMultiAdapter((ob, Request(IR)), IV, u'test')
+        v = zope.component.queryMultiAdapter((ob, Request(IR)), IV, u'test')
         self.assertEqual(v.__class__, V1)
 
 
     def testUnnamedViewThatProvidesAnInterface(self):
         ob = Ob()
         self.assertEqual(
-            zapi.queryMultiAdapter((ob, Request(IR)), IV), None)
+            zope.component.queryMultiAdapter((ob, Request(IR)), IV), None)
 
         xmlconfig(StringIO(template %
             '''
@@ -230,7 +234,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             '''
             ))
 
-        v = zapi.queryMultiAdapter((ob, Request(IR)), IV)
+        v = zope.component.queryMultiAdapter((ob, Request(IR)), IV)
         self.assertEqual(v, None)
 
         xmlconfig(StringIO(template %
@@ -243,7 +247,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             '''
             ))
 
-        v = zapi.queryMultiAdapter((ob, Request(IR)), IV)
+        v = zope.component.queryMultiAdapter((ob, Request(IR)), IV)
         self.assertEqual(v.__class__, V1)
 
     def testViewHavingARequiredClass(self):
@@ -258,13 +262,13 @@ class Test(PlacelessSetup, unittest.TestCase):
             )))
 
         content = Content()
-        a1 = zapi.getMultiAdapter((content, Request(IR)))
+        a1 = zope.component.getMultiAdapter((content, Request(IR)))
         self.assert_(isinstance(a1, A1))
 
         class MyContent:
             implements(IContent)
 
-        self.assertRaises(ComponentLookupError, zapi.getMultiAdapter,
+        self.assertRaises(ComponentLookupError, zope.component.getMultiAdapter,
                           (MyContent(), Request(IR)))
 
     def testInterfaceProtectedView(self):
@@ -280,7 +284,8 @@ class Test(PlacelessSetup, unittest.TestCase):
             '''
             ))
 
-        v = ProxyFactory(zapi.getMultiAdapter((Ob(), Request(IV)), name='test'))
+        v = ProxyFactory(zope.component.getMultiAdapter((Ob(), Request(IV)),
+                                                        name='test'))
         self.assertEqual(v.index(), 'V1 here')
         self.assertRaises(Exception, getattr, v, 'action')
 
@@ -297,7 +302,8 @@ class Test(PlacelessSetup, unittest.TestCase):
             '''
             ))
 
-        v = ProxyFactory(zapi.getMultiAdapter((Ob(), Request(IV)), name='test'))
+        v = ProxyFactory(zope.component.getMultiAdapter((Ob(), Request(IV)),
+                                                        name='test'))
         self.assertEqual(v.action(), 'done')
         self.assertRaises(Exception, getattr, v, 'index')
 
@@ -315,7 +321,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             '''
             ))
 
-        v = zapi.getMultiAdapter((Ob(), Request(IV)), name='test')
+        v = zope.component.getMultiAdapter((Ob(), Request(IV)), name='test')
         self.assertEqual(v.index(), 'V1 here')
         self.assertEqual(v.action(), 'done')
 
@@ -333,7 +339,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             '''
             ))
 
-        v = zapi.getMultiAdapter((Ob(), Request(IV)), name='test')
+        v = zope.component.getMultiAdapter((Ob(), Request(IV)), name='test')
         self.assertEqual(v.index(), 'V1 here')
         self.assertEqual(v.action(), 'done')
 
@@ -371,7 +377,8 @@ class Test(PlacelessSetup, unittest.TestCase):
     def testDefaultView(self):
         ob = Ob()
         self.assertEqual(
-            zapi.queryMultiAdapter((Ob(), Request(IV)), name='test'), None)
+            zope.component.queryMultiAdapter((Ob(), Request(IV)), name='test'),
+            None)
 
         xmlconfig(StringIO(template % (
             '''
@@ -382,16 +389,17 @@ class Test(PlacelessSetup, unittest.TestCase):
             )))
 
         self.assertEqual(
-            zapi.queryMultiAdapter((Ob(), Request(IV)), name='test'), None)
+            zope.component.queryMultiAdapter((Ob(), Request(IV)), name='test'),
+            None)
         self.assertEqual(
-            zapi.getGlobalSiteManager().adapters.lookup((IC, IV),
-                                                        IDefaultViewName),
+            zope.component.getGlobalSiteManager().adapters.lookup(
+                (IC, IV), IDefaultViewName),
             'test')
 
     def testResource(self):
         ob = Ob()
         self.assertEqual(
-            zapi.queryAdapter(Request(IV), name=u'test'), None)
+            zope.component.queryAdapter(Request(IV), name=u'test'), None)
         xmlconfig(StringIO(template % (
             '''
             <resource name="test"
@@ -401,12 +409,13 @@ class Test(PlacelessSetup, unittest.TestCase):
             )))
 
         self.assertEqual(
-            zapi.queryAdapter(Request(IV), name=u'test').__class__,
+            zope.component.queryAdapter(Request(IV), name=u'test').__class__,
             R1)
 
     def testResourceThatProvidesAnInterface(self):
         ob = Ob()
-        self.assertEqual(zapi.queryAdapter(Request(IR), IV, u'test'), None)
+        self.assertEqual(zope.component.queryAdapter(Request(IR), IV, u'test'),
+                         None)
 
         xmlconfig(StringIO(template %
             '''
@@ -418,7 +427,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             '''
             ))
 
-        v = zapi.queryAdapter(Request(IR), IV, name=u'test')
+        v = zope.component.queryAdapter(Request(IR), IV, name=u'test')
         self.assertEqual(v, None)
 
         xmlconfig(StringIO(template %
@@ -432,12 +441,12 @@ class Test(PlacelessSetup, unittest.TestCase):
             '''
             ))
 
-        v = zapi.queryAdapter(Request(IR), IV, name=u'test')
+        v = zope.component.queryAdapter(Request(IR), IV, name=u'test')
         self.assertEqual(v.__class__, R1)
 
     def testUnnamedResourceThatProvidesAnInterface(self):
         ob = Ob()
-        self.assertEqual(zapi.queryAdapter(Request(IR), IV), None)
+        self.assertEqual(zope.component.queryAdapter(Request(IR), IV), None)
 
         xmlconfig(StringIO(template %
             '''
@@ -448,7 +457,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             '''
             ))
 
-        v = zapi.queryAdapter(Request(IR), IV)
+        v = zope.component.queryAdapter(Request(IR), IV)
         self.assertEqual(v, None)
 
         xmlconfig(StringIO(template %
@@ -461,7 +470,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             '''
             ))
 
-        v = zapi.queryAdapter(Request(IR), IV)
+        v = zope.component.queryAdapter(Request(IR), IV)
         self.assertEqual(v.__class__, R1)
 
     def testResourceUndefinedPermission(self):
@@ -480,8 +489,9 @@ class Test(PlacelessSetup, unittest.TestCase):
     def testFactory(self):
         showwarning = warnings.showwarning
         warnings.showwarning = lambda *a, **k: None
-        
-        self.assertRaises(ComponentLookupError, zapi.createObject, 'foo')
+
+        self.assertRaises(ComponentLookupError, zope.component.createObject,
+                          'foo')
 
         xmlconfig(StringIO(template % (
             '''
@@ -493,7 +503,7 @@ class Test(PlacelessSetup, unittest.TestCase):
             )))
 
         from factory import X
-        self.assertEqual(zapi.createObject('foo.bar').__class__, X)
+        self.assertEqual(zope.component.createObject('foo.bar').__class__, X)
 
         warnings.showwarning = showwarning
 
@@ -529,8 +539,8 @@ class TestFactoryDirective(PlacelessSetup, unittest.TestCase):
        />
 </class>''')
         xmlconfig(f)
-        obj = createObject('test.Example')
-        self.failUnless(zapi.isinstance(obj, exampleclass.ExampleClass))
+        obj = zope.component.createObject('test.Example')
+        self.failUnless(proxy.isinstance(obj, exampleclass.ExampleClass))
 
 
 

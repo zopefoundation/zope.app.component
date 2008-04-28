@@ -11,7 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Base Mix-in class for Placeful Setups 
+"""Base Mix-in class for Placeful Setups
 
 Also contains common test related classes/functions/objects.
 
@@ -22,11 +22,11 @@ import os
 import zope.interface
 from zope.component.interfaces import IComponentLookup
 from zope.app.component.interfaces import ILocalSiteManager
-from zope.app import zapi
 from zope.app.testing import setup
 from zope.app.testing.placelesssetup import PlacelessSetup
 from zope.app.folder import rootFolder
 from zope.app.testing.functional import ZCMLLayer
+from zope.traversing.api import traverse
 
 AppComponentLayer = ZCMLLayer(
     os.path.join(os.path.split(__file__)[0], 'ftesting.zcml'),
@@ -47,7 +47,7 @@ class Place(object):
         except KeyError:
             root = inst.rootFolder = setup.buildSampleFolderTree()
 
-        return zapi.traverse(root, self.path)
+        return traverse(root, self.path)
 
 
 class PlacefulSetup(PlacelessSetup):
@@ -97,7 +97,7 @@ class PlacefulSetup(PlacelessSetup):
             return self.makeSite()
 
     def makeSite(self, path='/'):
-        folder = zapi.traverse(self.rootFolder, path)
+        folder = traverse(self.rootFolder, path)
         return setup.createSiteManager(folder, True)
 
     def createRootFolder(self):
@@ -106,7 +106,7 @@ class PlacefulSetup(PlacelessSetup):
 
 class SiteManagerStub(object):
     zope.interface.implements(ILocalSiteManager)
-    
+
     __bases__ = ()
 
     def __init__(self):

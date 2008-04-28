@@ -35,6 +35,7 @@ import zope.deprecation
 import zope.schema.vocabulary
 from zope import interface, schema
 from zope.traversing.interfaces import TraversalError
+from zope.traversing.api import getPath, getRoot, traverse
 from zope.interface import implements
 from zope.security.checker import InterfaceChecker, CheckerPublic
 from zope.security.proxy import Proxy, removeSecurityProxy
@@ -47,7 +48,6 @@ from zope.publisher.interfaces.back35 import ILayer
 import zope.app.component.interfaces.registration
 import zope.app.container.interfaces
 import zope.app.container.constraints
-from zope.app import zapi
 from zope.app.component.i18n import ZopeMessageFactory as _
 from zope.app.component.interfaces import registration as interfaces
 from zope.app.container.btree import BTreeContainer
@@ -439,17 +439,17 @@ class BBBComponentRegistration(object):
         return self._component
 
     def __BBB_old_getComponent(self, path):
-        service_manager = zapi.getSiteManager(self)
+        service_manager = component.getSiteManager(self)
 
         # Get the root and unproxy it
         if path.startswith("/"):
             # Absolute path
-            root = removeAllProxies(zapi.getRoot(service_manager))
-            component = zapi.traverse(root, path)
+            root = removeAllProxies(getRoot(service_manager))
+            component = traverse(root, path)
         else:
             # Relative path.
             ancestor = self.__parent__.__parent__
-            component = zapi.traverse(ancestor, path)
+            component = traverse(ancestor, path)
 
         if self.permission:
             if type(component) is Proxy:
@@ -475,7 +475,7 @@ class BBBComponentRegistration(object):
     def __BBB_getComponentPath(self):
         if self._BBB_componentPath is not None:
             return self._BBB_componentPath
-        return '/' + '/'.join(zapi.getPath(self.component))
+        return '/' + '/'.join(getPath(self.component))
 
     def __BBB_setComponentPath(self, path):
         self._component = NULL_COMPONENT
@@ -640,7 +640,7 @@ class AdapterRegistration(ComponentRegistration):
     component = property(component)
 
     def getRegistry(self):
-        return zapi.getSiteManager(self)
+        return component.getSiteManager(self)
 
 class AdapterRegistration2(ComponentRegistration):
     """A simple implementation of the adapter registration interface."""
@@ -687,7 +687,7 @@ class UtilityRegistration(ComponentRegistration):
         self.provided = provided
 
     def getRegistry(self):
-        return zapi.getSiteManager(self)
+        return component.getSiteManager(self)
 
 
 class LayerField(GlobalObject):

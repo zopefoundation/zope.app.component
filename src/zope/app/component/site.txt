@@ -158,8 +158,8 @@ Of course, the local site manager has also access to the global component
 registrations:
 
   >>> gutil = MyUtility('Global Utility')
-  >>> from zope.app import zapi
-  >>> gsm = zapi.getGlobalSiteManager()
+  >>> from zope.component import getGlobalSiteManager
+  >>> gsm = getGlobalSiteManager()
   >>> gsm.registerUtility(gutil, IMyUtility, 'gutil')
 
   >>> sm.queryUtility(IMyUtility, 'gutil')
@@ -199,15 +199,17 @@ By the way, once you set a site
 
   >>> hooks.setSite(myfolder)
 
-you can simply use the ZAPI's `getSiteManager()` method to get the nearest
-site manager:
+you can simply use the zope.component's `getSiteManager()` method to get
+the nearest site manager:
 
-  >>> zapi.getSiteManager() is sm
+  >>> from zope.component import getSiteManager
+  >>> getSiteManager() is sm
   True
 
-This also means that you can simply use ZAPI to look up your utility
+This also means that you can simply use zope.component to look up your utility
 
-  >>> zapi.getUtility(IMyUtility, 'gutil')
+  >>> from zope.component import getUtility
+  >>> getUtility(IMyUtility, 'gutil')
   MyUtility('Global Utility')
 
 or the adapter via the interface's `__call__` method:

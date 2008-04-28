@@ -52,8 +52,8 @@ let's create a folder tree and create some sites from it:
 
 If we ask `folder1` for its nearest site manager, we get
 
-  >>> from zope.app import zapi
-  >>> zapi.getSiteManager(root['folder1']) is folder1_sm
+  >>> from zope.component import getSiteManager
+  >>> getSiteManager(root['folder1']) is folder1_sm
   True
 
 but its next site manager is
@@ -64,7 +64,8 @@ but its next site manager is
 
 The next site manager of the local root is the global site manager:
 
-  >>> gsm = zapi.getGlobalSiteManager()
+  >>> from zope.component import getGlobalSiteManager
+  >>> gsm = getGlobalSiteManager()
   >>> component.getNextSiteManager(root) is gsm
   True
 

@@ -23,9 +23,9 @@ from zope.component.interfaces import ComponentLookupError
 from zope.component.interface import queryInterface
 from zope.configuration.xmlconfig import xmlconfig, XMLConfig
 
+import zope.component
 import zope.app.security
 import zope.app.component
-from zope.app import zapi
 from zope.app.testing.placelesssetup import PlacelessSetup
 
 # explicitly import ExampleClass and IExample using full paths
@@ -154,7 +154,7 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
 </class>
                        """)
         xmlconfig(f)
-        factory = zapi.getUtility(IFactory, 'test.Example')
+        factory = zope.component.getUtility(IFactory, 'test.Example')
         self.assertEquals(factory.title, "Example content")
         self.assertEquals(factory.description, "Example description")
 
@@ -170,9 +170,9 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
 </class>
                        """)
         xmlconfig(f)
-        self.assertRaises(ComponentLookupError, zapi.getUtility, IFactory, 
-                          'Example')
-        factory = zapi.getUtility(
+        self.assertRaises(ComponentLookupError, zope.component.getUtility,
+                          IFactory, 'Example')
+        factory = zope.component.getUtility(
             IFactory, 'zope.app.component.tests.exampleclass.ExampleClass')
         self.assertEquals(factory.title, "Example content")
         self.assertEquals(factory.description, "Example description")
@@ -190,7 +190,7 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
 </class>
             """)
         xmlconfig(f)
-        factory = zapi.getUtility(IFactory, 'test.Example')
+        factory = zope.component.getUtility(IFactory, 'test.Example')
         self.assert_(hasattr(factory, '__Security_checker__'))
 
 
