@@ -17,8 +17,8 @@ $Id$
 """
 __docformat__ = 'restructuredtext'
 
+import threading
 import zope.component
-import zope.thread
 import zope.security
 
 class read_property(object):
@@ -31,7 +31,7 @@ class read_property(object):
 
         return self.func(inst)
 
-class SiteInfo(zope.thread.local):
+class SiteInfo(threading.local):
     site = None
     sm = zope.component.getGlobalSiteManager()
 
