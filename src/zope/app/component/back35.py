@@ -282,7 +282,7 @@ class IAdapterRegistration(IComponentRegistration):
         required=False,
         default=None)
 
-    with = schema.Tuple(
+    with_ = schema.Tuple(
         title = _("With interfaces"),
         description = _("Additionally required interfaces"),
         readonly=True,
@@ -625,10 +625,10 @@ class AdapterRegistration(ComponentRegistration):
                  name='', permission=None):
         if not isinstance(required, (tuple, list)):
             self.required = required
-            self.with = ()
+            self.with_ = ()
         else:
             self.required = required[0]
-            self.with = tuple(required[1:])
+            self.with_ = tuple(required[1:])
         self.provided = provided
         self.name = name
         self.factoryName = factoryName
@@ -650,10 +650,10 @@ class AdapterRegistration2(ComponentRegistration):
                  name='', permission=None, registry=None):
         if not isinstance(required, (tuple, list)):
             self.required = required
-            self.with = ()
+            self.with_ = ()
         else:
             self.required = required[0]
-            self.with = tuple(required[1:])
+            self.with_ = tuple(required[1:])
         self.provided = provided
         self.name = name
         self.component = factory
@@ -666,7 +666,7 @@ class AdapterRegistration2(ComponentRegistration):
     def __repr__(self):
         return ('<%s: ' %self.__class__.__name__ +
                 'required=%r, ' %self.required +
-                'with=' + `self.with` + ', ' +
+                'with_=' + `self.with_` + ', ' +
                 'provided=%r, ' %self.provided +
                 'name=%r, ' %self.name +
                 'component=%r, ' %self.component +

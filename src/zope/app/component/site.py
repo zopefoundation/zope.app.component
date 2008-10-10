@@ -238,7 +238,7 @@ class LocalSiteManager(
         elif interfaces.IAdapterRegistration.providedBy(registration):
             self.registerAdapter(
                 registration.component,
-                (registration.required, ) + registration.with,
+                (registration.required, ) + registration.with_,
                 registration.provided,
                 registration.name,
                 )
@@ -264,7 +264,7 @@ class LocalSiteManager(
         elif interfaces.IAdapterRegistration.providedBy(registration):
             self.unregisterAdapter(
                 registration.component,
-                (registration.required, ) + registration.with,
+                (registration.required, ) + registration.with_,
                 registration.provided,
                 registration.name,
                 )
@@ -305,7 +305,7 @@ class LocalSiteManager(
                    r.name == registration.name
                    and
                    r.required == ((registration.required, )
-                                  + registration.with)
+                                  + registration.with_)
                 )
                 ])
         elif (
@@ -321,7 +321,7 @@ class LocalSiteManager(
                    r.name == registration.name
                    and
                    r.required == ((registration.required, )
-                                  + registration.with)
+                                  + registration.with_)
                 )
                 ])
         elif zope.component.interfaces.IHandlerRegistration.providedBy(
@@ -336,7 +336,7 @@ class LocalSiteManager(
                    r.name == registration.name
                    and
                    r.required == ((registration.required, )
-                                  + registration.with)
+                                  + registration.with_)
                 )
                 ])
         return False
