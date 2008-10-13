@@ -23,7 +23,6 @@ import zope.interface
 import zope.schema
 from zope.component.zcml import IBasicComponentInformation
 
-from zope.app.component.back35 import LayerField
 from zope.app.component.i18n import ZopeMessageFactory as _
 
 class IDefaultViewName(zope.interface.Interface):
@@ -58,7 +57,7 @@ class IBasicViewInformation(zope.interface.Interface):
         required=False,
         )
 
-    layer = LayerField(
+    layer = zope.configuration.fields.GlobalInterface(
         title=_("The layer the view is in."),
         description=_("""
         A skin is composed of layers. It is common to put skin
@@ -202,7 +201,7 @@ class IResourceDirective(IBasicComponentInformation,
                          IBasicResourceInformation):
     """Register a resource"""
 
-    layer = LayerField(
+    layer = zope.configuration.fields.GlobalInterface(
         title=_("The layer the resource is in."),
         required=False,
         )

@@ -21,19 +21,7 @@ import zope.interface
 import zope.component.interfaces
 import zope.app.container.interfaces
 
-import zope.deferredimport
-
 from zope.location.interfaces import IPossibleSite, ISite
-
-zope.deferredimport.deprecatedFrom(
-    "Local registration is now much simpler.  The old baroque APIs "
-    "will go away in Zope 3.5.  See the new component-registration APIs "
-    "defined in zope.component, especially IComponentRegistry.",
-    'zope.app.component.back35',
-    'ILocalAdapterRegistry', 'ILocalUtility', 'IAdapterRegistration',
-    'IUtilityRegistration',
-    )
-
 
 class INewLocalSite(zope.interface.Interface):
     """Event: a local site was created

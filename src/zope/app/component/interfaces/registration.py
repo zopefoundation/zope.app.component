@@ -18,36 +18,6 @@ $Id$
 from zope import interface, schema
 import zope.schema.interfaces
 
-import zope.deferredimport
-
-zope.deferredimport.deprecatedFrom(
-    "Local registration is now much simpler.  The old baroque APIs "
-    "will go away in Zope 3.5.  See the new component-registration APIs "
-    "defined in zope.component, especially IComponentRegistry.",
-    'zope.app.component.back35',
-    'IRegistration',
-    'InactiveStatus',
-    'ActiveStatus',
-    'IComponentRegistration',
-    'IRegistry',
-    'ILocatedRegistry',
-    'IRegistrationManager',
-    'IRegistrationManagerContained',
-    'IRegisterableContainer',
-    'IRegisterable',
-    'IRegisterableContainerContaining',
-    'IRegistered',
-    )
-
-zope.deferredimport.deprecated(
-    "Registration events are not defined in zope.component.interfaces. "
-    "Importing them from zope.app.component.registration will be disallowed "
-    "in Zope 3.5",
-    IRegistrationEvent = 'zope.component.interfaces:IRegistrationEvent',
-    IRegistrationActivatedEvent = 'zope.component.interfaces:IRegistered',
-    IRegistrationDeactivatedEvent = 'zope.component.interfaces:IUnregistered',
-    )
-
 class IComponent(zope.schema.interfaces.IField):
     """A component 
 

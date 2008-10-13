@@ -42,11 +42,7 @@ def test_suite():
         "site.txt",
         optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
     site.layer = AppComponentBrowserLayer
-    reg = zope.app.testing.functional.FunctionalDocFileSuite(
-        'registration.txt',
-        optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
-    reg.layer = AppComponentLayer
-    return unittest.TestSuite((site, reg))
+    return unittest.TestSuite((site,))
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')
