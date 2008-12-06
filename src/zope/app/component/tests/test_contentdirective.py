@@ -11,7 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test 'zope:content' directive.
+"""Test 'zope:class' directive.
 
 $Id$
 """

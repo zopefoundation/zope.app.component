@@ -29,7 +29,6 @@ from zope.interface import classImplements
 from zope.schema.interfaces import IField
 from zope.configuration.exceptions import ConfigurationError
 from zope.location.interfaces import ILocation
-from zope.annotation.interfaces import IAttributeAnnotatable
 
 from zope.app.security.protectclass import protectLikeUnto, protectName
 from zope.app.security.protectclass import protectSetAttribute
@@ -174,81 +173,3 @@ class ClassDirective(object):
         # same namespace, despite the utilities/content division
         utility(_context, IFactory, factoryObj,
                 permission=PublicPermission, name=id)
-
-# BBB 2006/02/24, to be removed after 12 months
-class ContentDirective(ClassDirective):
-    """ *BBB: DEPRECATED*
-
-    The ``content`` alias for the ``class`` directive has been
-    deprecated and will be removed in Zope 3.5.
-    """
-
-    def __init__(self, _context, class_):
-        warnings.warn_explicit(
-            "The 'content' alias for the 'class' directive has been "
-            "deprecated and will be removed in Zope 3.5.\n",
-            DeprecationWarning, _context.info.file, _context.info.line)
-        super(ContentDirective, self).__init__(_context, class_)
-
-# BBB 2006/09/17, to be removed after 12 months
-class LocalUtilityDirective(ClassDirective):
-    r"""*BBB: DEPRECATED*
-
-    The ``localUtility`` directive has been deprecated
-    and will be removed after 09/2007.
-
-    Use ``class`` directive with additional subdirective
-    ``<implements interface="zope.annotation.interfaces.IAttributeAnnotatable" />``
-
-    Deprecated examples:
-
-      >>> from zope.interface import implements
-      >>> class LU1(object):
-      ...     pass
-
-      >>> class LU2(LU1):
-      ...     implements(ILocation)
-
-      >>> class LU3(LU1):
-      ...     __parent__ = None
-
-      >>> class LU4(LU2):
-      ...     implements(IPersistent)
-
-      >>> dir = LocalUtilityDirective(None, LU4)
-      >>> IAttributeAnnotatable.implementedBy(LU4)
-      True
-
-      >>> LocalUtilityDirective(None, LU3)
-      Traceback (most recent call last):
-      ...
-      ConfigurationError: Class `LU3` does not implement `IPersistent`.
-
-      >>> LocalUtilityDirective(None, LU2)
-      Traceback (most recent call last):
-      ...
-      ConfigurationError: Class `LU2` does not implement `IPersistent`.
-
-      >>> LocalUtilityDirective(None, LU1)
-      Traceback (most recent call last):
-      ...
-      ConfigurationError: Class `LU1` does not implement `ILocation`.
-    """
-
-    def __init__(self, _context, class_):
-        if not ILocation.implementedBy(class_) and \
-               not hasattr(class_, '__parent__'):
-            raise ConfigurationError('Class `%s` does not implement '
-                                     '`ILocation`.' % class_.__name__)
-
-        if not IPersistent.implementedBy(class_):
-            raise ConfigurationError('Class `%s` does not implement '
-                                     '`IPersistent`.' % class_.__name__)
-
-        warnings.warn_explicit(
-            "The 'localUtility' directive has been deprecated. It will "
-            "be removed after 09/2007.\n"
-            "Use 'class' directive + implements(IAttributeAnnotatable).\n",
-            DeprecationWarning, _context.info.file, _context.info.line)
-        classImplements(class_, IAttributeAnnotatable)
-        super(LocalUtilityDirective, self).__init__(_context, class_)

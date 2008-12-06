@@ -228,15 +228,6 @@ class IClassDirective(zope.interface.Interface):
         required=True
         )
 
-# BBB 2006/09/17, to be removed after 12 months
-class IBBBClassDirective(IClassDirective):
-    """ *BBB: DEPRECATED*
-
-    It is discouraged to use ``content`` or ``localUtility`` directives.
-    They are currently deprecated:
-    only use ``class`` directive for class statements.
-    """
-
 class IImplementsSubdirective(zope.interface.Interface):
     """Declare that the class given by the content directive's class
     attribute implements a given interface

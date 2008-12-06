@@ -60,64 +60,6 @@
 
     </meta:complexDirective>
 
-    <!-- BBB 2006/02/24, to be removed after 12 months -->
-    <meta:complexDirective
-        name="content"
-        schema=".metadirectives.IBBBClassDirective"
-        handler=".contentdirective.ContentDirective"
-        >
-
-      <meta:subdirective
-          name="implements"
-          schema=".metadirectives.IImplementsSubdirective"
-          />
-
-      <meta:subdirective
-          name="require"
-          schema=".metadirectives.IRequireSubdirective"
-          />
-
-      <meta:subdirective
-          name="allow"
-          schema=".metadirectives.IAllowSubdirective"
-          />
-
-      <meta:subdirective
-          name="factory"
-          schema=".metadirectives.IFactorySubdirective"
-          />
-
-    </meta:complexDirective>
-
-    <!-- BBB 2006/09/17, to be removed after 12 months -->
-    <meta:complexDirective
-        name="localUtility"
-        schema=".metadirectives.IBBBClassDirective"
-        handler=".contentdirective.LocalUtilityDirective"
-        >
-
-      <meta:subdirective
-          name="implements"
-          schema=".metadirectives.IImplementsSubdirective"
-          />
-
-      <meta:subdirective
-          name="require"
-          schema=".metadirectives.IRequireSubdirective"
-          />
-
-      <meta:subdirective
-          name="allow"
-          schema=".metadirectives.IAllowSubdirective"
-          />
-
-      <meta:subdirective
-          name="factory"
-          schema=".metadirectives.IFactorySubdirective"
-          />
-
-    </meta:complexDirective>
-
   </meta:directives>
 
 </configure>
