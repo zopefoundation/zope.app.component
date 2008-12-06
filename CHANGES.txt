@@ -5,7 +5,12 @@ CHANGES
 3.5.1 (Unreleased)
 ------------------
 
-- ...
+- Remove zope.app.component.fields module that
+  was pointing to the removed back35's LayerField.
+- Remove "back35" extras_require as it doesn't make
+  any sense now.
+- Remove zope.modulealias test dependency as it is
+  not used anywhere.
 
 3.5.0 (2008-10-13)
 ------------------
