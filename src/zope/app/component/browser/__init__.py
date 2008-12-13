@@ -101,7 +101,7 @@ class UtilityAdding(ComponentAdding):
             (self.added_object, self.request), name="addRegistration.html")
         if v is not None:
             url = zope.component.absoluteURL(self.added_object, self.request)
-            return url + "/addRegistration.html"
+            return url + "/@@addRegistration.html"
 
         return super(UtilityAdding, self).nextURL()
 
