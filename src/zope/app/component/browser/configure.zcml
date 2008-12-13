@@ -16,7 +16,7 @@
       menu="zmi_views"
       title="Registration"
       for="*"
-      action="registration.html"
+      action="@@registration.html"
       order="999"
   />
 
@@ -78,7 +78,7 @@
   <browser:menuItem
       menu="zmi_actions" title="Make a site"
       for="zope.app.component.interfaces.IPossibleSite"
-      action="addSiteManager.html"
+      action="@@addSiteManager.html"
       filter="python:
         not modules['zope.app.component.interfaces'].ISite.providedBy(context)"
       permission="zope.ManageSite"
@@ -132,7 +132,7 @@
   <browser:menuItem
       menu="zmi_views" title="Registration"
       for="zope.app.component.interfaces.ILocalSiteManager"
-      action="registration.html"
+      action="@@registration.html"
       filter="python:False"
       permission="zope.ManageSite"
       />
