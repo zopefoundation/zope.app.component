@@ -13,6 +13,7 @@ CHANGES
     zope.component.interface ages ago.
   * zope:content and zope:localUtility directives.
   * zope:factory directive.
+  * deprecated imports in zope.component.metaconfigure
 
 - Remove "back35" extras_require as it doesn't make
   any sense now.

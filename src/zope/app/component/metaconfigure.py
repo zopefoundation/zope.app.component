@@ -26,17 +26,8 @@ from zope.component.interfaces import IDefaultViewName, IFactory
 from zope.configuration.exceptions import ConfigurationError
 from zope.security.checker import CheckerPublic
 from zope.security.checker import Checker, NamesChecker
-import zope.deferredimport
 
 PublicPermission = 'zope.Public'
-
-zope.deferredimport.deprecatedFrom(
-    "Moved to zope.component.zcml. Importing from here will stop working "
-    "in Zope 3.5",
-    "zope.component.zcml",
-    "handler", "adapter", "subscriber", "utility", "interface",
-    )
-    
 
 def _checker(_context, permission, allowed_interface, allowed_attributes):
     if (not allowed_attributes) and (not allowed_interface):
