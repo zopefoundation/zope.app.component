@@ -14,6 +14,8 @@ CHANGES
   * zope:content and zope:localUtility directives.
   * zope:factory directive.
   * deprecated imports in zope.component.metaconfigure
+  * browser:tool directive and all zope.component.browser
+    meta.zcml stuff.
 
 - Remove "back35" extras_require as it doesn't make
   any sense now.
