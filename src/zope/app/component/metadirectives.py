@@ -25,6 +25,13 @@ from zope.component.zcml import IBasicComponentInformation
 
 from zope.app.component.i18n import ZopeMessageFactory as _
 
+class IDefaultViewName(zope.interface.Interface):
+    """A string that contains the default view name
+
+    A default view name is used to select a view when a user hasn't
+    specified one.
+    """
+
 class IBasicViewInformation(zope.interface.Interface):
     """This is the basic information for all views."""
 
@@ -120,6 +127,32 @@ class IViewDirective(IBasicViewInformation, IBasicResourceInformation):
         required=False,
         value_type=zope.configuration.fields.GlobalObject(),
         )
+
+############################################################################
+# BBB: Deprecated; use browser:defaultView instead. Will go away in 3.3.
+class IDefaultViewDirective(IBasicResourceInformation):
+    """
+    *BBB: DEPRECATED*
+
+    Use ``browser:defaultView`` instead.
+
+    The name of the view that should be the default.
+
+    This name refers to view that should be the
+    view used by default (if no view name is supplied
+    explicitly).
+    """
+
+    for_ = zope.configuration.fields.GlobalInterface(
+        title=_("The interface this view is the default for."),
+        description=_("""
+        Specifies the interface for which the default view is declared. All
+        objects implementing this interface make use of this default
+        setting. If this attribute is not specified, the default is available
+        for all objects."""),
+        required=False,
+        )
+############################################################################
 
 
 class IResourceDirective(IBasicComponentInformation,
