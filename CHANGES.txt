@@ -5,11 +5,17 @@ CHANGES
 3.5.1 (Unreleased)
 ------------------
 
-- Remove deprecated zope:content and zope:localUtility directives.
-- Remove zope.app.component.fields module that
-  was pointing to the removed back35's LayerField.
+- Remove more deprecated on 3.5 code:
+
+  * zope.app.component.fields module that was pointing to the
+    removed back35's LayerField.
+  * zope.app.component.interface module that was moved to
+    zope.component.interface ages ago.
+  * zope:content and zope:localUtility directives.
+
 - Remove "back35" extras_require as it doesn't make
   any sense now.
+
 - Remove zope.modulealias test dependency as it is
   not used anywhere.
 
