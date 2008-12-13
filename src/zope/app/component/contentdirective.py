@@ -17,9 +17,7 @@ $Id$
 """
 __docformat__ = 'restructuredtext'
 
-import warnings
 from types import ModuleType
-from persistent.interfaces import IPersistent
 
 from zope.component.interfaces import IFactory
 from zope.component.factory import Factory
@@ -28,7 +26,6 @@ from zope.component.zcml import utility
 from zope.interface import classImplements
 from zope.schema.interfaces import IField
 from zope.configuration.exceptions import ConfigurationError
-from zope.location.interfaces import ILocation
 
 from zope.app.security.protectclass import protectLikeUnto, protectName
 from zope.app.security.protectclass import protectSetAttribute
