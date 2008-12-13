@@ -119,48 +119,6 @@ class IBasicResourceInformation(zope.interface.Interface):
         )
 
 
-# BBB 2006/02/24, to be removed after 12 months
-class IFactoryDirective(zope.interface.Interface):
-    """
-    *BBB: DEPRECATED*
-
-    The ``factory`` directive has been deprecated and will be
-    removed in Zope 3.5.  Use the ``utility`` directive instead::
-
-      <utility
-          provides="zope.component.interfaces.IFactory"
-          component="some.factory.class"
-          name="factoryName"
-          />
-
-    (Define a factory.)
-    """
-
-    component = zope.configuration.fields.GlobalObject(
-        title=_("Component to be used"),
-        required=True,
-        )
-
-    id = zope.schema.Id(
-        title=_("ID"),
-        required=False,
-        )
-
-    title = zope.configuration.fields.MessageID(
-        title=_("Title"),
-        description=_("Text suitable for use in the 'add content' menu of"
-                      " a management interface"),
-        required=False,
-        )
-
-    description = zope.configuration.fields.MessageID(
-        title=_("Description"),
-        description=_("Longer narrative description of what this factory"
-                      " does"),
-        required=False,
-        )
-
-
 class IViewDirective(IBasicViewInformation, IBasicResourceInformation):
     """Register a view for a component"""
 

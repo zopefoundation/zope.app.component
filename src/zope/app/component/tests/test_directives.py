@@ -485,27 +485,6 @@ class Test(PlacelessSetup, unittest.TestCase):
             ))
         self.assertRaises(ValueError, xmlconfig, config, testing=1)
 
-    # BBB 2006/02/24, to be removed after 12 months
-    def testFactory(self):
-        showwarning = warnings.showwarning
-        warnings.showwarning = lambda *a, **k: None
-
-        self.assertRaises(ComponentLookupError, zope.component.createObject,
-                          'foo')
-
-        xmlconfig(StringIO(template % (
-            '''
-            <factory
-               id="foo.bar"
-               component="zope.app.component.tests.factory.f"
-               />
-            '''
-            )))
-
-        from factory import X
-        self.assertEqual(zope.component.createObject('foo.bar').__class__, X)
-
-        warnings.showwarning = showwarning
 
 class ParticipationStub(object):
 

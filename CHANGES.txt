@@ -12,6 +12,7 @@ CHANGES
   * zope.app.component.interface module that was moved to
     zope.component.interface ages ago.
   * zope:content and zope:localUtility directives.
+  * zope:factory directive.
 
 - Remove "back35" extras_require as it doesn't make
   any sense now.

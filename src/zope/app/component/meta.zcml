@@ -6,13 +6,6 @@
 
   <meta:directives namespace="http://namespaces.zope.org/zope">
 
-    <!-- BBB 2006/02/24, to be removed after 12 months -->
-    <meta:directive
-        name="factory"
-        schema=".metadirectives.IFactoryDirective"
-        handler="zope.app.component.metaconfigure.factory"
-        />
-
     <meta:directive
         name="view"
         schema=".metadirectives.IViewDirective"

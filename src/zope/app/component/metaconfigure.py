@@ -38,33 +38,6 @@ zope.deferredimport.deprecatedFrom(
     )
     
 
-
-# BBB 2006/02/24, to be removed after 12 months
-def factory(_context, component, id, title=None, description=None):
-    try:
-        dottedname = component.__module__ + "." + component.__name__
-    except AttributeError:
-        dottedname = '...'
-    warnings.warn_explicit(
-        "The 'factory' directive has been deprecated and will be "
-        "removed in Zope 3.5.  Use the 'utility' directive instead:\n"
-        '  <utility\n'
-        '      provides="zope.component.interfaces.IFactory"\n'
-        '      component="%s"\n'
-        '      name="%s"\n'
-        '      />' % (dottedname, id),
-        DeprecationWarning, _context.info.file, _context.info.line)
-    
-    if title is not None:
-        component.title = title
-
-    if description is not None:
-        component.description = description
-
-    utility(_context, IFactory, component,
-            permission=PublicPermission, name=id)
-
-
 def _checker(_context, permission, allowed_interface, allowed_attributes):
     if (not allowed_attributes) and (not allowed_interface):
         allowed_attributes = ["__call__"]
