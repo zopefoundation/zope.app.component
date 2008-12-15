@@ -16,13 +16,16 @@
 $Id$
 """
 
-
+import zope.deferredimport
 import zope.interface
 import zope.component.interfaces
 import zope.app.container.interfaces
 
-from zope.location.interfaces import IPossibleSite, ISite
-
+zope.deferredimport.deprecatedFrom(
+    "Moved to zope.location.interfaces. Importing from here will stop working in Zope 3.6",
+    "zope.location.interfaces",
+    "ISite", "IPossibleSite")
+                    
 class INewLocalSite(zope.interface.Interface):
     """Event: a local site was created
     """

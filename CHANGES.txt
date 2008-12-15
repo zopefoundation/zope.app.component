@@ -23,6 +23,10 @@ CHANGES
 - Remove zope.modulealias test dependency as it is
   not used anywhere.
 
+- Deprecate ISite and IPossibleSite imports from
+  zope.app.component.interfaces. They were moved
+  to zope.location.interfaces ages ago.
+
 3.5.0 (2008-10-13)
 ------------------
 
