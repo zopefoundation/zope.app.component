@@ -68,7 +68,7 @@
 <!-- Site Manager navigation action -->
 
   <browser:page
-      for="zope.app.component.interfaces.IPossibleSite"
+      for="zope.location.interfaces.IPossibleSite"
       name="addSiteManager.html"
       permission="zope.ManageSite"
       class=".MakeSite"
@@ -77,17 +77,17 @@
 
   <browser:menuItem
       menu="zmi_actions" title="Make a site"
-      for="zope.app.component.interfaces.IPossibleSite"
+      for="zope.location.interfaces.IPossibleSite"
       action="@@addSiteManager.html"
       filter="python:
-        not modules['zope.app.component.interfaces'].ISite.providedBy(context)"
+        not modules['zope.location.interfaces'].ISite.providedBy(context)"
       permission="zope.ManageSite"
       />
 
   <browser:menuItem
       menu="zmi_actions"
       title="Manage Site"
-      for="zope.app.component.interfaces.ISite"
+      for="zope.location.interfaces.ISite"
       action="++etc++site/@@SelectedManagementView.html"
       permission="zope.ManageSite"
       />

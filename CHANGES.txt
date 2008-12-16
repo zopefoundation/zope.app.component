@@ -25,7 +25,8 @@ CHANGES
 
 - Deprecate ISite and IPossibleSite imports from
   zope.app.component.interfaces. They were moved
-  to zope.location.interfaces ages ago.
+  to zope.location.interfaces ages ago. Fix imports
+  in zope.app.component itself.
 
 3.5.0 (2008-10-13)
 ------------------

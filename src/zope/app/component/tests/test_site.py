@@ -21,6 +21,7 @@ import unittest
 import zope.interface
 import zope.interface.verify
 from zope.testing import doctest
+from zope.location.interfaces import ISite, IPossibleSite
 
 from zope.app.testing import setup
 from zope.app.component import interfaces, site
@@ -128,17 +129,17 @@ class BaseTestSiteManagerContainer(unittest.TestCase):
     container that has no site manager."""
 
     def test_IPossibleSite_verify(self):
-        zope.interface.verify.verifyObject(interfaces.IPossibleSite,
+        zope.interface.verify.verifyObject(IPossibleSite,
                                            self.makeTestObject())
 
     def test_get_and_set(self):
         smc = self.makeTestObject()
-        self.failIf(interfaces.ISite.providedBy(smc))
+        self.failIf(ISite.providedBy(smc))
         sm = site.LocalSiteManager(smc)
         smc.setSiteManager(sm)
-        self.failUnless(interfaces.ISite.providedBy(smc))
+        self.failUnless(ISite.providedBy(smc))
         self.failUnless(smc.getSiteManager() is sm)
-        zope.interface.verify.verifyObject(interfaces.ISite, smc)
+        zope.interface.verify.verifyObject(ISite, smc)
 
     def test_set_w_bogus_value(self):
         smc=self.makeTestObject()

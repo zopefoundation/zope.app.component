@@ -87,7 +87,7 @@ class SiteManagerContainer(Contained):
     This is a mix-in that implements the IPossibleSite
     interface; for example, it is used by the Folder implementation.
     """
-    zope.interface.implements(interfaces.IPossibleSite)
+    zope.interface.implements(zope.location.interfaces.IPossibleSite)
 
     _sm = None
 
@@ -98,7 +98,7 @@ class SiteManagerContainer(Contained):
             raise ComponentLookupError('no site manager defined')
 
     def setSiteManager(self, sm):
-        if interfaces.ISite.providedBy(self):
+        if zope.location.interfaces.ISite.providedBy(self):
             raise TypeError("Already a site")
 
         if zope.component.interfaces.IComponentLookup.providedBy(sm):
@@ -109,7 +109,7 @@ class SiteManagerContainer(Contained):
             raise ValueError('setSiteManager requires an IComponentLookup')
 
         zope.interface.directlyProvides(
-            self, interfaces.ISite,
+            self, zope.location.interfaces.ISite,
             zope.interface.directlyProvidedBy(self))
 
         zope.event.notify(interfaces.NewLocalSite(sm))
@@ -126,7 +126,7 @@ def _findNextSiteManager(site):
             # there was not enough context; probably run from a test
             return None
 
-        if interfaces.ISite.providedBy(site):
+        if zope.location.interfaces.ISite.providedBy(site):
             return site.getSiteManager()
 
 
@@ -242,7 +242,7 @@ def SiteManagerAdapter(ob):
     """
     current = ob
     while True:
-        if interfaces.ISite.providedBy(current):
+        if zope.location.interfaces.ISite.providedBy(current):
             return current.getSiteManager()
         current = getattr(current, '__parent__', None)
         if current is None:

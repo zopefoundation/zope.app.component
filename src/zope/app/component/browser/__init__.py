@@ -23,11 +23,11 @@ from zope.security.proxy import removeSecurityProxy
 from zope.publisher.browser import BrowserView
 from zope.component.interfaces import IFactory
 from zope.component.interface import searchInterface
+from zope.location.interfaces import ISite
 
 from zope.app.component.i18n import ZopeMessageFactory as _
 from zope.app.container.browser.adding import Adding
 from zope.app.component.site import LocalSiteManager
-from zope.app.component.interfaces import ISite
 
 class ComponentAdding(Adding):
     """Adding subclass used for registerable components."""

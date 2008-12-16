@@ -51,7 +51,7 @@
   <adapter factory=".site.SiteManagerAdapter" />
 
   <subscriber
-      for=".interfaces.ISite
+      for="zope.location.interfaces.ISite
            zope.app.publication.interfaces.IBeforeTraverseEvent"
       handler=".site.threadSiteSubscriber"
       />
@@ -62,7 +62,7 @@
       />
 
   <subscriber
-      for=".interfaces.ISite
+      for="zope.location.interfaces.ISite
            zope.app.container.interfaces.IObjectMovedEvent"
       handler=".site.changeSiteConfigurationAfterMove"
       />

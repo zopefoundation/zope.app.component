@@ -19,13 +19,13 @@ application or Web site. Every folder,
 
 has the potential to become a site
 
-  >>> from zope.app.component import interfaces
-  >>> interfaces.IPossibleSite.providedBy(myfolder)
+  >>> from zope.location.interfaces import ISite, IPossibleSite
+  >>> IPossibleSite.providedBy(myfolder)
   True
 
 but is not yet one:
 
-  >>> interfaces.ISite.providedBy(myfolder)
+  >>> ISite.providedBy(myfolder)
   False
 
 If you would like your custom content component to be able to become a site,
@@ -36,16 +36,16 @@ you can use the `SiteManagerContainer` mix-in class:
   ...     pass
 
   >>> myContent = MyContentComponent()
-  >>> interfaces.IPossibleSite.providedBy(myContent)
+  >>> IPossibleSite.providedBy(myContent)
   True
-  >>> interfaces.ISite.providedBy(myContent)
+  >>> ISite.providedBy(myContent)
   False
 
 To convert a possible site to a real site, we have to provide a site manager:
 
   >>> sm = site.LocalSiteManager(myfolder)
   >>> myfolder.setSiteManager(sm)
-  >>> interfaces.ISite.providedBy(myfolder)
+  >>> ISite.providedBy(myfolder)
   True
   >>> myfolder.getSiteManager() is sm
   True
@@ -287,7 +287,7 @@ that manage the wiring of site managers after moving or copying:
   >>> from zope.app import container
   >>> gsm.registerHandler(
   ...    site.changeSiteConfigurationAfterMove,
-  ...    (interfaces.ISite, container.interfaces.IObjectMovedEvent),
+  ...    (ISite, container.interfaces.IObjectMovedEvent),
   ...    )
 
 We only have to register one event listener, since the copy action causes an
