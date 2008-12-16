@@ -38,7 +38,6 @@
     <require
         permission="zope.ManageSite"
         interface="zope.app.container.interfaces.IWriteContainer"
-        attributes="registrationManager" 
         />
   </class>
   
