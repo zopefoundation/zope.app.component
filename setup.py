@@ -32,10 +32,6 @@ setup(name='zope.app.component',
           'Detailed Documentation\n'
           '**********************\n'
           + '\n\n' +
-          read('src', 'zope', 'app', 'component', 'README.txt')
-          + '\n\n' +
-          read('src', 'zope', 'app', 'component', 'site.txt')
-          + '\n\n' +
           read('CHANGES.txt')
           ),
       keywords = "zope component architecture local",
@@ -63,6 +59,7 @@ setup(name='zope.app.component',
                 ]),
       install_requires=[
           'setuptools',
+          'zope.site',
           'zope.annotation',
           'zope.app.container',
           'zope.app.interface',

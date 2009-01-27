@@ -5,6 +5,10 @@ CHANGES
 3.5.1 (Unreleased)
 ------------------
 
+- Extracted `zope.site` from zope.app.component with backwards
+  compatibility imports in place. Local site related functionality
+  is now in `zope.site` and packages should import from there.
+
 - Remove more deprecated on 3.5 code:
 
   * zope.app.component.fields module that was pointing to the

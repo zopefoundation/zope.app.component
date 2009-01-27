@@ -20,6 +20,8 @@ __docformat__ = "reStructuredText"
 import zope.component
 import zope.deprecation
 
+from zope.site import getNextUtility, queryNextUtility # BBB
+
 _marker = object()
 
 # BBB: Deprecated on 9/26/2006
@@ -57,31 +59,3 @@ def queryNextSiteManager(context, default=None):
     if not bases:
         return zope.component.getGlobalSiteManager()
     return bases[0]
-
-
-def getNextUtility(context, interface, name=''):
-    """Get the next available utility.
-
-    If no utility was found, a `ComponentLookupError` is raised.
-    """
-    util = queryNextUtility(context, interface, name, _marker)
-    if util is _marker:
-        raise zope.component.interfaces.ComponentLookupError(
-              "No more utilities for %s, '%s' have been found." % (
-                  interface, name))
-    return util
-
-
-def queryNextUtility(context, interface, name='', default=None):
-    """Query for the next available utility.
-
-    Find the next available utility providing `interface` and having the
-    specified name. If no utility was found, return the specified `default`
-    value."""
-    sm = zope.component.getSiteManager(context)
-    bases = sm.__bases__
-    for base in bases:
-        util = base.queryUtility(interface, name, _marker)
-        if util is not _marker:
-            return util
-    return default
