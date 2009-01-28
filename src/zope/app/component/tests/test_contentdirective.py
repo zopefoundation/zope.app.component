@@ -24,7 +24,7 @@ from zope.component.interface import queryInterface
 from zope.configuration.xmlconfig import xmlconfig, XMLConfig
 
 import zope.component
-import zope.app.security
+import zope.security
 import zope.app.component
 from zope.app.testing.placelesssetup import PlacelessSetup
 
@@ -53,7 +53,7 @@ class TestClassDirective(PlacelessSetup, unittest.TestCase):
     def setUp(self):
         super(TestClassDirective, self).setUp()
         XMLConfig('meta.zcml', zope.app.component)()
-        XMLConfig('meta.zcml', zope.app.security)()
+        XMLConfig('meta.zcml', zope.security)()
 
         try:
             del ExampleClass.__implements__
@@ -139,7 +139,7 @@ class TestFactorySubdirective(PlacelessSetup, unittest.TestCase):
     def setUp(self):
         super(TestFactorySubdirective, self).setUp()
         XMLConfig('meta.zcml', zope.app.component)()
-        XMLConfig('meta.zcml', zope.app.security)()
+        XMLConfig('meta.zcml', zope.security)()
 
     def testFactory(self):
         f = configfile("""

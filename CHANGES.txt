@@ -2,8 +2,14 @@
 CHANGES
 =======
 
-3.5.1 (Unreleased)
+3.6.0 (Unreleased)
 ------------------
+
+- Moved the implementation of the <class> directive from this package to
+  `zope.security`.  In particular, the module
+  `zope.app.component.contentdirective` has moved to
+  `zope.security.metaconfigure`, and a compatibility import has been
+  left in its place.
 
 - Extracted `zope.site` from zope.app.component with backwards
   compatibility imports in place. Local site related functionality

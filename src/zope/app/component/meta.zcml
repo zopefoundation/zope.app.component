@@ -25,34 +25,6 @@
         handler="zope.app.component.metaconfigure.resource"
         />
 
-    <meta:complexDirective
-        name="class"
-        schema=".metadirectives.IClassDirective"
-        handler=".contentdirective.ClassDirective"
-        >
-
-      <meta:subdirective
-          name="implements"
-          schema=".metadirectives.IImplementsSubdirective"
-          />
-
-      <meta:subdirective
-          name="require"
-          schema=".metadirectives.IRequireSubdirective"
-          />
-
-      <meta:subdirective
-          name="allow"
-          schema=".metadirectives.IAllowSubdirective"
-          />
-
-      <meta:subdirective
-          name="factory"
-          schema=".metadirectives.IFactorySubdirective"
-          />
-
-    </meta:complexDirective>
-
   </meta:directives>
 
 </configure>
