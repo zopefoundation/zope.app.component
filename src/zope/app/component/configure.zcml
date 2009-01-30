@@ -1,3 +1,22 @@
 <configure xmlns="http://namespaces.zope.org/zope">
+
   <include package="zope.site" />
+
+  <!-- the 'Interfaces' vocabulary below requires a registred IInterface --> 	 
+  <interface 	 
+      interface="zope.interface.interfaces.IInterface" 	 
+      /> 	 
+  	 
+  <!-- Vocabularies --> 	 
+  <utility 	 
+      component=".vocabulary.InterfacesVocabulary" 	 
+      name="Interfaces" 	 
+      /> 	 
+  	 
+  <utility 	 
+      component=".vocabulary.UtilityComponentInterfacesVocabulary" 	 
+      provides="zope.schema.interfaces.IVocabularyFactory" 	 
+      name="Utility Component Interfaces" 	 
+      />
+
 </configure>
