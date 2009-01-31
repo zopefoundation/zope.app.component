@@ -20,11 +20,12 @@ $Id$
 
 import os
 import zope.interface
+import zope.site.folder
 from zope.component.interfaces import IComponentLookup
 from zope.app.component.interfaces import ILocalSiteManager
 from zope.app.testing import setup
 from zope.app.testing.placelesssetup import PlacelessSetup
-from zope.app.folder import rootFolder
+
 from zope.app.testing.functional import ZCMLLayer
 from zope.traversing.api import traverse
 
@@ -101,7 +102,7 @@ class PlacefulSetup(PlacelessSetup):
         return setup.createSiteManager(folder, True)
 
     def createRootFolder(self):
-        self.rootFolder = rootFolder()
+        self.rootFolder = zope.site.folder.rootFolder()
 
 
 class SiteManagerStub(object):
