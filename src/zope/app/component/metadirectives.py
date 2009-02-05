@@ -18,12 +18,28 @@ $Id$
 __docformat__ = 'restructuredtext'
 
 import zope.configuration.fields
+import zope.deferredimport
 import zope.security.zcml
 import zope.interface
 import zope.schema
 from zope.component.zcml import IBasicComponentInformation
 
 from zope.app.component.i18n import ZopeMessageFactory as _
+
+# BBB
+zope.deferredimport.deprecatedFrom(
+    "Schemas for the ``class`` directive and its subdirectives are now "
+    "moved to zope.security.metadirectives. Imports from here are "
+    "deprecated and will be removed in Zope 3.6",
+
+    'zope.security.metadirectives',
+
+    'IClassDirective',
+    'IImplementsSubdirective',
+    'IRequireSubdirective',
+    'IAllowSubdirective',
+    'IFactorySubdirective',
+)
 
 class IDefaultViewName(zope.interface.Interface):
     """A string that contains the default view name

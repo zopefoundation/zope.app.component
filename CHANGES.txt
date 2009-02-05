@@ -5,7 +5,9 @@ CHANGES
 3.6.1 (unreleased)
 ------------------
 
-- ...
+- Make ``class`` directive schemas importable from old location,
+  raising a deprecation warning. It was moved in the previous release,
+  but some custom directives could possibly use its schemas. 
 
 3.6.0 (2009-01-31)
 ------------------
