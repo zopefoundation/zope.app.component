@@ -9,6 +9,8 @@ CHANGES
   raising a deprecation warning. It was moved in the previous release,
   but some custom directives could possibly use its schemas. 
 
+- Deprecate import of ClassDirective to announce about new location.
+
 3.6.0 (2009-01-31)
 ------------------
 
