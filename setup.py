@@ -24,7 +24,7 @@ def read(*rnames):
 setup(name='zope.app.component',
       version = '3.6.1dev',
       author='Zope Corporation and Contributors',
-      author_email='zope3-dev@zope.org',
+      author_email='zope-dev@zope.org',
       description='Local Zope Component Support',
       long_description=(
           read('README.txt')

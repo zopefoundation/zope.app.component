@@ -11,6 +11,9 @@ CHANGES
 
 - Deprecate import of ClassDirective to announce about new location.
 
+- Change package's mailing list address to zope-dev at zope.org,
+  because zope3-dev at zope.org is now retired.
+
 3.6.0 (2009-01-31)
 ------------------
 
