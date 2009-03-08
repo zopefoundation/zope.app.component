@@ -14,6 +14,9 @@ CHANGES
 - Change package's mailing list address to zope-dev at zope.org,
   because zope3-dev at zope.org is now retired.
 
+- Adapt to the move of IDefaultViewName from zope.component.interfaces
+  to zope.publisher.interfaces.
+
 3.6.0 (2009-01-31)
 ------------------
 

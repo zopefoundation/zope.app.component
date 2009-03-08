@@ -22,10 +22,10 @@ from zope import component
 from zope.interface import Interface
 from zope.component.zcml import handler, proxify, utility
 from zope.component.interface import provideInterface
-from zope.component.interfaces import IDefaultViewName, IFactory
 from zope.configuration.exceptions import ConfigurationError
 from zope.security.checker import CheckerPublic
 from zope.security.checker import Checker, NamesChecker
+from zope.publisher.interfaces import IDefaultViewName
 
 PublicPermission = 'zope.Public'
 
