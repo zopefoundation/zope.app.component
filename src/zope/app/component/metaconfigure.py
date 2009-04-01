@@ -24,7 +24,6 @@ from zope.component.interface import provideInterface
 from zope.configuration.exceptions import ConfigurationError
 from zope.security.checker import CheckerPublic
 from zope.security.checker import Checker
-from zope.publisher.interfaces import IDefaultViewName
 
 PublicPermission = 'zope.Public'
 
@@ -182,33 +181,3 @@ def view(_context, factory, type, name, for_, layer=None,
                     callable = provideInterface,
                     args = ('', iface)
                     )
-############################################################################
-# BBB: Deprecated. Will go away in 3.3.
-
-def defaultView(_context, type, name, for_):
-
-    _context.action(
-        discriminator = ('defaultViewName', for_, type, name),
-        callable = handler,
-        args = ('registerAdapter',
-                 name, (for_, type), IDefaultViewName, '',_context.info)
-        )
-
-    _context.action(
-        discriminator = None,
-        callable = provideInterface,
-        args = ('', type)
-        )
-
-    _context.action(
-        discriminator = None,
-        callable = provideInterface,
-        args = ('', for_)
-        )
-
-from zope.deprecation import deprecated
-deprecated('defaultView',
-           'The zope:defaultView directive has been deprecated in favor of '
-           'the browser:defaultView directive. '
-           'Will be gone in Zope 3.3.')
-

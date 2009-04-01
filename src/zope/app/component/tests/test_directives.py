@@ -373,29 +373,6 @@ class Test(PlacelessSetup, unittest.TestCase):
             ))
         self.assertRaises(ValueError, xmlconfig, config, testing=1)
 
-
-    def testDefaultView(self):
-        ob = Ob()
-        self.assertEqual(
-            zope.component.queryMultiAdapter((Ob(), Request(IV)), name='test'),
-            None)
-
-        xmlconfig(StringIO(template % (
-            '''
-            <defaultView name="test"
-                  for="zope.app.component.tests.views.IC"
-                  type="zope.app.component.tests.views.IV"/>
-            '''
-            )))
-
-        self.assertEqual(
-            zope.component.queryMultiAdapter((Ob(), Request(IV)), name='test'),
-            None)
-        self.assertEqual(
-            zope.component.getGlobalSiteManager().adapters.lookup(
-                (IC, IV), IDefaultViewName),
-            'test')
-
     def testResource(self):
         ob = Ob()
         self.assertEqual(

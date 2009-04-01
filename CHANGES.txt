@@ -2,10 +2,12 @@
 CHANGES
 =======
 
-3.6.2 (unreleased)
+3.7.0 (unreleased)
 ------------------
 
-- ...
+- Removed deprecated `zope:defaultView` directive and its
+  implementation.  New directive to set default view is
+  `browser:defaultView`.
 
 3.6.1 (2009-03-12)
 ------------------

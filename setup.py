@@ -22,7 +22,7 @@ def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 setup(name='zope.app.component',
-      version = '3.6.2dev',
+      version='3.7.0dev',
       author='Zope Corporation and Contributors',
       author_email='zope-dev@zope.org',
       description='Local Zope Component Support',
@@ -34,8 +34,8 @@ setup(name='zope.app.component',
           + '\n\n' +
           read('CHANGES.txt')
           ),
-      keywords = "zope component architecture local",
-      classifiers = [
+      keywords="zope component architecture local",
+      classifiers=[
           'Development Status :: 5 - Production/Stable',
           'Environment :: Web Environment',
           'Intended Audience :: Developers',
@@ -48,7 +48,7 @@ setup(name='zope.app.component',
       url='http://pypi.python.org/pypi/zope.app.component',
       license='ZPL 2.1',
       packages=find_packages('src'),
-      package_dir = {'': 'src'},
+      package_dir={'': 'src'},
       namespace_packages=['zope', 'zope.app'],
       extras_require=dict(
           test=['zope.app.testing',
@@ -84,7 +84,7 @@ setup(name='zope.app.component',
           'zope.traversing',
           'ZODB3',
           ],
-      include_package_data = True,
-      zip_safe = False,
+      include_package_data=True,
+      zip_safe=False,
       )
 
