@@ -2,10 +2,10 @@
 CHANGES
 =======
 
-3.7.1 (unreleased)
+3.8.0 (unreleased)
 ------------------
 
-* ...
+* zope.app.security was only a testing dependency so made it such.
 
 3.7.0 (2009-04-01)
 ------------------
