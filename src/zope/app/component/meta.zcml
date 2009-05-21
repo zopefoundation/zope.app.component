@@ -8,20 +8,4 @@
        moved from here. -->
   <include package="zope.security" file="meta.zcml" />
 
-  <meta:directives namespace="http://namespaces.zope.org/zope">
-
-    <meta:directive
-        name="view"
-        schema=".metadirectives.IViewDirective"
-        handler="zope.app.component.metaconfigure.view"
-        />
-
-    <meta:directive
-        name="resource"
-        schema=".metadirectives.IResourceDirective"
-        handler="zope.app.component.metaconfigure.resource"
-        />
-
-  </meta:directives>
-
 </configure>
