@@ -5,7 +5,10 @@ CHANGES
 3.8.0 (unreleased)
 ------------------
 
-- zope.app.security was only a testing dependency so made it such.
+- IMPORTANT: this package is now empty except for some ZMI definitions
+  in zope.app.component.browser. Functionality from this package has
+  been moved to ``zope.site``, ``zope.componentvocabulary`` and
+  ``zope.component``, so preferably import from those locations.
 
 - zope.componentvocabulary has the vocabulary implementations that
   were in zope.app.componentvocabulary now, import them from there for
