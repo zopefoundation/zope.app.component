@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-3.8.1 (unreleased)
+3.8.1 (2009-05-21)
 ------------------
 
 - Add deprecation note.
