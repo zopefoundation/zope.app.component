@@ -12,6 +12,7 @@
 #
 ##############################################################################
 
+import zope.deferredimport
 import zope.security
 
 # BBB
