@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-3.8.2 (unreleased)
+3.8.2 (2009-05-22)
 ------------------
 
 - Fix missing import in ``zope.app.component.metadirectives``.
