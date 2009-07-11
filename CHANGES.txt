@@ -2,6 +2,12 @@
 CHANGES
 =======
 
+3.8.3 (unreleased)
+------------------
+
+- Removed unnecessary dependency on ``zope.app.interface``.
+
+
 3.8.2 (2009-05-22)
 ------------------
 
@@ -25,7 +31,7 @@ CHANGES
   were in zope.app.componentvocabulary now, import them from there for
   backwards compatibility.
 
-- moved zope:resource and zope:view directive implementation and tests  
+- moved zope:resource and zope:view directive implementation and tests
   over into zope.component [zcml].
 
 3.7.0 (2009-04-01)
@@ -40,7 +46,7 @@ CHANGES
 
 - Make ``class`` directive schemas importable from old location,
   raising a deprecation warning. It was moved in the previous release,
-  but some custom directives could possibly use its schemas. 
+  but some custom directives could possibly use its schemas.
 
 - Deprecate import of ClassDirective to announce about new location.
 
