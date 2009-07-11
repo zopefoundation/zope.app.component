@@ -22,16 +22,13 @@ def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 setup(name='zope.app.component',
-      version = '3.8.3dev',
+      version = '3.8.3',
       author='Zope Corporation and Contributors',
       author_email='zope-dev@zope.org',
       description='Local Zope Component Support',
       long_description=(
           read('README.txt')
-          + '\n\n' +
-          'Detailed Documentation\n'
-          '**********************\n'
-          + '\n\n' +
+          + '\n\n.. contents:: \n\n' +
           read('CHANGES.txt')
           ),
       keywords="zope component architecture local",
