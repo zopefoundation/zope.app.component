@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-3.4.2 (unreleased)
+3.4.2 (2009-07-15)
 ------------------
 
 - Fix empty __bases__ on LocalSiteManager objects loaded from old databases,
