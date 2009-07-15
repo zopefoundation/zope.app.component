@@ -2,6 +2,16 @@
 CHANGES
 =======
 
+3.4.2 (unreleased)
+------------------
+
+- Fix empty __bases__ on LocalSiteManager objects loaded from old databases,
+  which causes queryNextUtility to never see global utilites and therefore
+  broke minor things like the whole authentication framework.
+- Fix KeyError: 'base' on startup in zope/app/component/back35.py after
+  an inept attempt to fix the above error.
+
+
 3.4.1 (2007-10-31)
 ------------------
 

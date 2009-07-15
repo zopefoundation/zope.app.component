@@ -192,6 +192,12 @@ class LocalSiteManager(
         zope.event.notify(ObjectCreatedEvent(folder))
         self['default'] = folder
 
+    def __setstate__(self, state):
+        if not state.get('__bases__'):
+            next = zope.component.getGlobalSiteManager()
+            state['__bases__'] = (next, )
+        super(LocalSiteManager, self).__setstate__(state)
+
     def _init_registries(self):
         self.adapters = _LocalAdapterRegistry()
         self.utilities = _LocalAdapterRegistry()
