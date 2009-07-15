@@ -889,7 +889,7 @@ class _OldSubscriberRegistrations(object):
 class _LocalAdapterRegistryGeneration3SupportMixin(object):
 
     def __setstate__(self, state):
-        if '_registrations' in state:
+        if '_registrations' in state and '__bases__' not in state:
             # convert data to generation 3 data structure:
             next = state.get('next')
             if next is None:

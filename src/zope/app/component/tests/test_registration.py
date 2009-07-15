@@ -63,6 +63,7 @@ def tearDown(test):
 
 def setUp(test):
     placelesssetup.setUp(test)
+    zope.component.provideUtility(Foo(), provides=IFoo, name='globalfoo')
     test.globs['showwarning'] = warnings.showwarning
     warnings.showwarning = lambda *a, **k: None
 
@@ -135,6 +136,13 @@ We can look up utilities as we expect:
     True
 
     >>> sm3.getUtility(IFoo, '5') is sm3['default']['5']
+    True
+
+The bases are loaded correctly and therefore we can look up global utilities
+
+    >>> sm1.queryUtility(IFoo, 'globalfoo') is not None
+    True
+    >>> zope.app.component.queryNextUtility(sm1, IFoo, 'globalfoo') is not None
     True
 
 and we get registration info:
@@ -343,7 +351,46 @@ getAllUtilitiesRegisteredFor should work too: :)
     >>> all.remove(sm3['default']['4'])
     >>> all.remove(sm3['default']['5'])
     >>> len(all)
-    2
+    3
+
+Cleanup:
+
+    >>> db.close()
+
+"""
+
+
+def test_old_databases_backward_compat_shoot_self_in_foot():
+    """
+
+    >>> fs = oldfs()
+    >>> demo = DemoStorage(base=fs)
+    >>> db = DB(demo)
+    >>> tm = transaction.TransactionManager()
+    >>> root = db.open(transaction_manager=tm).root()
+    >>> _ = tm.begin()
+
+When I did this in production, in a vain attempt to fix the queryNextUtility
+problem:
+
+    >>> sm1 = root['Application'].getSiteManager()
+    >>> sm1.__bases__ = (zope.component.getGlobalSiteManager(), )
+    >>> tm.commit()
+
+I started getting KeyError: 'base' in _LocalAdapterRegistryGeneration3SupportMixin
+__setstate__ which didn't expect the registry to be pickled without someone
+carefully removing the _registrations attribute it left in place.
+
+    >>> tm2 = transaction.TransactionManager()
+    >>> root2 = db.open(transaction_manager=tm2).root()
+    >>> _ = tm2.begin()
+    >>> sm1 = root2['Application'].getSiteManager()
+    >>> len(sm1.__bases__)
+    1
+    >>> sm1.queryUtility(IFoo, 'globalfoo') is not None
+    True
+    >>> zope.app.component.queryNextUtility(sm1, IFoo, 'globalfoo') is not None
+    True
 
 Cleanup:
 
