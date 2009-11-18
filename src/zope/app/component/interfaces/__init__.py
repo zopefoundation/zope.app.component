@@ -25,7 +25,6 @@ from zope.site.interfaces import (INewLocalSite,
                                   ISiteManagementFolder)
 
 zope.deferredimport.deprecatedFrom(
-    "Moved to zope.location.interfaces. Importing from here will stop working in Zope 3.6",
-    "zope.location.interfaces",
+    "Moved to zope.component.interfaces. Importing from here will stop working in Zope 3.6",
+    "zope.component.interfaces",
     "ISite", "IPossibleSite")
-                    

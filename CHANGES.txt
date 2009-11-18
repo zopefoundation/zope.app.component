@@ -5,7 +5,11 @@ CHANGES
 3.8.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Import hooks functionality from zope.component after it was moved there from
+  zope.site.
+
+- Import ISite and IPossibleSite from zope.component after they were moved
+  there from zope.location. This lifts the direct dependency on zope.location.
 
 
 3.8.3 (2009-07-11)

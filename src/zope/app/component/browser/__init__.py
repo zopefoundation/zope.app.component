@@ -18,12 +18,12 @@ $Id$
 __docformat__ = 'restructuredtext'
 
 import zope.component
+import zope.component.interfaces
 from zope.exceptions.interfaces import UserError
 from zope.security.proxy import removeSecurityProxy
 from zope.publisher.browser import BrowserView
 from zope.component.interfaces import IFactory
 from zope.component.interface import searchInterface
-from zope.location.interfaces import ISite
 
 from zope.app.component.i18n import ZopeMessageFactory as _
 from zope.app.container.browser.adding import Adding
@@ -119,7 +119,7 @@ class MakeSite(BrowserView):
         ...     implements(IContainmentRoot)
         ...     def setSiteManager(self, sm):
         ...         from zope.interface import directlyProvides
-        ...         directlyProvides(self, ISite)
+        ...         directlyProvides(self, zope.component.interfaces.ISite)
 
 
         >>> folder = PossibleSite()
@@ -133,7 +133,7 @@ class MakeSite(BrowserView):
 
         Now verify that we have a site:
 
-        >>> ISite.providedBy(folder)
+        >>> zope.component.interfaces.ISite.providedBy(folder)
         1
 
         Note that we've also redirected the request:
@@ -152,7 +152,7 @@ class MakeSite(BrowserView):
         UserError: This is already a site
 
         """
-        if ISite.providedBy(self.context):
+        if zope.component.interfaces.ISite.providedBy(self.context):
             raise UserError(_(u'This is already a site'))
 
         # We don't want to store security proxies (we can't,

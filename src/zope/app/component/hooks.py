@@ -13,13 +13,14 @@
 ##############################################################################
 """This module here is for backwards compatibility.
 
-The real public API is now zope.site.hooks
+The real public API is now zope.component.hooks
 
 $Id$
 """
 __docformat__ = 'restructuredtext'
 
-from zope.site.hooks import (read_property,
+from zope.component.hooks import (
+                             read_property,
                              SiteInfo,
                              siteinfo,
                              setSite,
@@ -30,4 +31,3 @@ from zope.site.hooks import (read_property,
                              resetHooks,
                              setSite,
                              clearSite) # BBB
-                             

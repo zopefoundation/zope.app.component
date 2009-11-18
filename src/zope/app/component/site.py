@@ -19,6 +19,7 @@ $Id$
 """
 # on the side of caution for backwards compatibility we
 # import everything defined
+from zope.component.hooks import setSite
 from zope.site.site import (SiteManagementFolder,
                             SMFolderFactory,
                             SiteManagerContainer,
@@ -27,7 +28,6 @@ from zope.site.site import (SiteManagementFolder,
                             LocalSiteManager,
                             threadSiteSubscriber,
                             clearThreadSiteSubscriber,
-                            setSite,
                             clearSite,
                             SiteManagerAdapter,
                             changeSiteConfigurationAfterMove) # BBB
