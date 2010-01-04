@@ -58,6 +58,7 @@ setup(name='zope.app.component',
                 'zope.app.zcmlfiles',
                 'zope.app.schema',
                 'zope.testbrowser',
+                'zope.login',
                 ]),
       install_requires=[
           'setuptools',
