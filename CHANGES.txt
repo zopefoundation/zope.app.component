@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-3.8.4 (unreleased)
+3.8.4 (2010-01-08)
 ------------------
 
 - Import hooks functionality from zope.component after it was moved there from
