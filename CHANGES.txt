@@ -5,7 +5,8 @@ CHANGES
 3.9.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- No longer using deprected ``zope.testing.doctest``. Use python's build-in
+  ``doctest`` instead.
 
 
 3.9.0 (2010-07-19)

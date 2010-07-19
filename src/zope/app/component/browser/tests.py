@@ -15,13 +15,13 @@
 
 $Id$
 """
-import os.path
-import unittest
-import zope.app.testing.functional
 from zope import interface
 from zope.app.component.testing import AppComponentLayer
 from zope.app.testing import functional
-from zope.testing import doctest
+import doctest
+import os.path
+import unittest
+import zope.app.testing.functional
 
 AppComponentBrowserLayer = functional.ZCMLLayer(
     os.path.join(os.path.dirname(__file__), 'ftesting.zcml'),
