@@ -5,7 +5,10 @@ CHANGES
 3.8.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Added missing BBB import in ``zope.app.component.metaconfigure``.
+
+- Requiring at least ``zope.component`` 3.8 where some modules have
+  moved which are BBB imported here.
 
 
 3.8.4 (2010-01-08)
