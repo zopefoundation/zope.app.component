@@ -12,23 +12,12 @@
 #
 ##############################################################################
 
-import zope.deferredimport
-import zope.security
-
 # BBB
-zope.deferredimport.deprecatedFrom(
-    "Schemas for the ``class`` directive and its subdirectives are now "
-    "moved to zope.security.metadirectives. Imports from here are "
-    "deprecated and will be removed in Zope 3.6",
-
-    'zope.security.metadirectives',
-
-    'IClassDirective',
-    'IImplementsSubdirective',
-    'IRequireSubdirective',
-    'IAllowSubdirective',
-    'IFactorySubdirective',
-)
+from zope.security.metadirectives import (IClassDirective,
+                                          IImplementsSubdirective,
+                                          IRequireSubdirective,
+                                          IAllowSubdirective,
+                                          IFactorySubdirective)
 
 # BBB
 from zope.component.zcml import (IBasicViewInformation,

@@ -8,6 +8,8 @@ CHANGES
 - No longer using deprected ``zope.testing.doctest``. Use python's build-in
   ``doctest`` instead.
 
+- Replaced the dependency on zope.deferredimport with BBB imports
+
 
 3.9.0 (2010-07-19)
 ------------------

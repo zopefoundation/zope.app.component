@@ -11,20 +11,13 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Backwards compatibility module.
 
-The real interfaces are defined in zope.site.interfaces.
-$Id$
-"""
-
-import zope.deferredimport
-
+# BBB
 from zope.site.interfaces import (INewLocalSite,
                                   NewLocalSite,
                                   ILocalSiteManager,
                                   ISiteManagementFolder)
 
-zope.deferredimport.deprecatedFrom(
-    "Moved to zope.component.interfaces. Importing from here will stop working in Zope 3.6",
-    "zope.component.interfaces",
-    "ISite", "IPossibleSite")
+# BBB
+from zope.component.interfaces import (ISite,
+                                       IPossibleSite)

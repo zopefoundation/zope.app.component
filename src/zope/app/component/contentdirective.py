@@ -13,16 +13,7 @@
 ##############################################################################
 """Backwards compatibility: moved this module to
 `zope.security.metaconfigure`.
-
-$Id$
 """
-__docformat__ = 'restructuredtext'
 
-import zope.deferredimport
-
-zope.deferredimport.deprecated(
-    "The ``class`` directive implementation was moved to "
-    "zope.security.metaconfigure. This import will stop "
-    "working in Zope 3.6",
-    ClassDirective = 'zope.security.metaconfigure:ClassDirective'
-    )
+# BBB
+from zope.security.metaconfigure import ClassDirective
