@@ -5,7 +5,8 @@ CHANGES
 3.9.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Replaced a testing dependency on ``zope.app.securitypolicy`` with one on
+  ``zope.securitypolicy``.
 
 
 3.9.1 (2010-09-01)
@@ -14,7 +15,7 @@ CHANGES
 - No longer using deprecated ``zope.testing.doctest``. Use python's build-in
   ``doctest`` instead.
 
-- Replaced the dependency on zope.deferredimport with BBB imports
+- Replaced the dependency on ``zope.deferredimport`` with BBB imports.
 
 
 3.9.0 (2010-07-19)
