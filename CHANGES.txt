@@ -5,7 +5,8 @@ CHANGES
 3.9.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Replaced an undeclared test dependency on ``zope.app.authentication`` with
+  ``zope.password``.
 
 
 3.9.2 (2010-09-17)
