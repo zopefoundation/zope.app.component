@@ -25,7 +25,7 @@ def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 setup(name='zope.app.component',
-      version='3.9.3',
+      version='3.9.4dev',
       author='Zope Corporation and Contributors',
       author_email='zope-dev@zope.org',
       description='Local Zope Component Support',
