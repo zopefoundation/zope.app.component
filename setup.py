@@ -16,7 +16,7 @@
 # When developing and releasing this package, please follow the documented
 # Zope Toolkit policies as described by this documentation.
 ##############################################################################
-"""Setup for zope.app.catalog package
+"""Setup for zope.app.component package
 """
 import os
 from setuptools import setup, find_packages
@@ -52,7 +52,6 @@ setup(name='zope.app.component',
       namespace_packages=['zope', 'zope.app'],
       extras_require=dict(
           test=[
-              'zope.app.schema',
               'zope.app.testing',
               'zope.app.zcmlfiles',
               'zope.login',
@@ -63,26 +62,19 @@ setup(name='zope.app.component',
       install_requires=[
           'setuptools',
           'zope.site',
-          'zope.annotation',
           'zope.app.container',
           'zope.app.pagetemplate',
-          'zope.cachedescriptors',
           'zope.component [hook,zcml] >= 3.8',
-          'zope.configuration',
           'zope.deprecation',
-          'zope.event',
           'zope.exceptions',
-          'zope.filerepresentation',
           'zope.formlib',
           'zope.i18nmessageid',
           'zope.interface',
-          'zope.lifecycleevent',
           'zope.publisher>=3.12.0',
           'zope.schema',
           'zope.security',
           'zope.traversing',
           'zope.componentvocabulary',
-          'ZODB3',
           ],
       include_package_data=True,
       zip_safe=False,
