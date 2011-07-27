@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2001-2007 Zope Corporation and Contributors.
+# Copyright (c) 2001-2007 Zope Foundation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -14,8 +14,6 @@
 """Base Mix-in class for Placeful Setups
 
 Also contains common test related classes/functions/objects.
-
-$Id$
 """
 
 import os

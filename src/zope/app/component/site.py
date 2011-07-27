@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# Copyright (c) 2001, 2002 Zope Foundation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -14,8 +14,6 @@
 """This module here is for backwards compatibility.
 
 The real public API is now zope.site
-
-$Id$
 """
 # on the side of caution for backwards compatibility we
 # import everything defined
