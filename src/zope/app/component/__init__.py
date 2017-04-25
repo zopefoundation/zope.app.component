@@ -28,7 +28,7 @@ away in Zope 3.6. There is no replacement for this function, since it does not
 make sense in light of registry bases anymore. If you are using this function
 to lookup the next utility, consider using get/queryNextUtility. Otherwise, it
 is suggested to iterate through the list of bases of a registry manually.''')
-def getNextSiteManager(context):
+def getNextSiteManager(context): # pragma: no cover
     """Get the next site manager."""
     sm = queryNextSiteManager(context, _marker)
     if sm is _marker:
@@ -43,7 +43,7 @@ away in Zope 3.6. There is no replacement for this function, since it does not
 make sense in light of registry bases anymore. If you are using this function
 to lookup the next utility, consider using get/queryNextUtility. Otherwise, it
 is suggested to iterate through the list of bases of a registry manually.''')
-def queryNextSiteManager(context, default=None):
+def queryNextSiteManager(context, default=None): # pragma: no cover
     """Get the next site manager.
 
     If the site manager of the given context is the global site manager, then

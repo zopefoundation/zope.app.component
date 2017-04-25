@@ -2,10 +2,21 @@
 CHANGES
 =======
 
-3.9.4 (unreleased)
+4.0.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Remove test dependencies on zope.app.testing, zope.app.zcmlfiles,
+  and others.
+
+- Remove install dependency on zope.app.form, replaced with direct
+  imports of zope.formlib.
+
+- Simplify ``zope.app.component.testing`` to remove the deprecated or
+  broken functionality in ``testingNextUtility`` and ``SiteManagerStub``.
+  ``PlacefulSetup`` is retained, although use of
+  ``zope.component.testing.PlacelessSetup`` is suggested when possible.
+
+- Add support for PyPy and Python 3.4, 3.5 and 3.6.
 
 
 3.9.3 (2011-07-27)

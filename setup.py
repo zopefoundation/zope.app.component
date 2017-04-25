@@ -22,17 +22,50 @@ import os
 from setuptools import setup, find_packages
 
 def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+    with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
+        return f.read()
+
+test_requires = [
+    'zope.app.appsetup',
+    'zope.app.basicskin >= 4.0',
+    'zope.app.container[test] >= 4.0',
+    'zope.app.content',
+    'zope.app.dependable >= 4.0',
+    'zope.app.http',
+    'zope.app.pagetemplate >= 4.0',
+    'zope.app.principalannotation',
+    'zope.app.publication',
+    'zope.app.publisher',
+    'zope.app.rotterdam',
+    'zope.app.schema',
+    'zope.app.testing',
+    'zope.app.wsgi',
+
+    'zope.applicationcontrol',
+    'zope.browser',
+    'zope.browserresource',
+    'zope.copypastemove',
+    'zope.login',
+    'zope.password',
+    'zope.principalannotation',
+    'zope.principalregistry',
+    'zope.proxy >= 4.2.1',
+    'zope.securitypolicy',
+    'zope.site',
+    'zope.testbrowser >= 5.2',
+    'zope.testing',
+    'zope.testrunner',
+]
 
 setup(name='zope.app.component',
-      version='3.9.4dev',
+      version='4.0.0.dev0',
       author='Zope Corporation and Contributors',
       author_email='zope-dev@zope.org',
       description='Local Zope Component Support',
       long_description=(
-          read('README.txt')
+          read('README.rst')
           + '\n\n.. contents:: \n\n' +
-          read('CHANGES.txt')
+          read('CHANGES.rst')
           ),
       keywords="zope component architecture local",
       classifiers=[
@@ -41,42 +74,43 @@ setup(name='zope.app.component',
           'Intended Audience :: Developers',
           'License :: OSI Approved :: Zope Public License',
           'Programming Language :: Python',
+          'Programming Language :: Python :: 2.7',
+          'Programming Language :: Python :: 3.4',
+          'Programming Language :: Python :: 3.5',
+          'Programming Language :: Python :: 3.6',
+          'Programming Language :: Python :: Implementation :: CPython',
+          'Programming Language :: Python :: Implementation :: PyPy',
           'Natural Language :: English',
           'Operating System :: OS Independent',
           'Topic :: Internet :: WWW/HTTP',
-          'Framework :: Zope3'],
-      url='http://pypi.python.org/pypi/zope.app.component',
+          'Framework :: Zope3',
+      ],
+      url='http://github.com/zopefoundation/zope.app.component',
       license='ZPL 2.1',
       packages=find_packages('src'),
       package_dir={'': 'src'},
       namespace_packages=['zope', 'zope.app'],
-      extras_require=dict(
-          test=[
-              'zope.app.testing',
-              'zope.app.zcmlfiles',
-              'zope.login',
-              'zope.password',
-              'zope.securitypolicy',
-              'zope.testbrowser',
-                ]),
+      extras_require={
+          'test': test_requires,
+      },
+      test_requires=test_requires,
       install_requires=[
           'setuptools',
           'zope.site',
-          'zope.app.container',
-          'zope.app.pagetemplate',
-          'zope.component [hook,zcml] >= 3.8',
+          'zope.app.container >= 4.0',
+          'zope.app.pagetemplate >= 4.0',
+          'zope.component[hook,zcml] >= 4.3.0',
           'zope.deprecation',
           'zope.exceptions',
           'zope.formlib',
           'zope.i18nmessageid',
           'zope.interface',
-          'zope.publisher>=3.12.0',
+          'zope.publisher >= 4.3.1',
           'zope.schema',
           'zope.security',
           'zope.traversing',
           'zope.componentvocabulary',
-          ],
+      ],
       include_package_data=True,
       zip_safe=False,
-      )
-
+)
