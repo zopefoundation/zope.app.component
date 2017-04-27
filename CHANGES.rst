@@ -12,9 +12,11 @@ CHANGES
   imports of zope.formlib.
 
 - Simplify ``zope.app.component.testing`` to remove the deprecated or
-  broken functionality in ``testingNextUtility`` and ``SiteManagerStub``.
-  ``PlacefulSetup`` is retained, although use of
-  ``zope.component.testing.PlacelessSetup`` is suggested when possible.
+  broken functionality in ``testingNextUtility`` and
+  ``SiteManagerStub``. ``PlacefulSetup`` is retained (and incorporates
+  much of what was previously inherited from ``zope.app.testing``),
+  although use of ``zope.component.testing.PlacelessSetup`` is
+  suggested when possible.
 
 - Add support for PyPy and Python 3.4, 3.5 and 3.6.
 

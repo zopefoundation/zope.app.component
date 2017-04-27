@@ -36,7 +36,7 @@ test_requires = [
     'zope.app.principalannotation',
     'zope.app.publication',
     'zope.app.publisher',
-    'zope.app.rotterdam',
+    'zope.app.rotterdam >= 4.0',
     'zope.app.schema',
     'zope.app.testing',
     'zope.app.wsgi',
@@ -93,7 +93,7 @@ setup(name='zope.app.component',
       extras_require={
           'test': test_requires,
       },
-      test_requires=test_requires,
+      tests_require=test_requires,
       install_requires=[
           'setuptools',
           'zope.site',
