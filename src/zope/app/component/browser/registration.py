@@ -28,6 +28,7 @@ from zope.app.component.i18n import ZopeMessageFactory as _
 
 
 def _registrations(context, comp):
+    comp = removeSecurityProxy(comp)
     sm = component.getSiteManager(context)
     for meth, attrname in ((sm.registeredUtilities, 'component'),
                            (sm.registeredAdapters, 'factory'),
