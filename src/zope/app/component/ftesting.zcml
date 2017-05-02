@@ -1,5 +1,6 @@
 <configure
    xmlns="http://namespaces.zope.org/zope"
+   xmlns:browser="http://namespaces.zope.org/browser"
    i18n_domain="zope"
    package="zope.app.component"
    >
@@ -7,20 +8,157 @@
   <!-- This file is the equivalent of site.zcml and it is -->
   <!-- used for functional testing setup -->
 
+
+  <include package="zope.component" file="meta.zcml" />
+  <include package="zope.security" file="meta.zcml" />
+  <include package="zope.app.container.browser" file="meta.zcml" />
+  <include package="zope.browserpage" file="meta.zcml" />
+  <include package="zope.app.publication" file="meta.zcml" />
+  <include package="zope.principalregistry" file="meta.zcml" />
+  <include package="zope.publisher" file="meta.zcml" />
+  <include package="zope.browserresource" file="meta.zcml" />
+  <include package="zope.browsermenu" file="meta.zcml" />
   <include package="zope.securitypolicy" file="meta.zcml" />
 
-  <include package="zope.app.zcmlfiles" />
-  <include package="zope.securitypolicy" />
+
+  <include package="zope.annotation" />
+  <include package="zope.browsermenu" />
+  <include package="zope.browserresource" />
+  <!-- Utility Component Interfaces vocab -->
+  <include package="zope.componentvocabulary" />
+  <include package="zope.container" />
+  <include package="zope.copypastemove" />
+  <include package="zope.dublincore" />
   <include package="zope.formlib" />
+  <include package="zope.location" />
   <include package="zope.login" />
   <include package="zope.password" />
+  <include package="zope.principalannotation" />
+  <include package="zope.principalregistry" />
+  <include package="zope.publisher" />
+  <include package="zope.security" />
+  <include package="zope.securitypolicy" />
+  <include package="zope.traversing" />
+  <include package="zope.traversing.browser" />
+
+  <include package="zope.app.appsetup" />
+  <include package="zope.app.basicskin" />
+  <include package="zope.app.pagetemplate" />
+  <include package="zope.app.publication" />
+  <include package="zope.app.rotterdam" />
+
+  <utility factory="zope.app.schema.vocabulary.ZopeVocabularyRegistry" />
+
+
+  <!-- These normally come from zope.app.zcmlfiles/menus.zcml -->
+  <browser:menu
+      id="zmi_views"
+      title="Views"
+      description="Menu for displaying alternate representations of an object"
+      />
+
+  <browser:menu
+      id="zmi_actions"
+      title="Actions"
+      description="Menu for displaying actions to be performed"
+      />
+
+  <browser:menu
+      id="zope.app.container.add"
+      title="Add"
+      description="Menu for objects to be added according to
+                   containment constraints"
+      interface="zope.app.publisher.interfaces.browser.AddMenu"
+      />
+
+  <browser:menu
+      id="add_component"
+      title="Add"
+      description="Menu of objects to be added to site management folders"
+      />
+
+  <!-- login_logout view -->
+  <!-- Normally comes from zope.app.security -->
+  <browser:page
+      name="login_logout"
+      for="*"
+      class=".tests.LoginLogout"
+      permission="zope.Public"
+      />
+
+
+  <browser:defaultView name="index.html" />
+  <browser:defaultSkin name="Rotterdam" />
+
+  <!-- <include package="zope.app.exception.browser" /> -->
+  <!-- <include package="zope.traversing.browser" /> -->
+
+  <!-- Folder creation views -->
+  <include package="zope.app.container.browser" />
+
+
+  <!-- This normally comes from zope.app.folder -->
+  <include package="zope.site" />
+  <include package="zope.container" />
+
+  <interface
+      interface="zope.site.interfaces.IFolder"
+      type="zope.app.content.interfaces.IContentType"
+      />
+  <browser:addMenuItem
+      class="zope.site.folder.Folder"
+      title="Folder"
+      description="Minimal folder"
+      permission="zope.ManageContent"
+      />
+  <browser:containerViews
+      for="zope.site.interfaces.IFolder"
+      contents="zope.ManageContent"
+      index="zope.View"
+      add="zope.ManageContent"
+      />
+
+  <!-- Management view selector; normally from zope.app.publisher.browser -->
+  <!-- Get first accessible item from zmi_views menu -->
+  <browser:page
+      for="*"
+      name="SelectedManagementView.html"
+      permission="zope.Public"
+      class=".tests.ManagementViewSelector"
+      allowed_interface="zope.publisher.interfaces.browser.IBrowserPublisher"
+      />
+
+  <!-- Make manage an alias for same -->
+  <browser:page
+      for="*"
+      name="manage"
+      permission="zope.ManageContent"
+      class=".tests.ManagementViewSelector"
+      allowed_interface="zope.publisher.interfaces.browser.IBrowserPublisher"
+      />
+
+  <!-- Application setup -->
 
   <securityPolicy
       component="zope.securitypolicy.zopepolicy.ZopeSecurityPolicy" />
 
+  <role id="zope.Anonymous" title="Everybody"
+        description="All users have this role implicitly" />
   <role id="zope.Manager" title="Site Manager" />
 
+  <!-- Replace the following directive if you don't want public access -->
+  <grant permission="zope.View"
+         role="zope.Anonymous" />
+  <grant permission="zope.dublincore.view"
+         role="zope.Anonymous" />
+
   <grantAll role="zope.Manager" />
+
+  <!-- Principals -->
+
+  <unauthenticatedPrincipal
+      id="zope.anybody"
+      title="Unauthenticated User" />
 
   <!-- Principal that tests generally run as -->
   <principal
@@ -28,7 +166,10 @@
       title="Manager"
       login="mgr"
       password="mgrpw" />
-
   <grant role="zope.Manager" principal="zope.mgr" />
+
+  <class class="zope.site.folder.Folder">
+	<allow attributes="items __getitem__ get __contains__ __setitem__" />
+  </class>
 
 </configure>

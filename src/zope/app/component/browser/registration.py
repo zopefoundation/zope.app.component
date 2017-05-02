@@ -13,6 +13,7 @@
 ##############################################################################
 """General registry-related views
 """
+import base64
 import warnings
 
 from zope import interface, component, schema
@@ -27,19 +28,15 @@ from zope.app.component.i18n import ZopeMessageFactory as _
 
 
 def _registrations(context, comp):
+    comp = removeSecurityProxy(comp)
     sm = component.getSiteManager(context)
-    for r in sm.registeredUtilities():
-        if r.component == comp or comp is None:
-            yield r
-    for r in sm.registeredAdapters():
-        if r.factory == comp or comp is None:
-            yield r
-    for r in sm.registeredSubscriptionAdapters():
-        if r.factory == comp or comp is None:
-            yield r
-    for r in sm.registeredHandlers():
-        if r.factory == comp or comp is None:
-            yield r
+    for meth, attrname in ((sm.registeredUtilities, 'component'),
+                           (sm.registeredAdapters, 'factory'),
+                           (sm.registeredSubscriptionAdapters, 'factory'),
+                           (sm.registeredHandlers, 'factory')):
+        for registration in meth():
+            if getattr(registration, attrname) == comp or comp is None:
+                yield registration
 
 class IRegistrationDisplay(interface.Interface):
     """Display registration information
@@ -59,9 +56,8 @@ class ISiteRegistrationDisplay(IRegistrationDisplay):
     """Display registration information, including the component registered
     """
 
+@component.adapter(None, zope.publisher.interfaces.browser.IBrowserRequest)
 class RegistrationView(BrowserPage):
-
-    component.adapts(None, zope.publisher.interfaces.browser.IBrowserRequest)
 
     render = zope.app.pagetemplate.ViewPageTemplateFile('registration.pt')
 
@@ -83,12 +79,11 @@ class RegistrationView(BrowserPage):
         self.update()
         return self.render()
 
+@component.adapter(zope.component.interfaces.IUtilityRegistration,
+                   zope.publisher.interfaces.browser.IBrowserRequest)
+@interface.implementer(IRegistrationDisplay)
 class UtilityRegistrationDisplay(object):
     """Utility Registration Details"""
-
-    component.adapts(zope.component.interfaces.IUtilityRegistration,
-                     zope.publisher.interfaces.browser.IBrowserRequest)
-    interface.implements(IRegistrationDisplay)
 
     def __init__(self, context, request):
         self.context = context
@@ -99,13 +94,15 @@ class UtilityRegistrationDisplay(object):
         return provided.__module__ + '.' + provided.__name__
 
     def id(self):
-        return 'R' + (("%s %s" % (self.provided(), self.context.name))
-                      .encode('utf8')
-                      .encode('base64')
-                      .replace('+', '_')
-                      .replace('=', '')
-                      .replace('\n', '')
-                      )
+        joined = "%s %s" % (self.provided(), self.context.name)
+        joined_bytes = joined.encode("utf8")
+        j64_bytes = base64.b64encode(joined_bytes)
+        if not isinstance(j64_bytes, str):
+            j_str = j64_bytes.decode('ascii')
+        else:
+            j_str = j64_bytes
+        escaped = j_str.replace('+', '_').replace('=', '').replace('\n', '')
+        return 'R' + escaped
 
     def _comment(self):
         comment = self.context.info or ''
@@ -149,21 +146,20 @@ class SiteRegistrationView(RegistrationView):
             ]
         return registrations
 
+@interface.implementer_only(ISiteRegistrationDisplay)
 class UtilitySiteRegistrationDisplay(UtilityRegistrationDisplay):
     """Utility Registration Details"""
-
-    interface.implementsOnly(ISiteRegistrationDisplay)
 
     def render(self):
         url = component.getMultiAdapter(
             (self.context.component, self.request), name='absolute_url')
         try:
             url = url()
-        except TypeError:
+        except TypeError: # pragma: no cover
             url = ""
 
         cname = getattr(self.context.component, '__name__', '')
-        if not cname:
+        if not cname: # pragma: no cover
             cname = _("(unknown name)")
         if url:
             url += "/@@SelectedManagementView.html"
@@ -175,6 +171,7 @@ class UtilitySiteRegistrationDisplay(UtilityRegistrationDisplay):
             "comment": self._comment()
             }
 
+@component.adapter(None, zope.publisher.interfaces.browser.IBrowserRequest)
 class AddUtilityRegistration(form.Form):
     """View for registering utilities
 
@@ -187,7 +184,6 @@ class AddUtilityRegistration(form.Form):
     should always be registered with the same interface.
 
     """
-    component.adapts(None, zope.publisher.interfaces.browser.IBrowserRequest)
 
     form_fields = form.Fields(
         schema.Choice(
@@ -219,15 +215,15 @@ class AddUtilityRegistration(form.Form):
     prefix = 'field' # in hopes of making old tests pass. :)
 
     def __init__(self, context, request):
-        if self.name is not None:
+        if self.name is not None: # pragma: no cover
             self.form_fields = self.form_fields.omit('name')
-        if self.provided is not None:
+        if self.provided is not None: # pragma: no cover
             self.form_fields = self.form_fields.omit('provided')
         super(AddUtilityRegistration, self).__init__(context, request)
 
     def update(self):
         # hack to make work with old tests
-        if 'UPDATE_SUBMIT' in self.request.form:
+        if 'UPDATE_SUBMIT' in self.request.form: # pragma: no cover
             warnings.warn(
                 "Old test needs to be updated.",
                 DeprecationWarning)
@@ -257,7 +253,7 @@ class AddUtilityRegistration(form.Form):
             provided, name,
             data['comment'] or '')
 
-        if 'UPDATE_SUBMIT' in self.request.form:
+        if 'UPDATE_SUBMIT' in self.request.form: # pragma: no cover
             # Backward compat until 3.5
             self.request.response.redirect('@@SelectedManagementView.html')
             return

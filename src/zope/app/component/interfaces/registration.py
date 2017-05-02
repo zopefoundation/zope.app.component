@@ -17,17 +17,16 @@ from zope import interface, schema
 import zope.schema.interfaces
 
 class IComponent(zope.schema.interfaces.IField):
-    """A component 
+    """A component
 
     This is just the interface for the ComponentPath field below.  We'll use
     this as the basis for looking up an appropriate widget.
     """
 
+@interface.implementer(IComponent)
 class Component(schema.Field):
-    """A component 
+    """A component
 
     Values of the field are absolute unicode path strings that can be
     traversed to get an object.
     """
-    interface.implements(IComponent)
-

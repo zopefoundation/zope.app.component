@@ -22,10 +22,10 @@ from zope.security.proxy import removeSecurityProxy
 from zope.publisher.browser import BrowserView
 from zope.component.interfaces import IFactory
 from zope.component.interface import searchInterface
-
+from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.app.component.i18n import ZopeMessageFactory as _
 from zope.app.container.browser.adding import Adding
-from zope.app.component.site import LocalSiteManager
+from zope.site.site import LocalSiteManager
 
 class ComponentAdding(Adding):
     """Adding subclass used for registerable components."""
@@ -45,12 +45,12 @@ class ComponentAdding(Adding):
                 (self.added_object, self.request), name='absolute_url'))
             return url + "/@@registration.html"
 
-        return super(ComponentAdding, self).nextURL()
+        return super(ComponentAdding, self).nextURL() # pragma: no cover
 
     def action(self, type_name, id=''):
         # For special case of that we want to redirect to another adding view
         # (usually another menu such as AddUtility)
-        if type_name.startswith("../"):
+        if type_name.startswith("../"): # pragma: no cover
             # Special case
             url = type_name
             if id:
@@ -98,10 +98,10 @@ class UtilityAdding(ComponentAdding):
         v = zope.component.queryMultiAdapter(
             (self.added_object, self.request), name="addRegistration.html")
         if v is not None:
-            url = zope.component.absoluteURL(self.added_object, self.request)
+            url = absoluteURL(self.added_object, self.request)
             return url + "/@@addRegistration.html"
 
-        return super(UtilityAdding, self).nextURL()
+        return super(UtilityAdding, self).nextURL() # pragma: no cover
 
 
 class MakeSite(BrowserView):
@@ -111,10 +111,10 @@ class MakeSite(BrowserView):
         """Convert a possible site to a site
 
         >>> from zope.traversing.interfaces import IContainmentRoot
-        >>> from zope.interface import implements
+        >>> from zope.interface import implementer
 
-        >>> class PossibleSite(object):
-        ...     implements(IContainmentRoot)
+        >>> @implementer(IContainmentRoot)
+        ... class PossibleSite(object):
         ...     def setSiteManager(self, sm):
         ...         from zope.interface import directlyProvides
         ...         directlyProvides(self, zope.component.interfaces.ISite)
@@ -147,7 +147,7 @@ class MakeSite(BrowserView):
         >>> MakeSite(folder, request).addSiteManager()
         Traceback (most recent call last):
         ...
-        UserError: This is already a site
+        zope.exceptions.interfaces.UserError: This is already a site
 
         """
         if zope.component.interfaces.ISite.providedBy(self.context):

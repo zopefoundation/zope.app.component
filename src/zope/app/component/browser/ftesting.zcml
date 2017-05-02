@@ -3,13 +3,37 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="zope"
     >
-    
+
   <include package="zope.app.component" file="ftesting.zcml"/>
+  <include package="zope.app.component.browser" />
 
   <browser:addMenuItem
       class="zope.app.component.browser.tests.Sample"
       permission="zope.ManageSite"
       title="Sample"
       />
+
+  <browser:view
+      name="="
+      menu="zmi_actions" title="Add"
+      for="zope.site.interfaces.ISiteManagementFolder"
+      permission="zope.ManageSite"
+      class="zope.app.component.browser.UtilityAdding"
+      >
+    <browser:page name="index.html"  attribute="index"  />
+    <browser:page name="action.html" attribute="action" />
+  </browser:view>
+
+
+  <browser:view
+      name="-"
+      for="zope.site.interfaces.ISiteManagementFolder"
+      permission="zope.ManageSite"
+      class="zope.app.component.browser.tests.FilteredAdding"
+      >
+    <browser:page name="index.html"  attribute="index"  />
+    <browser:page name="action.html" attribute="action" />
+  </browser:view>
+
 
 </configure>
