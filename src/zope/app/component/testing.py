@@ -34,7 +34,7 @@ from zope.traversing.api import traverse
 from zope.traversing.interfaces import ITraversable
 
 def buildSampleFolderTree():
-    """
+    r"""
     Create a tree of folders and return the root::
 
            ____________ rootFolder ______________________________

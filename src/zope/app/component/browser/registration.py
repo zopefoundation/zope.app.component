@@ -69,7 +69,7 @@ class RegistrationView(BrowserPage):
         return registrations
 
     def update(self):
-        registrations = dict([(r.id(), r) for r in self.registrations()])
+        registrations = {r.id(): r for r in self.registrations()}
         for id in self.request.form.get('ids', ()):
             r = registrations.get(id)
             if r is not None:
@@ -79,7 +79,7 @@ class RegistrationView(BrowserPage):
         self.update()
         return self.render()
 
-@component.adapter(zope.component.interfaces.IUtilityRegistration,
+@component.adapter(zope.interface.interfaces.IUtilityRegistration,
                    zope.publisher.interfaces.browser.IBrowserRequest)
 @interface.implementer(IRegistrationDisplay)
 class UtilityRegistrationDisplay(object):
@@ -187,28 +187,28 @@ class AddUtilityRegistration(form.Form):
 
     form_fields = form.Fields(
         schema.Choice(
-           __name__ = 'provided',
-           title=_("Provided interface"),
-           description=_("The interface provided by the utility"),
-           vocabulary="Utility Component Interfaces",
-           required=True,
-           ),
+            __name__='provided',
+            title=_("Provided interface"),
+            description=_("The interface provided by the utility"),
+            vocabulary="Utility Component Interfaces",
+            required=True,
+        ),
         schema.TextLine(
-           __name__ = 'name',
-           title=_("Register As"),
-           description=_("The name under which the utility will be known."),
-           required=False,
-           default=u'',
-           missing_value=u''
-           ),
+            __name__='name',
+            title=_("Register As"),
+            description=_("The name under which the utility will be known."),
+            required=False,
+            default=u'',
+            missing_value=u''
+        ),
         schema.Text(
-           __name__ = 'comment',
-           title=_("Comment"),
-           required=False,
-           default=u'',
-           missing_value=u''
-           ),
-        )
+            __name__='comment',
+            title=_("Comment"),
+            required=False,
+            default=u'',
+            missing_value=u''
+        ),
+    )
 
     name = provided = None
 
