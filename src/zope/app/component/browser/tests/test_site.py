@@ -15,14 +15,18 @@
 """
 
 
+import re
+from zope.testing import renormalizing
 import doctest
 import unittest
 
-from zope.testbrowser.wsgi import TestBrowserLayer
 from zope.app.wsgi.testlayer import BrowserLayer
-
+from zope.principalannotation.interfaces import IPrincipalAnnotationUtility
+from zope.principalannotation.utility import PrincipalAnnotationUtility
+from zope.testbrowser.wsgi import TestBrowserLayer
 import zope.app.component.browser
 import zope.app.component.testing
+import zope.component
 
 
 class _AppComponentBrowserLayer(TestBrowserLayer,
@@ -32,29 +36,26 @@ class _AppComponentBrowserLayer(TestBrowserLayer,
         # Typically this would be done by zope.app.principalannotation's
         # bootstrap.zcml but we don't have a dep on that.
         super(_AppComponentBrowserLayer, self).setUp()
-        from zope.principalannotation.utility import PrincipalAnnotationUtility
-        from zope.principalannotation.interfaces import IPrincipalAnnotationUtility
-        from zope import component
-        component.getGlobalSiteManager().registerUtility(PrincipalAnnotationUtility(),
-                                                         IPrincipalAnnotationUtility)
+        import zope.component
+        zope.component.getGlobalSiteManager().registerUtility(
+            PrincipalAnnotationUtility(), IPrincipalAnnotationUtility)
 
 
 AppComponentBrowserLayer = _AppComponentBrowserLayer(
     zope.app.component.browser,
     allowTearDown=True)
 
-from zope.testing import renormalizing
 
-import re
 checker = renormalizing.RENormalizing([
     (re.compile("u('.*?')"), r"\1"),
     (re.compile('u(".*?")'), r"\1"),
 ])
 
+
 def test_suite():
-    flags = optionflags=(doctest.ELLIPSIS
-                         | doctest.NORMALIZE_WHITESPACE
-                         | renormalizing.IGNORE_EXCEPTION_MODULE_IN_PYTHON2)
+    flags = (doctest.ELLIPSIS
+             | doctest.NORMALIZE_WHITESPACE
+             | renormalizing.IGNORE_EXCEPTION_MODULE_IN_PYTHON2)
 
     site = doctest.DocFileSuite(
         "../site.rst",

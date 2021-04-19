@@ -13,19 +13,17 @@
 ##############################################################################
 """View support for adding and configuring utilities and adapters.
 """
-__docformat__ = 'restructuredtext'
-
 import zope.component
 import zope.component.interfaces
 from zope.exceptions.interfaces import UserError
 from zope.security.proxy import removeSecurityProxy
 from zope.publisher.browser import BrowserView
 from zope.component.interfaces import IFactory
-from zope.component.interface import searchInterface
 from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.app.component.i18n import ZopeMessageFactory as _
 from zope.app.container.browser.adding import Adding
 from zope.site.site import LocalSiteManager
+
 
 class ComponentAdding(Adding):
     """Adding subclass used for registerable components."""
@@ -45,12 +43,12 @@ class ComponentAdding(Adding):
                 (self.added_object, self.request), name='absolute_url'))
             return url + "/@@registration.html"
 
-        return super(ComponentAdding, self).nextURL() # pragma: no cover
+        return super(ComponentAdding, self).nextURL()  # pragma: no cover
 
     def action(self, type_name, id=''):
         # For special case of that we want to redirect to another adding view
         # (usually another menu such as AddUtility)
-        if type_name.startswith("../"): # pragma: no cover
+        if type_name.startswith("../"):  # pragma: no cover
             # Special case
             url = type_name
             if id:
@@ -101,7 +99,7 @@ class UtilityAdding(ComponentAdding):
             url = absoluteURL(self.added_object, self.request)
             return url + "/@@addRegistration.html"
 
-        return super(UtilityAdding, self).nextURL() # pragma: no cover
+        return super(UtilityAdding, self).nextURL()  # pragma: no cover
 
 
 class MakeSite(BrowserView):

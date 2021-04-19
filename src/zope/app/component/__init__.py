@@ -18,22 +18,24 @@ __docformat__ = "reStructuredText"
 import zope.component
 import zope.deprecation
 
-from zope.site import getNextUtility, queryNextUtility # BBB
+from zope.site import getNextUtility, queryNextUtility  # BBB
 
 _marker = object()
 
 # BBB: Deprecated on 9/26/2006
+
+
 @zope.deprecation.deprecate('''This function has been deprecated and will go
 away in Zope 3.6. There is no replacement for this function, since it does not
 make sense in light of registry bases anymore. If you are using this function
 to lookup the next utility, consider using get/queryNextUtility. Otherwise, it
 is suggested to iterate through the list of bases of a registry manually.''')
-def getNextSiteManager(context): # pragma: no cover
+def getNextSiteManager(context):  # pragma: no cover
     """Get the next site manager."""
     sm = queryNextSiteManager(context, _marker)
     if sm is _marker:
         raise zope.component.interfaces.ComponentLookupError(
-              "No more site managers have been found.")
+            "No more site managers have been found.")
     return sm
 
 
@@ -43,7 +45,7 @@ away in Zope 3.6. There is no replacement for this function, since it does not
 make sense in light of registry bases anymore. If you are using this function
 to lookup the next utility, consider using get/queryNextUtility. Otherwise, it
 is suggested to iterate through the list of bases of a registry manually.''')
-def queryNextSiteManager(context, default=None): # pragma: no cover
+def queryNextSiteManager(context, default=None):  # pragma: no cover
     """Get the next site manager.
 
     If the site manager of the given context is the global site manager, then

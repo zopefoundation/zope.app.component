@@ -33,6 +33,7 @@ from zope.site.site import LocalSiteManager
 from zope.traversing.api import traverse
 from zope.traversing.interfaces import ITraversable
 
+
 def buildSampleFolderTree():
     r"""
     Create a tree of folders and return the root::
@@ -66,11 +67,11 @@ def buildSampleFolderTree():
          u"\N{CYRILLIC SMALL LETTER PE}"
          u"\N{CYRILLIC SMALL LETTER KA}"
          u"\N{CYRILLIC SMALL LETTER A}3"][
-         u"\N{CYRILLIC SMALL LETTER PE}"
-         u"\N{CYRILLIC SMALL LETTER A}"
-         u"\N{CYRILLIC SMALL LETTER PE}"
-         u"\N{CYRILLIC SMALL LETTER KA}"
-         u"\N{CYRILLIC SMALL LETTER A}3_1"] = Folder()
+        u"\N{CYRILLIC SMALL LETTER PE}"
+        u"\N{CYRILLIC SMALL LETTER A}"
+        u"\N{CYRILLIC SMALL LETTER PE}"
+        u"\N{CYRILLIC SMALL LETTER KA}"
+        u"\N{CYRILLIC SMALL LETTER A}3_1"] = Folder()
 
     return root
 
@@ -94,12 +95,16 @@ def setUpTraversal():
 
 
 class Place(object):
-    "A property-like descriptor that traverses its name starting from 'rootFolder."
+    """A property-like descriptor that traverses its name starting from
+
+    rootFolder.
+    """
+
     def __init__(self, path):
         self.path = path
 
     def __get__(self, inst, cls=None):
-        if inst is None: # pragma: no cover
+        if inst is None:  # pragma: no cover
             return self
 
         try:
@@ -120,34 +125,34 @@ class PlacefulSetup(PlacelessSetup):
     """
 
     # Places :)
-    rootFolder  = Place(u'')
+    rootFolder = Place(u'')
 
-    folder1     = Place(u'folder1')
-    folder1_1   = Place(u'folder1/folder1_1')
+    folder1 = Place(u'folder1')
+    folder1_1 = Place(u'folder1/folder1_1')
     folder1_1_1 = Place(u'folder1/folder1_1/folder1_1_1')
     folder1_1_2 = Place(u'folder1/folder1_2/folder1_1_2')
-    folder1_2   = Place(u'folder1/folder1_2')
+    folder1_2 = Place(u'folder1/folder1_2')
     folder1_2_1 = Place(u'folder1/folder1_2/folder1_2_1')
 
-    folder2     = Place(u'folder2')
-    folder2_1   = Place(u'folder2/folder2_1')
+    folder2 = Place(u'folder2')
+    folder2_1 = Place(u'folder2/folder2_1')
     folder2_1_1 = Place(u'folder2/folder2_1/folder2_1_1')
 
-    folder3     = Place(u"\N{CYRILLIC SMALL LETTER PE}"
-                        u"\N{CYRILLIC SMALL LETTER A}"
-                        u"\N{CYRILLIC SMALL LETTER PE}"
-                        u"\N{CYRILLIC SMALL LETTER KA}"
-                        u"\N{CYRILLIC SMALL LETTER A}3")
-    folder3_1   = Place(u"\N{CYRILLIC SMALL LETTER PE}"
-                        u"\N{CYRILLIC SMALL LETTER A}"
-                        u"\N{CYRILLIC SMALL LETTER PE}"
-                        u"\N{CYRILLIC SMALL LETTER KA}"
-                        u"\N{CYRILLIC SMALL LETTER A}3/"
-                        u"\N{CYRILLIC SMALL LETTER PE}"
-                        u"\N{CYRILLIC SMALL LETTER A}"
-                        u"\N{CYRILLIC SMALL LETTER PE}"
-                        u"\N{CYRILLIC SMALL LETTER KA}"
-                        u"\N{CYRILLIC SMALL LETTER A}3_1")
+    folder3 = Place(u"\N{CYRILLIC SMALL LETTER PE}"
+                    u"\N{CYRILLIC SMALL LETTER A}"
+                    u"\N{CYRILLIC SMALL LETTER PE}"
+                    u"\N{CYRILLIC SMALL LETTER KA}"
+                    u"\N{CYRILLIC SMALL LETTER A}3")
+    folder3_1 = Place(u"\N{CYRILLIC SMALL LETTER PE}"
+                      u"\N{CYRILLIC SMALL LETTER A}"
+                      u"\N{CYRILLIC SMALL LETTER PE}"
+                      u"\N{CYRILLIC SMALL LETTER KA}"
+                      u"\N{CYRILLIC SMALL LETTER A}3/"
+                      u"\N{CYRILLIC SMALL LETTER PE}"
+                      u"\N{CYRILLIC SMALL LETTER A}"
+                      u"\N{CYRILLIC SMALL LETTER PE}"
+                      u"\N{CYRILLIC SMALL LETTER KA}"
+                      u"\N{CYRILLIC SMALL LETTER A}3_1")
 
     def setUp(self, folders=False, site=False):
         PlacelessSetup.setUp(self)

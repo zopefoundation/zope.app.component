@@ -17,6 +17,7 @@ from zope.app.component import testing
 
 from zope.component.interfaces import ISite
 
+
 class TestTesting(testing.PlacefulSetup,
                   unittest.TestCase):
 
@@ -43,6 +44,7 @@ class TestTesting(testing.PlacefulSetup,
         del self.rootFolder
         f2 = self.folder1
         self.assertIsNot(f1, f2)
+
 
 def test_suite():
     return unittest.defaultTestLoader.loadTestsFromName(__name__)

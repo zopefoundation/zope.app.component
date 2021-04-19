@@ -28,4 +28,4 @@ from zope.site.site import (SiteManagementFolder,
                             clearThreadSiteSubscriber,
                             clearSite,
                             SiteManagerAdapter,
-                            changeSiteConfigurationAfterMove) # BBB
+                            changeSiteConfigurationAfterMove)  # BBB

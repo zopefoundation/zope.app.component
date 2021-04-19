@@ -15,6 +15,7 @@
 from zope import interface
 from zope.app.component.browser import ComponentAdding
 
+
 class ISampleBase(interface.Interface):
     pass
 
@@ -26,6 +27,7 @@ class ISample(ISampleBase):
 @interface.implementer(ISample)
 class Sample(object):
     pass
+
 
 class FilteredAdding(ComponentAdding):
     _addFilterInterface = ISample

@@ -16,6 +16,7 @@ import unittest
 
 from zope.interface.verify import verifyClass, verifyObject
 
+
 class TestComponent(unittest.TestCase):
 
     def test_implements(self):
@@ -24,6 +25,7 @@ class TestComponent(unittest.TestCase):
 
         verifyClass(IComponent, Component)
         verifyObject(IComponent, Component())
+
 
 def test_suite():
     return unittest.defaultTestLoader.loadTestsFromName(__name__)
