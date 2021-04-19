@@ -40,7 +40,8 @@ class ManagementViewSelector(BrowserView):
         if not redirect_url.lower().startswith(('../', 'javascript:', '++')):
             self.request.response.redirect(redirect_url)
             return u''
-        raise AssertionError("Should not get here") # pragma: no cover
+        raise AssertionError("Should not get here")  # pragma: no cover
+
 
 class LoginLogout(object):
     # Dummy implementation of zope.app.security.browser.auth.LoginLogout

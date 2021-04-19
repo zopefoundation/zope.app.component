@@ -21,9 +21,11 @@
 import os
 from setuptools import setup, find_packages
 
+
 def read(*rnames):
     with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
         return f.read()
+
 
 test_requires = [
     'zope.app.appsetup',
@@ -66,7 +68,7 @@ setup(name='zope.app.component',
           read('README.rst')
           + '\n\n.. contents:: \n\n' +
           read('CHANGES.rst')
-          ),
+      ),
       keywords="zope component architecture local",
       classifiers=[
           'Development Status :: 5 - Production/Stable',
@@ -81,6 +83,7 @@ setup(name='zope.app.component',
           'Programming Language :: Python :: 3.6',
           'Programming Language :: Python :: 3.7',
           'Programming Language :: Python :: 3.8',
+          'Programming Language :: Python :: 3.9',
           'Programming Language :: Python :: Implementation :: CPython',
           'Programming Language :: Python :: Implementation :: PyPy',
           'Natural Language :: English',
@@ -116,4 +119,4 @@ setup(name='zope.app.component',
       ],
       include_package_data=True,
       zip_safe=False,
-)
+      )

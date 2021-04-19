@@ -18,4 +18,3 @@ from zope.componentvocabulary.vocabulary import (
     UtilityTerm, UtilityVocabulary, InterfacesVocabulary,
     UtilityComponentInterfacesVocabulary, UtilityNameTerm,
     UtilityNames)
-

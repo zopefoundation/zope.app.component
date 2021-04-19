@@ -38,6 +38,7 @@ def _registrations(context, comp):
             if getattr(registration, attrname) == comp or comp is None:
                 yield registration
 
+
 class IRegistrationDisplay(interface.Interface):
     """Display registration information
     """
@@ -52,9 +53,11 @@ class IRegistrationDisplay(interface.Interface):
     def unregister():
         "Remove the registration by unregistering the component"
 
+
 class ISiteRegistrationDisplay(IRegistrationDisplay):
     """Display registration information, including the component registered
     """
+
 
 @component.adapter(None, zope.publisher.interfaces.browser.IBrowserRequest)
 class RegistrationView(BrowserPage):
@@ -65,7 +68,7 @@ class RegistrationView(BrowserPage):
         registrations = [
             component.getMultiAdapter((r, self.request), IRegistrationDisplay)
             for r in sorted(_registrations(self.context, self.context))
-            ]
+        ]
         return registrations
 
     def update(self):
@@ -78,6 +81,7 @@ class RegistrationView(BrowserPage):
     def __call__(self):
         self.update()
         return self.render()
+
 
 @component.adapter(zope.interface.interfaces.IUtilityRegistration,
                    zope.publisher.interfaces.browser.IBrowserRequest)
@@ -125,14 +129,15 @@ class UtilityRegistrationDisplay(object):
         return {
             "info": self._provided(),
             "comment": self._comment()
-            }
+        }
 
     def unregister(self):
         self.context.registry.unregisterUtility(
             self.context.component,
             self.context.provided,
             self.context.name,
-            )
+        )
+
 
 class SiteRegistrationView(RegistrationView):
 
@@ -143,8 +148,9 @@ class SiteRegistrationView(RegistrationView):
             component.getMultiAdapter((r, self.request),
                                       ISiteRegistrationDisplay)
             for r in sorted(_registrations(self.context, None))
-            ]
+        ]
         return registrations
+
 
 @interface.implementer_only(ISiteRegistrationDisplay)
 class UtilitySiteRegistrationDisplay(UtilityRegistrationDisplay):
@@ -155,11 +161,11 @@ class UtilitySiteRegistrationDisplay(UtilityRegistrationDisplay):
             (self.context.component, self.request), name='absolute_url')
         try:
             url = url()
-        except TypeError: # pragma: no cover
+        except TypeError:  # pragma: no cover
             url = ""
 
         cname = getattr(self.context.component, '__name__', '')
-        if not cname: # pragma: no cover
+        if not cname:  # pragma: no cover
             cname = _("(unknown name)")
         if url:
             url += "/@@SelectedManagementView.html"
@@ -169,7 +175,8 @@ class UtilitySiteRegistrationDisplay(UtilityRegistrationDisplay):
             "url": url,
             "info": self._provided(),
             "comment": self._comment()
-            }
+        }
+
 
 @component.adapter(None, zope.publisher.interfaces.browser.IBrowserRequest)
 class AddUtilityRegistration(form.Form):
@@ -212,18 +219,18 @@ class AddUtilityRegistration(form.Form):
 
     name = provided = None
 
-    prefix = 'field' # in hopes of making old tests pass. :)
+    prefix = 'field'  # in hopes of making old tests pass. :)
 
     def __init__(self, context, request):
-        if self.name is not None: # pragma: no cover
+        if self.name is not None:  # pragma: no cover
             self.form_fields = self.form_fields.omit('name')
-        if self.provided is not None: # pragma: no cover
+        if self.provided is not None:  # pragma: no cover
             self.form_fields = self.form_fields.omit('provided')
         super(AddUtilityRegistration, self).__init__(context, request)
 
     def update(self):
         # hack to make work with old tests
-        if 'UPDATE_SUBMIT' in self.request.form: # pragma: no cover
+        if 'UPDATE_SUBMIT' in self.request.form:  # pragma: no cover
             warnings.warn(
                 "Old test needs to be updated.",
                 DeprecationWarning)
@@ -253,7 +260,7 @@ class AddUtilityRegistration(form.Form):
             provided, name,
             data['comment'] or '')
 
-        if 'UPDATE_SUBMIT' in self.request.form: # pragma: no cover
+        if 'UPDATE_SUBMIT' in self.request.form:  # pragma: no cover
             # Backward compat until 3.5
             self.request.response.redirect('@@SelectedManagementView.html')
             return

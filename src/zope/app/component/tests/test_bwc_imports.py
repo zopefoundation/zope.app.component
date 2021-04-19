@@ -15,12 +15,14 @@
 import importlib
 import unittest
 
+
 def _make_import_test(mod_name, attrname):
     def test(self):
         mod = importlib.import_module('zope.app.component.' + mod_name)
         self.assertIsNotNone(getattr(mod, attrname))
 
     return test
+
 
 class TestBWCImports(unittest.TestCase):
 
@@ -32,6 +34,7 @@ class TestBWCImports(unittest.TestCase):
                                ('vocabulary', 'UtilityTerm'),
                                ('interfaces', 'INewLocalSite')):
         locals()['test_' + mod_name] = _make_import_test(mod_name, attrname)
+
 
 def test_suite():
     return unittest.defaultTestLoader.loadTestsFromName(__name__)
