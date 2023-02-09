@@ -15,18 +15,19 @@
 """
 
 
-import re
-from zope.testing import renormalizing
 import doctest
+import re
 import unittest
 
+import zope.component
 from zope.app.wsgi.testlayer import BrowserLayer
 from zope.principalannotation.interfaces import IPrincipalAnnotationUtility
 from zope.principalannotation.utility import PrincipalAnnotationUtility
 from zope.testbrowser.wsgi import TestBrowserLayer
+from zope.testing import renormalizing
+
 import zope.app.component.browser
 import zope.app.component.testing
-import zope.component
 
 
 class _AppComponentBrowserLayer(TestBrowserLayer,
@@ -53,9 +54,7 @@ checker = renormalizing.RENormalizing([
 
 
 def test_suite():
-    flags = (doctest.ELLIPSIS
-             | doctest.NORMALIZE_WHITESPACE
-             | renormalizing.IGNORE_EXCEPTION_MODULE_IN_PYTHON2)
+    flags = doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
 
     site = doctest.DocFileSuite(
         "../site.rst",

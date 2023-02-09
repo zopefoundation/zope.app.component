@@ -17,21 +17,18 @@ Test helpers.
 This is part of the public API of this package.
 """
 
-from zope import component
-
 from zope.component.hooks import setSite
 from zope.component.interfaces import ISite
 from zope.component.testing import PlacelessSetup
-
 from zope.container.interfaces import ISimpleReadContainer
 from zope.container.traversal import ContainerTraversable
-
 from zope.site.folder import Folder
 from zope.site.folder import rootFolder
 from zope.site.site import LocalSiteManager
-
 from zope.traversing.api import traverse
 from zope.traversing.interfaces import ITraversable
+
+from zope import component
 
 
 def buildSampleFolderTree():

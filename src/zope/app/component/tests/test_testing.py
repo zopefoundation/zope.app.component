@@ -13,9 +13,10 @@
 ##############################################################################
 
 import unittest
-from zope.app.component import testing
 
 from zope.component.interfaces import ISite
+
+from zope.app.component import testing
 
 
 class TestTesting(testing.PlacefulSetup,

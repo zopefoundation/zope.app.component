@@ -16,14 +16,16 @@
 import base64
 import warnings
 
-from zope import interface, component, schema
+import zope.app.pagetemplate
+import zope.component.interfaces
+import zope.publisher.interfaces.browser
 from zope.formlib import form
 from zope.publisher.browser import BrowserPage
 from zope.security.proxy import removeSecurityProxy
-import zope.component.interfaces
-import zope.publisher.interfaces.browser
 
-import zope.app.pagetemplate
+from zope import component
+from zope import interface
+from zope import schema
 from zope.app.component.i18n import ZopeMessageFactory as _
 
 

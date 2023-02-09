@@ -14,7 +14,8 @@
 
 import unittest
 
-from zope.interface.verify import verifyClass, verifyObject
+from zope.interface.verify import verifyClass
+from zope.interface.verify import verifyObject
 
 
 class TestComponent(unittest.TestCase):

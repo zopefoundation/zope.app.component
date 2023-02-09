@@ -15,14 +15,15 @@
 """
 import zope.component
 import zope.component.interfaces
-from zope.exceptions.interfaces import UserError
-from zope.security.proxy import removeSecurityProxy
-from zope.publisher.browser import BrowserView
-from zope.component.interfaces import IFactory
-from zope.traversing.browser.absoluteurl import absoluteURL
-from zope.app.component.i18n import ZopeMessageFactory as _
 from zope.app.container.browser.adding import Adding
+from zope.component.interfaces import IFactory
+from zope.exceptions.interfaces import UserError
+from zope.publisher.browser import BrowserView
+from zope.security.proxy import removeSecurityProxy
 from zope.site.site import LocalSiteManager
+from zope.traversing.browser.absoluteurl import absoluteURL
+
+from zope.app.component.i18n import ZopeMessageFactory as _
 
 
 class ComponentAdding(Adding):

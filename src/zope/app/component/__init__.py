@@ -17,8 +17,9 @@ __docformat__ = "reStructuredText"
 
 import zope.component
 import zope.deprecation
+from zope.site import getNextUtility  # BBB
+from zope.site import queryNextUtility
 
-from zope.site import getNextUtility, queryNextUtility  # BBB
 
 _marker = object()
 

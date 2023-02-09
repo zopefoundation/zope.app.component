@@ -13,11 +13,10 @@
 ##############################################################################
 
 # BBB
-from zope.site.interfaces import (INewLocalSite,
-                                  NewLocalSite,
-                                  ILocalSiteManager,
-                                  ISiteManagementFolder)
-
+from zope.component.interfaces import IPossibleSite
+from zope.component.interfaces import ISite
 # BBB
-from zope.component.interfaces import (ISite,
-                                       IPossibleSite)
+from zope.site.interfaces import ILocalSiteManager
+from zope.site.interfaces import INewLocalSite
+from zope.site.interfaces import ISiteManagementFolder
+from zope.site.interfaces import NewLocalSite

@@ -12,5 +12,8 @@
 #
 ##############################################################################
 # BBB
-from zope.component.security import PublicPermission, _checker
-from zope.component.zcml import view, resource, subscriber
+from zope.component.security import PublicPermission
+from zope.component.security import _checker
+from zope.component.zcml import resource
+from zope.component.zcml import subscriber
+from zope.component.zcml import view
