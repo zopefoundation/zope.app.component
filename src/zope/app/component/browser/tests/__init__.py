@@ -25,7 +25,7 @@ class ISample(ISampleBase):
 
 
 @interface.implementer(ISample)
-class Sample(object):
+class Sample:
     pass
 
 

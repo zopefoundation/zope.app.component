@@ -13,6 +13,13 @@ CHANGES
 
 - Drop support for Python 3.4.
 
+- Remove deprecated:
+
+    - ``zope.app.component.getNextUtility`` (import from ``zope.site``)
+    - ``zope.app.component.queryNextUtility`` (import from ``zope.site``)
+    - ``zope.app.component.getNextSiteManager`` (no replacement)
+    - ``zope.app.component.queryNextSiteManager`` (no replacement)
+
 
 4.1.0 (2018-10-22)
 ------------------

@@ -33,7 +33,7 @@ class ComponentAdding(Adding):
 
     def add(self, content):
         # Override so as to save a reference to the added object
-        self.added_object = super(ComponentAdding, self).add(content)
+        self.added_object = super().add(content)
         return self.added_object
 
     def nextURL(self):
@@ -44,7 +44,7 @@ class ComponentAdding(Adding):
                 (self.added_object, self.request), name='absolute_url'))
             return url + "/@@registration.html"
 
-        return super(ComponentAdding, self).nextURL()  # pragma: no cover
+        return super().nextURL()  # pragma: no cover
 
     def action(self, type_name, id=''):
         # For special case of that we want to redirect to another adding view
@@ -59,14 +59,14 @@ class ComponentAdding(Adding):
 
         # Call the superclass action() method.
         # As a side effect, self.added_object is set by add() above.
-        super(ComponentAdding, self).action(type_name, id)
+        super().action(type_name, id)
 
     _addFilterInterface = None
 
     def addingInfo(self):
         # A site management folder can have many things. We only want
         # things that implement a particular interface
-        info = super(ComponentAdding, self).addingInfo()
+        info = super().addingInfo()
         if self._addFilterInterface is None:
             return info
         out = []
@@ -100,7 +100,7 @@ class UtilityAdding(ComponentAdding):
             url = absoluteURL(self.added_object, self.request)
             return url + "/@@addRegistration.html"
 
-        return super(UtilityAdding, self).nextURL()  # pragma: no cover
+        return super().nextURL()  # pragma: no cover
 
 
 class MakeSite(BrowserView):
@@ -150,7 +150,7 @@ class MakeSite(BrowserView):
 
         """
         if zope.component.interfaces.ISite.providedBy(self.context):
-            raise UserError(_(u'This is already a site'))
+            raise UserError(_('This is already a site'))
 
         # We don't want to store security proxies (we can't,
         # actually), so we have to remove proxies here before passing

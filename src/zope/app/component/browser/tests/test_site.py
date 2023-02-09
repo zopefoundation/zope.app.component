@@ -36,7 +36,7 @@ class _AppComponentBrowserLayer(TestBrowserLayer,
     def setUp(self):
         # Typically this would be done by zope.app.principalannotation's
         # bootstrap.zcml but we don't have a dep on that.
-        super(_AppComponentBrowserLayer, self).setUp()
+        super().setUp()
         import zope.component
         zope.component.getGlobalSiteManager().registerUtility(
             PrincipalAnnotationUtility(), IPrincipalAnnotationUtility)

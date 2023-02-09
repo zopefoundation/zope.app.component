@@ -88,7 +88,7 @@ class RegistrationView(BrowserPage):
 @component.adapter(zope.interface.interfaces.IUtilityRegistration,
                    zope.publisher.interfaces.browser.IBrowserRequest)
 @interface.implementer(IRegistrationDisplay)
-class UtilityRegistrationDisplay(object):
+class UtilityRegistrationDisplay:
     """Utility Registration Details"""
 
     def __init__(self, context, request):
@@ -100,7 +100,7 @@ class UtilityRegistrationDisplay(object):
         return provided.__module__ + '.' + provided.__name__
 
     def id(self):
-        joined = "%s %s" % (self.provided(), self.context.name)
+        joined = "{} {}".format(self.provided(), self.context.name)
         joined_bytes = joined.encode("utf8")
         j64_bytes = base64.b64encode(joined_bytes)
         if not isinstance(j64_bytes, str):
@@ -207,15 +207,15 @@ class AddUtilityRegistration(form.Form):
             title=_("Register As"),
             description=_("The name under which the utility will be known."),
             required=False,
-            default=u'',
-            missing_value=u''
+            default='',
+            missing_value=''
         ),
         schema.Text(
             __name__='comment',
             title=_("Comment"),
             required=False,
-            default=u'',
-            missing_value=u''
+            default='',
+            missing_value=''
         ),
     )
 
@@ -228,17 +228,7 @@ class AddUtilityRegistration(form.Form):
             self.form_fields = self.form_fields.omit('name')
         if self.provided is not None:  # pragma: no cover
             self.form_fields = self.form_fields.omit('provided')
-        super(AddUtilityRegistration, self).__init__(context, request)
-
-    def update(self):
-        # hack to make work with old tests
-        if 'UPDATE_SUBMIT' in self.request.form:  # pragma: no cover
-            warnings.warn(
-                "Old test needs to be updated.",
-                DeprecationWarning)
-            self.request.form['field.actions.register'] = 'Register'
-            self.request.form['field.comment'] = u''
-        super(AddUtilityRegistration, self).update()
+        super().__init__(context, request)
 
     @property
     def label(self):
@@ -261,10 +251,5 @@ class AddUtilityRegistration(form.Form):
             removeSecurityProxy(self.context),
             provided, name,
             data['comment'] or '')
-
-        if 'UPDATE_SUBMIT' in self.request.form:  # pragma: no cover
-            # Backward compat until 3.5
-            self.request.response.redirect('@@SelectedManagementView.html')
-            return
 
         self.request.response.redirect('@@registration.html')

@@ -23,7 +23,7 @@ class TestTesting(testing.PlacefulSetup,
                   unittest.TestCase):
 
     def setUp(self):
-        super(TestTesting, self).setUp(site=True)
+        super().setUp(site=True)
 
     def test_is_site(self):
         self.assertTrue(ISite.providedBy(self.rootFolder))
@@ -33,7 +33,7 @@ class TestTesting(testing.PlacefulSetup,
         tree1 = testing.buildSampleFolderTree()
         self.assertIsNotNone(tree1)
         self.assertIsNot(tree1, testing.buildSampleFolderTree())
-        self.assertIn(u'folder1', tree1)
+        self.assertIn('folder1', tree1)
 
     def test_new_root(self):
         cur_root = self.rootFolder

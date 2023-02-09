@@ -12,7 +12,7 @@
 #
 ##############################################################################
 # This package is developed by the Zope Toolkit project, documented here:
-# http://docs.zope.org/zopetoolkit
+# https://zopetoolkit.readthedocs.io/
 # When developing and releasing this package, please follow the documented
 # Zope Toolkit policies as described by this documentation.
 ##############################################################################
@@ -64,7 +64,7 @@ test_requires = [
 setup(name='zope.app.component',
       version='5.0.dev0',
       author='Zope Corporation and Contributors',
-      author_email='zope-dev@zope.org',
+      author_email='zope-dev@zope.dev',
       description='Local Zope Component Support',
       long_description=(
           read('README.rst')
@@ -96,10 +96,10 @@ setup(name='zope.app.component',
       packages=find_packages('src'),
       package_dir={'': 'src'},
       namespace_packages=['zope', 'zope.app'],
+      python_requires='>=3.7',
       extras_require={
           'test': test_requires,
       },
-      tests_require=test_requires,
       install_requires=[
           'setuptools',
           'zope.site',
