@@ -14,7 +14,6 @@
 """General registry-related views
 """
 import base64
-import warnings
 
 import zope.app.pagetemplate
 import zope.component.interfaces
