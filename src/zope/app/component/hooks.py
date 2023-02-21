@@ -17,15 +17,13 @@ The real public API is now zope.component.hooks
 """
 __docformat__ = 'restructuredtext'
 
-from zope.component.hooks import (
-    SiteInfo,
-    adapter_hook,
-    clearSite,
-    getSite,
-    getSiteManager,
-    read_property,
-    resetHooks,
-    setHooks,
-    setSite,
-    siteinfo,
-)  # BBB
+from zope.component.hooks import SiteInfo  # BBB
+from zope.component.hooks import adapter_hook
+from zope.component.hooks import clearSite
+from zope.component.hooks import getSite
+from zope.component.hooks import getSiteManager
+from zope.component.hooks import read_property
+from zope.component.hooks import resetHooks
+from zope.component.hooks import setHooks
+from zope.component.hooks import setSite
+from zope.component.hooks import siteinfo

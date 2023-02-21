@@ -13,14 +13,13 @@
 ##############################################################################
 
 # BBB
-from zope.security.metadirectives import (IClassDirective,
-                                          IImplementsSubdirective,
-                                          IRequireSubdirective,
-                                          IAllowSubdirective,
-                                          IFactorySubdirective)
-
+from zope.component.zcml import IBasicResourceInformation
+from zope.component.zcml import IBasicViewInformation
+from zope.component.zcml import IResourceDirective
+from zope.component.zcml import IViewDirective
 # BBB
-from zope.component.zcml import (IBasicViewInformation,
-                                 IBasicResourceInformation,
-                                 IViewDirective,
-                                 IResourceDirective)
+from zope.security.metadirectives import IAllowSubdirective
+from zope.security.metadirectives import IClassDirective
+from zope.security.metadirectives import IFactorySubdirective
+from zope.security.metadirectives import IImplementsSubdirective
+from zope.security.metadirectives import IRequireSubdirective

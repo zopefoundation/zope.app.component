@@ -18,14 +18,14 @@ The real public API is now zope.site
 # on the side of caution for backwards compatibility we
 # import everything defined
 from zope.component.hooks import setSite
-from zope.site.site import (SiteManagementFolder,
-                            SMFolderFactory,
-                            SiteManagerContainer,
-                            _findNextSiteManager,
-                            _LocalAdapterRegistry,
-                            LocalSiteManager,
-                            threadSiteSubscriber,
-                            clearThreadSiteSubscriber,
-                            clearSite,
-                            SiteManagerAdapter,
-                            changeSiteConfigurationAfterMove)  # BBB
+from zope.site.site import LocalSiteManager
+from zope.site.site import SiteManagementFolder
+from zope.site.site import SiteManagerAdapter
+from zope.site.site import SiteManagerContainer
+from zope.site.site import SMFolderFactory
+from zope.site.site import _findNextSiteManager
+from zope.site.site import _LocalAdapterRegistry
+from zope.site.site import changeSiteConfigurationAfterMove  # BBB
+from zope.site.site import clearSite
+from zope.site.site import clearThreadSiteSubscriber
+from zope.site.site import threadSiteSubscriber

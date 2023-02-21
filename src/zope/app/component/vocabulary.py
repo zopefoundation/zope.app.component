@@ -14,7 +14,10 @@
 
 # BBB
 
-from zope.componentvocabulary.vocabulary import (
-    UtilityTerm, UtilityVocabulary, InterfacesVocabulary,
-    UtilityComponentInterfacesVocabulary, UtilityNameTerm,
-    UtilityNames)
+from zope.componentvocabulary.vocabulary import InterfacesVocabulary
+from zope.componentvocabulary.vocabulary import \
+    UtilityComponentInterfacesVocabulary
+from zope.componentvocabulary.vocabulary import UtilityNames
+from zope.componentvocabulary.vocabulary import UtilityNameTerm
+from zope.componentvocabulary.vocabulary import UtilityTerm
+from zope.componentvocabulary.vocabulary import UtilityVocabulary

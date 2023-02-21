@@ -13,8 +13,10 @@
 ##############################################################################
 """Interfaces for objects supporting registration
 """
-from zope import interface, schema
 import zope.schema.interfaces
+
+from zope import interface
+from zope import schema
 
 
 class IComponent(zope.schema.interfaces.IField):

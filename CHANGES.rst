@@ -2,12 +2,23 @@
 CHANGES
 =======
 
-4.1.1 (unreleased)
-------------------
+5.0 (unreleased)
+----------------
+
+- Add support for Python 3.10, 3.11.
+
+- Drop support for Python 2.7, 3.5, 3.6.
 
 - Add support for Python 3.8 and 3.9.
 
 - Drop support for Python 3.4.
+
+- Remove deprecated:
+
+    - ``zope.app.component.getNextUtility`` (import from ``zope.site``)
+    - ``zope.app.component.queryNextUtility`` (import from ``zope.site``)
+    - ``zope.app.component.getNextSiteManager`` (no replacement)
+    - ``zope.app.component.queryNextSiteManager`` (no replacement)
 
 
 4.1.0 (2018-10-22)
