@@ -99,7 +99,7 @@ class UtilityRegistrationDisplay:
         return provided.__module__ + '.' + provided.__name__
 
     def id(self):
-        joined = "{} {}".format(self.provided(), self.context.name)
+        joined = f"{self.provided()} {self.context.name}"
         joined_bytes = joined.encode("utf8")
         j64_bytes = base64.b64encode(joined_bytes)
         if not isinstance(j64_bytes, str):
