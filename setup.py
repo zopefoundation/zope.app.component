@@ -61,7 +61,7 @@ test_requires = [
 ]
 
 setup(name='zope.app.component',
-      version='6.0',
+      version='6.1.dev0',
       author='Zope Foundation and Contributors',
       author_email='zope-dev@zope.dev',
       description='Local Zope Component Support',
