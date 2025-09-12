@@ -20,7 +20,6 @@
 """
 import os
 
-from setuptools import find_packages
 from setuptools import setup
 
 
@@ -58,11 +57,11 @@ test_requires = [
     'zope.site',
     'zope.testbrowser >= 5.2',
     'zope.testing',
-    'zope.testrunner',
+    'zope.testrunner >= 6.4',
 ]
 
 setup(name='zope.app.component',
-      version='5.1.dev0',
+      version='6.0.dev0',
       author='Zope Foundation and Contributors',
       author_email='zope-dev@zope.dev',
       description='Local Zope Component Support',
@@ -93,9 +92,6 @@ setup(name='zope.app.component',
       ],
       url='https://github.com/zopefoundation/zope.app.component',
       license='ZPL-2.1',
-      packages=find_packages('src'),
-      package_dir={'': 'src'},
-      namespace_packages=['zope', 'zope.app'],
       python_requires='>=3.9',
       extras_require={
           'test': test_requires,
