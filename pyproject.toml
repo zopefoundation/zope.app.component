@@ -7,6 +7,92 @@ requires = [
 ]
 build-backend = "setuptools.build_meta"
 
+[project]
+name = "zope.app.component"
+version = "6.1.dev0"
+description = "Local Zope Component Support"
+license = "ZPL-2.1"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Topic :: Internet :: WWW/HTTP",
+    "Framework :: Zope :: 3",
+]
+dynamic = ["readme"]
+requires-python = ">=3.11"
+authors = [
+    {name = "Zope Foundation and contributors",email = "zope-dev@zope.dev"},
+]
+maintainers = [
+    {name = "Plone Foundation and contributors",email = "zope-dev@zope.dev"},
+]
+dependencies = [
+    "zope.site",
+    "zope.app.container >= 4.0",
+    "zope.app.pagetemplate >= 4.0",
+    "zope.component[hook,zcml] >= 4.3.0",
+    "zope.deprecation",
+    "zope.exceptions",
+    "zope.formlib",
+    "zope.i18nmessageid",
+    "zope.interface",
+    "zope.publisher >= 4.3.1",
+    "zope.schema",
+    "zope.security",
+    "zope.traversing",
+    "zope.componentvocabulary",
+]
+keywords = ["zope", "component", "architecture", "local"]
+
+[project.optional-dependencies]
+test = [
+    "zope.app.appsetup",
+    "zope.app.basicskin >= 4.0",
+    "zope.app.container[test] >= 4.0",
+    "zope.app.content",
+    "zope.app.dependable >= 4.0",
+    "zope.app.http",
+    "zope.app.pagetemplate >= 4.0",
+    "zope.app.principalannotation",
+    "zope.app.publication",
+    "zope.app.publisher",
+    "zope.app.rotterdam >= 4.0",
+    "zope.app.schema",
+    "zope.app.testing",
+    "zope.app.wsgi",
+    "zope.applicationcontrol",
+    "zope.browser",
+    "zope.browserresource",
+    "zope.copypastemove",
+    "zope.login",
+    "zope.password",
+    "zope.principalannotation",
+    "zope.principalregistry",
+    "zope.proxy >= 4.2.1",
+    "zope.securitypolicy",
+    "zope.site",
+    "zope.testbrowser >= 5.2",
+    "zope.testing",
+    "zope.testrunner >= 6.4",
+]
+
+[project.urls]
+Source = "https://github.com/zopefoundation/zope.app.component"
+Issues = "https://github.com/zopefoundation/zope.app.component/issues"
+Changelog = "https://raw.githubusercontent.com/zopefoundation/zope.app.component/master/CHANGES.rst"
+
 [tool.coverage.run]
 branch = true
 source = ["zope.app.component"]
@@ -29,3 +115,11 @@ exclude_lines = [
 
 [tool.coverage.html]
 directory = "parts/htmlcov"
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.rst", "CHANGES.rst"]}
+
+[tool.zest-releaser]
+create-wheel = false
+extra-message = ""
+upload-pypi = false
